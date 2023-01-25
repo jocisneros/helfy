@@ -1,4 +1,20 @@
 # helfy #
+## Student/Team Information ##
+
+Team #: **47**
+Team Name: **Muscle Mango**
+
+Team member 1 (Team Lead)
+**Cisneros, Jose**; 61177732; jacisne4@uci.edu
+
+Team member 2
+**Bokil, Aayush**; 71798747; abokil@uci.edu
+
+Team member 3
+**Raya Isaiah**; 92172470; rayai@uci.edu
+
+Team member 4
+**Golla, Akhil**; 49262163; agolla@uci.edu
 
 ## Project Description ##
 ### Motivation ###
