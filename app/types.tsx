@@ -22,3 +22,23 @@ export type WorkoutSelectionPageNavigationProp = NativeStackScreenProps<
     RootStackParamList,
     'WorkoutSelection'
 >;
+
+export type Workout = {
+    id?: number,
+    name: string,
+    difficulty?: number,
+    demoUrl?: string,
+    tips?: string[],
+    muscleGroup?: string,
+};
+
+export enum MuscleGroup {
+    Legs = 'Legs',
+    Arms = 'Arms',
+    ChestAndBack = 'Chest/Back',
+    Push = 'Push',
+    Pull = 'Pull',
+    UpperBody = 'Upper Body',
+    LowerBody = 'Lower Body',
+    FullBody = 'Full Body',
+};
