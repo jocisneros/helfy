@@ -2,7 +2,7 @@ import mysql.connector
 from mysql.connector import errorcode
 from configs import PERSONALDBCONFIG, EXERCISEDBCONFIG
 
-def getUserById(userId):
+def getUserById(userId: str):
     users = []
     try:
         connection = mysql.connector.connect(**PERSONALDBCONFIG)
