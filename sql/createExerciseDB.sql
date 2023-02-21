@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS exercises (
 	id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     difficulty INT NOT NULL,
-    tips VARCHAR(300) NOT NULL,
+    tips VARCHAR(500) NOT NULL,
     link VARCHAR(100) NOT NULL,
     PRIMARY KEY (id)
 );
@@ -36,3 +36,4 @@ CREATE TABLE IF NOT EXISTS equipment_in_exercises (
 	FOREIGN KEY (exerciseID) REFERENCES exercises(id),
     FOREIGN KEY (equipmentID) REFERENCES equipment(id)
 );
+
