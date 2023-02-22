@@ -1,9 +1,11 @@
 // start-page.tsx
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { StyleSheet, Text, View, Button, ScrollView } from 'react-native';
 import { StartPageNavigationProp } from '../types';
 import {Picker} from '@react-native-picker/picker';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 type Height = {
   feet: number,
@@ -19,7 +21,32 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
   const [age, setAge] = useState("");
   const [sex, setSex] = useState("");
   const [workoutSchedule, setWorkoutSchedule] = useState("");
+  const saveUserInfo = useCallback(() => {
+    const fileUri = FileSystem.documentDirectory + 'data.txt';
 
+    let userInfo = {
+      weight: weight,
+      heightFeet: height.feet,
+      heightInches: height.inches,
+      age: age,
+      sex: sex,
+      workoutSchedule: workoutSchedule
+    };
+    
+    let userInfoStr = JSON.stringify(userInfo);
+
+    FileSystem.writeAsStringAsync(fileUri, userInfoStr, {
+      encoding: FileSystem.EncodingType.UTF8,
+    });
+
+    const UTI = 'public.text';
+
+    Sharing.shareAsync(fileUri, {UTI}).catch((error) => {
+      console.log(error);
+    });
+
+    navigation.navigate('Home')
+  }, [navigation])
 
   return (
     <ScrollView>
@@ -132,8 +159,8 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
         </View>
         <View style={styles.footer}>
           <Button
-            title='Go to Home Screen'
-            onPress={() => navigation.navigate('Home')}
+            title='Home'
+            onPress={saveUserInfo}
           />
         </View>
       </View>
@@ -156,16 +183,19 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       borderRadius: 40,
       margin: 20,
+      marginTop: 80,
       padding: 20,
     },
     title: {
       fontWeight: 'bold',
       fontSize: 20,
       color: '#CFCFCF',
+      fontFamily: 'Lato_700Bold',
     },
     headerInfo: {
       fontSize: 20,
       color: '#CFCFCF',
+      fontFamily: 'Lato_400Regular',
     },
     body: {
       backgroundColor: '#445046',
@@ -177,6 +207,7 @@ const styles = StyleSheet.create({
     },
     text: {
       color: '#CFCFCF',
+      fontFamily: 'Lato_700Bold',
     },
     picker: {
       flexDirection: 'row',
@@ -191,6 +222,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       borderRadius: 40,
       margin: 20,
+      marginBottom: 40,
       padding: 20,
     }
 });
