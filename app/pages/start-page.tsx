@@ -2,51 +2,17 @@
 
 import { useState, useCallback } from 'react';
 import { StyleSheet, Text, View, Button, ScrollView } from 'react-native';
-import { StartPageNavigationProp } from '../types';
-import {Picker} from '@react-native-picker/picker';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
-
-type Height = {
-  feet: number,
-  inches: number
-}
+import { Height, StartPageNavigationProp } from '../types';
+import { Picker } from '@react-native-picker/picker';
 
 export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
-  const [weight, setWeight] = useState("");
+  const [weight, setWeight] = useState(0);
   const [height, setHeight] = useState<Height>({
     feet: 0,
     inches: 0,
   });
-  const [age, setAge] = useState("");
+  const [age, setAge] = useState(0);
   const [sex, setSex] = useState("");
-  const [workoutSchedule, setWorkoutSchedule] = useState("");
-  const saveUserInfo = useCallback(() => {
-    const fileUri = FileSystem.documentDirectory + 'data.txt';
-
-    let userInfo = {
-      weight: weight,
-      heightFeet: height.feet,
-      heightInches: height.inches,
-      age: age,
-      sex: sex,
-      workoutSchedule: workoutSchedule
-    };
-    
-    let userInfoStr = JSON.stringify(userInfo);
-
-    FileSystem.writeAsStringAsync(fileUri, userInfoStr, {
-      encoding: FileSystem.EncodingType.UTF8,
-    });
-
-    const UTI = 'public.text';
-
-    Sharing.shareAsync(fileUri, {UTI}).catch((error) => {
-      console.log(error);
-    });
-
-    navigation.navigate('Home')
-  }, [navigation])
 
   return (
     <ScrollView>
@@ -69,7 +35,7 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
                 onValueChange={(itemValue) => setWeight(itemValue)}
               >
                 {[...Array(301).keys()].map(n => (
-                  <Picker.Item label={n.toString()} value={n} color='#CFCFCF' />
+                  <Picker.Item label={n.toString()} value={n} color='#CFCFCF' key={n} />
                 ))}
               </Picker>
             </View>
@@ -86,7 +52,7 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
                   onValueChange={(ft) => setHeight(prevHeight => ({...prevHeight, feet: ft}))}
                 >
                   {[...Array(11).keys()].map(n => (
-                    <Picker.Item label={n.toString()} value={n} color='#CFCFCF' />
+                    <Picker.Item label={n.toString()} value={n} color='#CFCFCF' key={n} />
                   ))}
               </Picker>
             </View>
@@ -97,7 +63,7 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
                   onValueChange={(inch) => setHeight(prevHeight => ({...prevHeight, inches: inch}))}
                 >
                   {[...Array(12).keys()].map(n => (
-                    <Picker.Item label={n.toString()} value={n} color='#CFCFCF' />
+                    <Picker.Item label={n.toString()} value={n} color='#CFCFCF' key={n} />
                   ))}
               </Picker>
             </View>
@@ -114,7 +80,7 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
                 onValueChange={(itemValue) => setAge(itemValue)}
               >
                 {[...Array(100).keys()].map(n => (
-                  <Picker.Item label={n.toString()} value={n} color='#CFCFCF' />
+                  <Picker.Item label={n.toString()} value={n} color='#CFCFCF' key={n} />
                 ))}
               </Picker>
             </View>
@@ -136,31 +102,16 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
               </Picker>
             </View>
           </View>
-          <View style={styles.picker}>
-            <View style={{flex:.2}}>
-              <Text style={styles.text}>Workout Schedule:</Text>
-              <Text style={styles.text}>{workoutSchedule}</Text>
-            </View>
-            <View style={{flex:.4}}>
-              <Picker
-                mode='dropdown'
-                selectedValue={workoutSchedule}
-                onValueChange={(itemValue) => setWorkoutSchedule(itemValue)}
-              >
-                <Picker.Item label='1 day' value='1 day' color='#CFCFCF' />
-                <Picker.Item label='2 day' value='2 day' color='#CFCFCF' />
-                <Picker.Item label='3 day' value='3 day' color='#CFCFCF' />
-                <Picker.Item label='4 day' value='4 day' color='#CFCFCF' />
-                <Picker.Item label='5 day' value='5 day' color='#CFCFCF' />
-                <Picker.Item label='6 day' value='6 day' color='#CFCFCF' />
-              </Picker>
-            </View>
-          </View>
         </View>
         <View style={styles.footer}>
           <Button
-            title='Home'
-            onPress={saveUserInfo}
+            title='Schedule Workout'
+            onPress={() => navigation.navigate('Schedule', {
+              weight: weight,
+              height: height,
+              sex: sex,
+              age: age
+            })}
           />
         </View>
       </View>
