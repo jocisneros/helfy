@@ -50,19 +50,29 @@ export enum MuscleGroup {
     Push = 'Push',
     Pull = 'Pull',
     UpperBody = 'Upper Body',
-    LowerBody = 'Lower Body',
     FullBody = 'Full Body',
+    None = 'None',
 };
 
 export type Height = {
     feet: number,
-    inches: number
+    inches: number,
 };
 
 export type UserSettings = {
-    weight: number
-    height: Height
-    age: number
-    sex: string
-    workoutSchedule: string
-}
+    weight: number,
+    height: Height,
+    age: number,
+    sex: string,
+    workoutSchedule: string,
+};
+
+export type WorkoutSchedule = {
+    sunday: MuscleGroup,
+    monday: MuscleGroup,
+    tuesday: MuscleGroup,
+    wednesday: MuscleGroup,
+    thursday: MuscleGroup,
+    friday: MuscleGroup,
+    saturday: MuscleGroup,
+};

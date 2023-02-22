@@ -1,8 +1,7 @@
 // home-page.tsx
 
-import React, { useCallback, useState, useMemo } from 'react';
-import { StyleSheet, Text, TouchableHighlight, View, SafeAreaView, Pressable, Button} from 'react-native';
-import Modal from 'react-native-modal';
+import React, { useCallback, useState, useMemo, Fragment } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, Pressable } from 'react-native';
 import { HomePageNavigationProp, MuscleGroup, Workout } from '../types';
 import {
     CalendarIcon,
@@ -15,6 +14,9 @@ import { MuscleGroupLabel } from '../components/muscle-group-label';
 import { WorkoutListItem } from '../components/workout-list-item';
 import { IconButton } from '../components/icon-button';
 import { addDays, format } from 'date-fns'
+import { Space } from '../components/space';
+import { HelfyModal } from '../components/helfy-modal';
+import { getMuscleGroupDescription } from '../muscle-group-helpers';
 
 const mockLegs: Workout[] = [
     {
@@ -35,171 +37,221 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
     const [date, setDate] = useState(new Date());
     const [modalContents, setModalContents] = useState<React.ReactNode>(null)
 
+    const muscleGroup = MuscleGroup.Legs;
+
     const showModal = useMemo(() => modalContents !== null, [modalContents]);
 
-    const closeModal = useCallback(() => setModalContents(null), []);
-
-    return (
-      <SafeAreaView style={styles.container}>
-        <Modal
-            isVisible={showModal}
-            backdropColor='black'
-            backdropOpacity={0.5}
-            style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            {modalContents}
-            <TouchableHighlight
-                onPress={closeModal}
-                style={{
-                    marginTop: 16,
-                    paddingVertical: 8,
-                    paddingHorizontal: 16,
-                    backgroundColor: '#F54949',
-                    borderRadius: 100,
-                }}
-                underlayColor='#F5494980'
-            >
-                <Text style={{
-                    fontFamily: 'Lato_700Bold',
-                    fontSize: 18,
-                    color: '#FFFFFF',
-                }}>CLOSE</Text>
-            </TouchableHighlight>
-        </Modal>
-        <View style={styles.header}>
+    const onMuscleGroupLabelPress = useCallback(() => {
+        setModalContents((
             <View style={{
-                display: 'flex',
-                flexDirection: 'row',
+                width: '80%',
+                height: '20%',
+                backgroundColor: '#445046',
+                borderRadius: 16,
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: 5,
-            }} >
-                <IconButton
-                    onPress={() => setDate(prevDate => addDays(prevDate, -1))}
-                    style={styles.iconButton}
-                    icon={<ChevronLeftIcon color={'#CFCFCF'}/>}
-                    onPressColor={'#00000040'}
-                />
-                <Pressable style={{
-                    display: 'flex',
-                    flexDirection: 'row',
+                overflow: 'hidden',
+            }}>
+                <View style={{
+                    position: 'absolute',
+                    top: 0,
+                    width: '100%',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    paddingHorizontal: 8,
+                    backgroundColor: '#3C443C',
+                    paddingVertical: 12,
                 }}>
-                    <CalendarIcon color={'#CFCFCF'}/>
                     <Text style={{
                         fontFamily: 'Lato_700Bold',
-                        fontSize: 24,
+                        fontSize: 20,
                         color: '#CFCFCF',
-                        width: 150,
-                        textAlign: 'center',
-                    }}>{format(date, 'E - MMM d')}</Text>
-                </Pressable>
-                <IconButton
-                    onPress={() => setDate(prevDate => addDays(prevDate, 1))}
-                    style={styles.iconButton}
-                    icon={<ChevronRightIcon color={'#CFCFCF'}/>}
-                    onPressColor={'#00000040'}
+                    }}>{muscleGroup.toUpperCase()}</Text>
+                </View>
+                <Text style={{
+                    fontFamily: 'Lato_400Regular',
+                    fontSize: 16,
+                    color: '#FFF',
+                }}>{getMuscleGroupDescription(muscleGroup)}</Text>
+            </View>
+        ));
+    }, []);
+
+    return (
+        <Fragment>
+            <HelfyModal
+                isVisible={showModal}
+                backdropColor='black'
+                backdropOpacity={0.5}
+                onClose={() => setModalContents(null)}
+                style={styles.modal}
+            >
+                {modalContents}
+            </HelfyModal>
+            <SafeAreaView style={styles.header}>
+                { /* Calendar Header */ }
+                <View style={styles.calendarRowContainer} >
+                    <IconButton
+                        onPress={() => setDate(prevDate => addDays(prevDate, -1))}
+                        style={styles.chevronLeft}
+                        icon={<ChevronLeftIcon color={'white'}/>}
+                        onPressColor={'#00000080'}
+                    />
+                    <Pressable style={styles.calendarCore}>
+                        <CalendarIcon color={'white'}/>
+                        <Text style={styles.calendarDate}>{format(date, 'E - MMM d')}</Text>
+                    </Pressable>
+                    <IconButton
+                        onPress={() => setDate(prevDate => addDays(prevDate, 1))}
+                        style={styles.chevronRight}
+                        icon={<ChevronRightIcon color={'white'}/>}
+                        onPressColor={'#00000080'}
+                    />
+                </View>
+                <MuscleGroupLabel
+                    muscleGroup={muscleGroup}
+                    onPress={onMuscleGroupLabelPress}
                 />
-            </View>
-            <MuscleGroupLabel
-                muscleGroup={MuscleGroup.Legs}
-                setModalContents={setModalContents}
-            />
-        </View>
-        <View style={styles.body}>
-            <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>WORKOUTS</Text>
-                <IconButton
-                    icon={<ThreeDotsVerticalIcon color={'#CFCFCF'} />}
-                    style={styles.iconButton}
-                    onPressColor={'#00000040'}
-                />
-            </View>
-            <View style={styles.workoutList}>
-                {mockLegs.map((workout, i) => (
-                    <WorkoutListItem workout={workout} key={i} setModalContents={setModalContents} />
-                ))}
-                <IconButton
-                    onPress={() => navigation.navigate('WorkoutSelection')}
-                    icon={<PlusCircleIcon color={'#CFCFCF'} />}
-                    style={styles.iconButton}
-                    onPressColor={'#00000040'}
-                />
-            </View>
-        </View>
-        <View style={styles.footer}>
-            <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>STEPS</Text>
-            </View>
-        </View>
-      </SafeAreaView>
+                <Space height={16}/>
+            </SafeAreaView>
+            <SafeAreaView style={styles.content}>
+                { /* Workout Contents */ }
+                <View style={styles.workouts}>
+                    { /* Section Label */ }
+                    <View style={styles.sectionLabel}>
+                        <Text style={styles.sectionTitle}>WORKOUTS</Text>
+                        <Space width={12} />
+                        <IconButton
+                            icon={<ThreeDotsVerticalIcon color={'white'} />}
+                            style={styles.iconButton}
+                            onPressColor={'#00000040'}
+                        />
+                    </View>
+                    { /* Workout List */ }
+                    <View style={styles.workoutList}>
+                        {mockLegs.map((workout, i) => (
+                            <WorkoutListItem
+                                workout={workout}
+                                key={i}
+                                setModalContents={setModalContents}
+                            />
+                        ))}
+                        <IconButton
+                            onPress={() => navigation.navigate('WorkoutSelection')}
+                            icon={<PlusCircleIcon color={'white'} />}
+                            style={styles.iconButton}
+                            onPressColor={'#00000040'}
+                        />
+                    </View>
+                </View>
+                <View style={styles.steps}>
+                    <View style={styles.sectionLabel}>
+                        <Text style={styles.sectionTitle}>STEPS</Text>
+                    </View>
+                </View>
+            </SafeAreaView>
+      </Fragment>
     );
 }
-  
+
+
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#2A302A',
+    modal: {
         alignItems: 'center',
         justifyContent: 'center',
-        fontFamily: 'Lato_400Regular',
     },
     header: {
-        backgroundColor: '#3C443C',
+        backgroundColor: '#3B463C',
         width: '100%',
-        flex: 1,
+        flex: 0,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    body: {
-        backgroundColor: '#445046',
+    calendarDate: {
+        fontFamily: 'Lato_700Bold',
+        fontSize: 24,
+        color: 'white',
+        width: 150,
+        textAlign: 'center',
+    },
+    calendarRowContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 12,
+    },
+    chevronLeft: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 18,
+        height: 26,
+        backgroundColor: '#303730',
+        borderTopLeftRadius: 24,
+        borderBottomLeftRadius: 24,
+        borderTopRightRadius: 12,
+        borderBottomRightRadius: 12,
+    },
+    chevronRight: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 18,
+        height: 26,
+        backgroundColor: '#303730',
+        borderTopRightRadius: 24,
+        borderBottomRightRadius: 24,
+        borderTopLeftRadius: 12,
+        borderBottomLeftRadius: 12,
+    },
+    calendarCore: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 8,
+        height: 36,
+        borderRadius: 12,
+        backgroundColor: '#303730',
+        marginHorizontal: 12,
+    },
+    content: {
+        backgroundColor: '#303730',
+        flex: 7,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    sectionLabel: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        backgroundColor: '#3B463C',
+        marginBottom: 20,
+        paddingHorizontal: 24,
+        borderRadius: 36,
+        height: 36,
+    },
+    workouts: {
         width: '95%',
         flex: 7,
         margin: 16,
         marginBottom: 0,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 16,
-        overflow: 'hidden',
     },
-    footer: {
-        backgroundColor: '#445046',
-        width: '95%',
+    steps: {
         flex: 1,
-        margin: 16,
+        width: '95%',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 16,
-        overflow: 'hidden',
     },
     workoutList: {
-        display: 'flex',
+        marginTop: 20,
         width: '100%',
         height: '75%',
         alignItems: 'center',
-        justifyContent: 'center',
     },
     sectionTitle: {
         fontFamily: 'Lato_700Bold',
         fontSize: 20,
-        color: '#CFCFCF',
-    },
-    sectionHeader: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        position: 'absolute',
-        width: '100%',
-        backgroundColor: '#3C443C',
-        paddingHorizontal: 20,
-        paddingVertical: 6,
-        top: 0,
+        color: 'white',
     },
     iconButton: {
         width: 24,
