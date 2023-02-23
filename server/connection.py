@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import errorcode
 from configs import PERSONALDBCONFIG, EXERCISEDBCONFIG
+from datetime import date
 
 def getUserById(userId: str):
     users = []
@@ -34,8 +35,53 @@ def getUserById(userId: str):
         connection.close()
     
     return users
+
+def getWorkoutInfo(userId: str, date:str):
+    workoutInfo = {}
+    exercises = {}
+    try:
+        connection = mysql.connector.connect(**PERSONALDBCONFIG)
+
+        cursor = connection.cursor()
+        query = ("SELECT * FROM workout_history as wh, exercise_history as eh " 
+                "WHERE wh.usersID = %s AND eh.usersID = %s AND wh.workoutDate = %s "
+                "AND wh.id = eh.workoutID;")
+        # query = ("SELECT * FROM users")
+
+        cursor.execute(query, (userId, userId, date))
+        # cursor.execute(query)
+        
+        for (wid, uid, d, workoutType, eid, uid2, exerciseId, wid2, sets, reps, weight, time, exerciseName) in cursor:
+            workoutInfo["workoutId"] = wid
+            workoutInfo["workoutDate"] = d.strftime("%Y-%m-%d")
+            workoutInfo["workoutType"] = workoutType
+
+            exerciseInfo = {}
+            exerciseInfo["exerciseId"] = exerciseId
+            exerciseInfo["exerciseName"] = exerciseName
+            exerciseInfo["exerciseSets"] = sets
+            exerciseInfo["exerciseRepetitions"] = reps
+            exerciseInfo["exerciseWeight"] = weight
+            exerciseInfo["exerciseTime"] = time
+
+            exercises[eid] = exerciseInfo
+
+        workoutInfo["exercises"] = exercises
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Username/Password Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database Error")
+        else:
+            print(err)
+    else:
+        connection.close()
+    
+    return workoutInfo
+
             
 
 if __name__ == "__main__":
-    users = getUserById(1)
-    print(users)
+    workoutInfo = getWorkoutInfo(1, "2023-01-01")
+    print(workoutInfo)
