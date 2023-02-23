@@ -1,7 +1,7 @@
 // start-page.tsx
 
-import { useState, useCallback } from 'react';
-import { StyleSheet, Text, View, Button, ScrollView } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, Button, ScrollView } from 'react-native';
 import { Height, StartPageNavigationProp } from '../types';
 import { Picker } from '@react-native-picker/picker';
 
@@ -16,7 +16,7 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
 
   return (
     <ScrollView>
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Welcome to Helfy </Text>
           <Text style={styles.headerInfo}>Your Personal Gym Partner!</Text>
@@ -114,7 +114,7 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
             })}
           />
         </View>
-      </View>
+      </SafeAreaView>
     </ScrollView>
   );
 }
@@ -122,20 +122,17 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#303730',
+      backgroundColor: '#2A302A',
       alignItems: 'center',
       justifyContent: 'center',
+      fontFamily: 'Lato_400Regular',
     },
     header: {
-      backgroundColor: '#445046',
-      width: '90%',
-      flex: 7,
+      backgroundColor: '#3C443C',
+      width: '100%',
+      flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: 40,
-      margin: 20,
-      marginTop: 80,
-      padding: 20,
     },
     title: {
       fontWeight: 'bold',
@@ -150,11 +147,14 @@ const styles = StyleSheet.create({
     },
     body: {
       backgroundColor: '#445046',
-      width: '90%',
+      width: '95%',
       flex: 7,
+      margin: 16,
+      marginBottom: 0,
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: 40,
+      borderRadius: 16,
+      overflow: 'hidden',
     },
     text: {
       color: '#CFCFCF',
@@ -167,13 +167,12 @@ const styles = StyleSheet.create({
     },
     footer: {
       backgroundColor: '#445046',
-      width: '90%',
-      flex: 7,
+      width: '95%',
+      flex: 1,
+      margin: 10,
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: 40,
-      margin: 20,
-      marginBottom: 40,
-      padding: 20,
+      borderRadius: 16,
+      overflow: 'hidden',
     }
 });

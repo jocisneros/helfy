@@ -15,7 +15,7 @@ export function getMuscleGroupLabelColor(muscleGroup: MuscleGroup): string {
         case MuscleGroup.UpperBody:
             return '#D76363';
         case MuscleGroup.None:
-            return '#6398D7';
+            return '#808080';
         case MuscleGroup.FullBody:
             return '#D7AF63';
         case MuscleGroup.ChestAndBack:
