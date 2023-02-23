@@ -80,6 +80,39 @@ def getWorkoutInfo(userId: str, date:str):
     
     return workoutInfo
 
+def insertWorkout(userId: str, date:str, workoutType:str, exercises:dict):
+    
+    try:
+        connection = mysql.connector.connect(**PERSONALDBCONFIG)
+        cursor = connection.cursor()
+
+        # insert workout
+        workoutQuery = ("INSERT INTO workout_history (usersID, workoutDate, workoutType) VALUES (%s, %s, %s)")
+        cursor.execute(workoutQuery, (userId, date, workoutType))
+        connection.commit()
+
+        workoutId = cursor.lastrowid
+
+        # insert each exercise
+        for exerciseID, exerciseInfo in exercises.items():
+            exerciseQuery = ("INSERT INTO exercise_history (usersID, exerciseID, workoutID, "
+                            "sets, reps, weight, lengthOfTime, exerciseName) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)")
+            cursor.execute(exerciseQuery, (userId, exerciseID, workoutId, exerciseInfo['sets'], exerciseInfo['reps'], 
+                            exerciseInfo['weight'],  exerciseInfo['lengthOfTime'], exerciseInfo['exerciseName'] ))
+            connection.commit()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Username/Password Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database Error")
+        else:
+            print(err)
+        return False
+    else:
+        connection.close()
+    
+    return True
             
 
 if __name__ == "__main__":
