@@ -1,197 +1,172 @@
 // workout-list-item.tsx
 
-import React, { useCallback, useState } from 'react';
+import React, { Fragment, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Workout } from '../types';
+import { MuscleGroup, Workout } from '../types';
 import {
-    DotIcon,
     InfoCircleIcon,
     ThreeDotsIcon,
 } from '../icons/icons';
 import { CheckButton } from './check-button';
 import { IconButton } from './icon-button';
+import { Picker } from '@react-native-picker/picker';
+import { HelfyModal } from './helfy-modal';
+import { WorkoutLabel } from './workout-label';
+import { getMuscleGroupLabelColor } from '../muscle-group-helpers';
+
+enum ModalType {
+    None = 'None',
+    Menu = 'Menu',
+    Info = 'Info',
+    Rating = 'Rating',
+};
+
 
 type WorkoutListItemProps = {
     workout: Workout,
-    setModalContents?: (element: React.ReactNode) => void,
+    muscleGroup: MuscleGroup,
 }
 
-type WorkoutLabelProps = {
-    weight: number,
-    sets: number,
-    reps: number,
-}
-
-const WorkoutLabel = ({
-    weight,
-    sets,
-    reps
-}: WorkoutLabelProps) => {
-    return (
-        <View style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingVertical: 3,
-            paddingHorizontal: 8,
-            borderRadius: 20,
-            backgroundColor: '#CFCFCF',
-        }}>
-            <Text style={{
-                fontFamily: 'Lato_700Bold',
-                color: '#303730',
-                fontSize: 16,
-                paddingRight: 4,
-            }}>{weight}</Text>
-            <View style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'row',
-                backgroundColor: '#BABABA',
-                paddingHorizontal: 4,
-                borderRadius: 20,
-            }}>
-                <Text style={{ fontFamily: 'Lato_700Bold', color: '#303730', fontSize: 14}} >{sets}</Text>
-                <DotIcon color={'#303730'} style={{ margin: 0, padding: 0}}/>
-                <Text style={{ fontFamily: 'Lato_700Bold', color: '#303730', fontSize: 14}} >{reps}</Text>
-            </View>
-        </View>
-    )
-}
 
 export const WorkoutListItem = ({
     workout,
-    setModalContents
+    muscleGroup
 }: WorkoutListItemProps) => {
     const [isChecked, setChecked] = useState(false); 
 
-    const [workoutWeight, setWorkoutWeight] = useState(270);
-    const [workoutSets, setWorkoutSets] = useState(3);
-    const [workoutReps, setWorkoutReps] = useState(8);
+    const muscleGroupColor = getMuscleGroupLabelColor(muscleGroup);
 
-    const openWorkoutInfoModal = useCallback(() => setModalContents && setModalContents(
-        <View style={{
-            width: '80%',
-            height: '50%',
-            backgroundColor: '#445046',
-            borderRadius: 16,
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-        }}>
-            <View style={{
-                position: 'absolute',
-                top: 0,
-                width: '100%',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: '#3C443C',
-                paddingVertical: 12,
-            }}>
-                <Text style={{
-                    fontFamily: 'Lato_700Bold',
-                    fontSize: 20,
-                    color: '#CFCFCF',
-                }}>{workout.name.toUpperCase()}</Text>
-            </View>
-            <Text style={{
-                fontFamily: 'Lato_700Bold',
-                fontSize: 16,
-                color: '#FFF',
-            }}>DEMO</Text>
-            <View style={{ width: '90%', height: 160, backgroundColor: 'gray', marginVertical: 16}}></View>
-            <Text style={{
-                fontFamily: 'Lato_700Bold',
-                fontSize: 16,
-                color: '#FFF',
-            }}>TIPS</Text>
-        </View>
-    ), [setModalContents])
+    const [weight, setWeight] = useState(270);
+    const [setCount, setSetCount] = useState(3);
+    const [repitionCount, setRepitionCount] = useState(8);
 
-    const openWorkoutMenuModal = useCallback(() => setModalContents && setModalContents(
-        <View style={{
-            width: '80%',
-            height: '20%',
-            backgroundColor: '#445046',
-            borderRadius: 16,
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-        }}>
-            <View style={{
-                position: 'absolute',
-                top: 0,
-                width: '100%',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: '#3C443C',
-                paddingVertical: 12,
-            }}>
-                <Text style={{
-                    fontFamily: 'Lato_700Bold',
-                    fontSize: 20,
-                    color: '#CFCFCF',
-                }}>{workout.name.toUpperCase()}</Text>
-            </View>
-            <View style={{flexDirection: 'column'}}>
-                <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{
-                        fontFamily: 'Lato_700Bold',
-                        fontSize: 16,
-                        color: '#FFF',
-                        textAlign: 'center',
-                    }}>{`WEIGHT: ${workoutWeight}`}</Text>
-                </View>
-                <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{
-                        fontFamily: 'Lato_700Bold',
-                        fontSize: 16,
-                        color: '#FFF',
-                    }}>{`SETS: ${workoutSets}`}</Text>
-                    <DotIcon color={'#FFF'} style={{marginHorizontal: 16}}/>
-                    <Text style={{
-                        fontFamily: 'Lato_700Bold',
-                        fontSize: 16,
-                        color: '#FFF',
-                    }}>{`REPS: ${workoutReps}`}</Text>
-                </View>
-            </View>
-        </View>
-    ), [setModalContents])
+    const [modalType, setModalType] = useState<ModalType>(ModalType.None);
+
+    const modalContents = useMemo(() => {
+        switch (modalType) {
+            case ModalType.Info:
+                return (
+                    <Fragment>
+                        <View style={{...styles.modalLabel, backgroundColor: muscleGroupColor}}>
+                            <Text style={styles.modalTitle}>{workout.name.toUpperCase()}</Text>
+                        </View>
+                        <View style={{...styles.modalContainer, height: '50%'}}>
+                            <Text style={{
+                                fontFamily: 'Lato_700Bold',
+                                fontSize: 16,
+                                color: '#FFF',
+                            }}>DEMO</Text>
+                            <View style={{ width: '90%', height: 160, backgroundColor: 'gray', marginVertical: 16}}></View>
+                            <Text style={{
+                                fontFamily: 'Lato_700Bold',
+                                fontSize: 16,
+                                color: '#FFF',
+                            }}>TIPS</Text>
+                        </View>
+                    </Fragment>
+                );
+            case ModalType.Menu:
+                return (
+                    <Fragment>
+                        <View style={{...styles.modalLabel, backgroundColor: muscleGroupColor}}>
+                            <Text style={styles.modalTitle}>{workout.name.toUpperCase()}</Text>
+                        </View>
+                        <View style={{...styles.modalContainer, height: '30%'}}>
+                            <View style={{ flexDirection: 'column' }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text style={{
+                                        fontFamily: 'Lato_700Bold',
+                                        fontSize: 16,
+                                        color: '#FFF',
+                                        textAlign: 'center',
+                                    }}>{`WEIGHT: ${weight}`}</Text>
+                                </View>
+                                <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                                    <Text style={{
+                                        fontFamily: 'Lato_700Bold',
+                                        fontSize: 16,
+                                        color: '#FFF',
+                                    }}>{'SETS: '}</Text>
+                                    <Picker
+                                        style={{width: 100}}
+                                        mode='dropdown'
+                                        selectedValue={setCount}
+                                        onValueChange={(itemValue) => setSetCount(itemValue)}
+                                    >
+                                        {[...Array(50).keys()].map(n => (
+                                            <Picker.Item label={n.toString()} value={n} color='white' key={n} />
+                                        ))}
+                                    </Picker>
+                                    <Text style={{
+                                        fontFamily: 'Lato_700Bold',
+                                        fontSize: 16,
+                                        color: '#FFF',
+                                    }}>{'REPS: '}</Text>
+                                    <Picker
+                                        style={{width: 100}}
+                                        mode='dropdown'
+                                        selectedValue={repitionCount}
+                                        onValueChange={(itemValue) => setRepitionCount(itemValue)}
+                                    >
+                                        {[...Array(50).keys()].map(n => (
+                                            <Picker.Item label={n.toString()} value={n} color='white' key={n} />
+                                        ))}
+                                    </Picker>
+                                </View>
+                            </View>
+                        </View>
+                    </Fragment>
+                );
+            case ModalType.Rating:
+            case ModalType.None:
+            default:
+                return null;
+        }
+    }, [modalType, workout, weight, setCount, repitionCount]);
 
     return (
-        <View style={styles.container} >
-            <CheckButton
-                isChecked={isChecked}
-                onPress={() => setChecked(!isChecked)}
-                style={isChecked ? styles.checkedButton : styles.uncheckedButton}
-            />
-            <View style={styles.workoutTitleContainer}>
-                <Text
-                    numberOfLines={1}
-                    style={styles.workoutTitle}
-                >
-                    {workout.name.toUpperCase()}
-                </Text>
+        <Fragment>
+            <HelfyModal
+                backdropColor='black'
+                isVisible={modalContents !== null}
+                onClose={() => setModalType(ModalType.None)}
+                style={styles.modal}
+            >
+                {modalContents}
+            </HelfyModal>
+            <View style={styles.container} >
+
+                <CheckButton
+                    isChecked={isChecked}
+                    onPress={() => setChecked(!isChecked)}
+                    style={isChecked ? styles.checkedButton : styles.uncheckedButton}
+                />
+                <View style={styles.workoutTitleContainer}>
+                    <Text
+                        numberOfLines={1}
+                        style={styles.workoutTitle}
+                    >
+                        {workout.name.toUpperCase()}
+                    </Text>
+                    <IconButton
+                        style={styles.iconButton}
+                        icon={<InfoCircleIcon color={'#CFCFCF'}/>}
+                        onPress={() => setModalType(ModalType.Info)}
+                        onPressColor={'#00000040'}
+                    />
+                </View>
+                <WorkoutLabel weight={weight} setCount={setCount} repitionCount={repitionCount} />
                 <IconButton
-                    style={styles.iconButton}
-                    icon={<InfoCircleIcon color={'#CFCFCF'}/>}
-                    onPress={openWorkoutInfoModal}
+                    style={styles.menuButton}
+                    icon={<ThreeDotsIcon color={'#CFCFCF'}/>}
+                    onPress={() => setModalType(ModalType.Menu)}
                     onPressColor={'#00000040'}
                 />
             </View>
-            <WorkoutLabel weight={workoutWeight} sets={workoutSets} reps={workoutReps} />
-            <IconButton
-                style={styles.menuButton}
-                icon={<ThreeDotsIcon color={'#CFCFCF'}/>}
-                onPress={openWorkoutMenuModal}
-                onPressColor={'#00000040'}
-            />
-        </View>
+        </Fragment>
     )
 }
-  
+
 const styles = StyleSheet.create({
     container: {
         display: 'flex',
@@ -204,6 +179,33 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 16,
         justifyContent: 'space-between',
+    },
+    modal: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalLabel: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        backgroundColor: '#3B463C',
+        marginBottom: 20,
+        paddingHorizontal: 24,
+        borderRadius: 36,
+        height: 36,
+    },
+    modalTitle: {
+        fontFamily: 'Lato_700Bold',
+        fontSize: 20,
+        color: 'white',
+    },
+    modalContainer: {
+        width: '80%',
+        backgroundColor: '#445046',
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
     },
     workoutTitleContainer: {
         flexDirection: 'row',

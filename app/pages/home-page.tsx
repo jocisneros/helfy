@@ -39,8 +39,6 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
 
     const muscleGroup = MuscleGroup.Legs;
 
-    const showModal = useMemo(() => modalContents !== null, [modalContents]);
-
     const onMuscleGroupLabelPress = useCallback(() => {
         setModalContents((
             <View style={{
@@ -79,7 +77,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
     return (
         <Fragment>
             <HelfyModal
-                isVisible={showModal}
+                isVisible={modalContents !== null}
                 backdropColor='black'
                 backdropOpacity={0.5}
                 onClose={() => setModalContents(null)}
@@ -119,7 +117,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                     { /* Section Label */ }
                     <View style={styles.sectionLabel}>
                         <Text style={styles.sectionTitle}>WORKOUTS</Text>
-                        <Space width={12} />
+                        <Space width={12}/>
                         <IconButton
                             icon={<ThreeDotsVerticalIcon color={'white'} />}
                             style={styles.iconButton}
@@ -130,9 +128,9 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                     <View style={styles.workoutList}>
                         {mockLegs.map((workout, i) => (
                             <WorkoutListItem
-                                workout={workout}
                                 key={i}
-                                setModalContents={setModalContents}
+                                workout={workout}
+                                muscleGroup={muscleGroup}
                             />
                         ))}
                         <IconButton
