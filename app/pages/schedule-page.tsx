@@ -16,16 +16,86 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
     const { weight, height, age, sex } = route.params;
 
     const [modalContents, setModalContents] = useState<React.ReactNode>(null)
-    const [workoutSchedule, setWorkoutSchedule] = useState("");
+    const [workoutSchedule, setWorkoutSchedule] = useState("3 Days");
     const[userWorkoutSchedule, setUserWorkoutSchedule] = useState<WorkoutSchedule>({
         sunday: MuscleGroup.None,
-        monday: MuscleGroup.None,
+        monday: MuscleGroup.Pull,
         tuesday: MuscleGroup.None,
-        wednesday: MuscleGroup.None,
+        wednesday: MuscleGroup.Push,
         thursday: MuscleGroup.None,
-        friday: MuscleGroup.None,
+        friday: MuscleGroup.Legs,
         saturday: MuscleGroup.None,
     });
+
+    const updateSchedule = useCallback((workoutDays: string) => {
+        setWorkoutSchedule(workoutDays)
+        if (workoutDays === '1 Day') {
+            setUserWorkoutSchedule({
+                sunday: MuscleGroup.None,
+                monday: MuscleGroup.None,
+                tuesday: MuscleGroup.None,
+                wednesday: MuscleGroup.FullBody,
+                thursday: MuscleGroup.None,
+                friday: MuscleGroup.None,
+                saturday: MuscleGroup.None,
+            });
+        }
+        if (workoutDays === '2 Days') {
+            setUserWorkoutSchedule({
+                sunday: MuscleGroup.None,
+                monday: MuscleGroup.None,
+                tuesday: MuscleGroup.UpperBody ,
+                wednesday: MuscleGroup.None,
+                thursday: MuscleGroup.Legs,
+                friday: MuscleGroup.None,
+                saturday: MuscleGroup.None,
+            });
+        }
+        if (workoutDays === '3 Days') {
+            setUserWorkoutSchedule({
+                sunday: MuscleGroup.None,
+                monday: MuscleGroup.Pull,
+                tuesday: MuscleGroup.None,
+                wednesday: MuscleGroup.Push,
+                thursday: MuscleGroup.None,
+                friday: MuscleGroup.Legs,
+                saturday: MuscleGroup.None,
+            });
+        }
+        if (workoutDays === '4 Days') {
+            setUserWorkoutSchedule({
+                sunday: MuscleGroup.None,
+                monday: MuscleGroup.Pull,
+                tuesday: MuscleGroup.Push,
+                wednesday: MuscleGroup.Legs,
+                thursday: MuscleGroup.None,
+                friday: MuscleGroup.FullBody,
+                saturday: MuscleGroup.None,
+            });
+        }
+        if (workoutDays === '5 Days') {
+            setUserWorkoutSchedule({
+                sunday: MuscleGroup.None,
+                monday: MuscleGroup.Pull,
+                tuesday: MuscleGroup.Push,
+                wednesday: MuscleGroup.Legs,
+                thursday: MuscleGroup.None,
+                friday: MuscleGroup.UpperBody ,
+                saturday: MuscleGroup.Legs,
+            });
+        }
+        if (workoutDays === '6 Days') {
+            setUserWorkoutSchedule({
+                sunday: MuscleGroup.None,
+                monday: MuscleGroup.Pull,
+                tuesday: MuscleGroup.Push,
+                wednesday: MuscleGroup.Legs,
+                thursday: MuscleGroup.Arms,
+                friday: MuscleGroup.ChestAndBack,
+                saturday: MuscleGroup.Legs,
+            });
+        }
+    }, [workoutSchedule])
 
     const saveUserInfo = useCallback(() => {
         const fileUri = FileSystem.documentDirectory + 'data.txt';
@@ -145,7 +215,7 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
                     <Picker
                         mode='dropdown'
                         selectedValue={workoutSchedule}
-                        onValueChange={(itemValue) => setWorkoutSchedule(itemValue)}
+                        onValueChange={(itemValue) => updateSchedule(itemValue)}
                     >
                         <Picker.Item label='1 Day' value='1 Day' color='#CFCFCF' />
                         <Picker.Item label='2 Days' value='2 Days' color='#CFCFCF' />
