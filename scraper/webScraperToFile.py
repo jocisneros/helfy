@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 
 
+# Output is not fully correct, need to edit apostrophe syntax and add semi colons before sql ready
+
 
 # PERSONALDBCONFIG = {
 #   'user': 'mytestuser',
@@ -23,11 +25,14 @@ EXERCISEDBCONFIG = {
 }
 
 
+exerciseFile = open('exercise.txt', 'w')
+lines = []
+
+
 difficultyDict = {"Beginner":0, "Intermediate":1, "Advanced":2}
 
 connection = mysql.connector.connect(**EXERCISEDBCONFIG)
 cursor = connection.cursor()
-
 
 defaultUrl = "https://musclewiki.com"
 chromedriver_path= "/Users/aayushbokil/Downloads/chromedriver_mac_arm64/chromedriver"
@@ -46,6 +51,8 @@ for i in range(0, len(exerciseData), 2):
     muscleGroupVal = (exerciseData[i].text, )
     cursor.execute(muscleGroupQuery, muscleGroupVal)
     connection.commit()
+
+    lines.append(f"INSERT INTO muscle_groups (name) VALUES ('{exerciseData[i].text}')\n")
 
     tr = exerciseData[i+1].findAll("tr")
     j = 0
@@ -94,12 +101,15 @@ for i in range(0, len(exerciseData), 2):
                 exerciseVal = []
                 if(video == None):
                     exerciseVal = (workoutName, difficulty, tipsStr, " ")
+                    lines.append(f"INSERT INTO exercises (name, difficulty, tips, link) VALUES ('{workoutName}', {difficulty}, '{tipsStr}', '')\n")
                 else:
                     exerciseVal = (workoutName, difficulty, tipsStr, video)
+                    lines.append(f"INSERT INTO exercises (name, difficulty, tips, link) VALUES ('{workoutName}', {difficulty}, '{tipsStr}', '{video}')\n")
 
                 cursor.execute(exerciseInsert, exerciseVal)
 
                 connection.commit()
+
 
                 exerciseId = cursor.lastrowid
 
@@ -117,6 +127,7 @@ for i in range(0, len(exerciseData), 2):
                 cursor.execute(muscleGroupInExerciseQuery, muscleGroupInExerciseVal)
                 connection.commit()
 
+                lines.append(f"INSERT INTO muscle_groups_in_exercises (exerciseID, muscleID) VALUES ({exerciseId}, {muscleId})\n")
 
 
                 equipmentQuery = "SELECT e.id FROM equipment AS e WHERE e.name=%s"   
@@ -133,12 +144,16 @@ for i in range(0, len(exerciseData), 2):
 
                     equipmentId = cursor.lastrowid
 
+                    lines.append(f"INSERT INTO equipment (name) VALUES ('{equipment}')\n")
+
                     # equipment_in_exercises
 
                     equipmentInExerciseQuery = "INSERT INTO equipment_in_exercises (exerciseID, equipmentID) VALUES (%s, %s)"
                     equipmentInExerciseVal = (exerciseId, equipmentId)
                     cursor.execute(equipmentInExerciseQuery, equipmentInExerciseVal)
                     connection.commit()
+
+                    lines.append(f"INSERT INTO equipment_in_exercises (exerciseID, equipmentID) VALUES ({exerciseId}, {equipmentId})\n")
 
 
                 else:   # Add to equipment_in_exercises only
@@ -147,6 +162,8 @@ for i in range(0, len(exerciseData), 2):
                     equipmentInExerciseVal = (exerciseId, foundTwo[0])
                     cursor.execute(equipmentInExerciseQuery, equipmentInExerciseVal)
                     connection.commit()
+
+                    lines.append(f"INSERT INTO equipment_in_exercises (exerciseID, equipmentID) VALUES ({exerciseId}, {foundTwo[0]})\n")
 
             else:
                 # add to muscle_groups_in_exercises only
@@ -160,4 +177,12 @@ for i in range(0, len(exerciseData), 2):
                 muscleGroupInExerciseVal = (found[0], muscleId)
                 cursor.execute(muscleGroupInExerciseQuery, muscleGroupInExerciseVal)
                 connection.commit()
+
+                lines.append(f"INSERT INTO muscle_groups_in_exercises (exerciseID, muscleID) VALUES ({found[0]}, {muscleId})\n")
         j += 1
+
+
+exerciseFile.writelines(lines)
+  
+# Closing file
+exerciseFile.close()
