@@ -1,21 +1,25 @@
 // trash-icon.tsx
 
 import * as React from 'react';
-import Svg, { SvgProps, Path } from 'react-native-svg';
+import Svg, { SvgProps, Path, Defs, G, ClipPath } from 'react-native-svg';
 
 export const TrashIcon = (props: SvgProps) => (
-    <Svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={16}
-      height={16}
-      fill="currentColor"
-      className="bi bi-trash"
-      {...props}
-    >
-      <Path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+  <Svg
+    width={24}
+    height={24}
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <G clipPath="url(#a)">
       <Path
-        fillRule="evenodd"
-        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+        d="M3.75 1.5A1.5 1.5 0 0 0 2.25 3v1.5A1.5 1.5 0 0 0 3.75 6h.75v13.5a3 3 0 0 0 3 3h9a3 3 0 0 0 3-3V6h.75a1.5 1.5 0 0 0 1.5-1.5V3a1.5 1.5 0 0 0-1.5-1.5H15A1.5 1.5 0 0 0 13.5 0h-3A1.5 1.5 0 0 0 9 1.5H3.75Zm4.5 6a.75.75 0 0 1 .75.75v10.5a.75.75 0 1 1-1.5 0V8.25a.75.75 0 0 1 .75-.75Zm3.75 0a.75.75 0 0 1 .75.75v10.5a.75.75 0 1 1-1.5 0V8.25A.75.75 0 0 1 12 7.5Zm4.5.75v10.5a.75.75 0 1 1-1.5 0V8.25a.75.75 0 1 1 1.5 0Z"
       />
-    </Svg>
+    </G>
+    <Defs>
+      <ClipPath id="a">
+        <Path d="M0 0h24v24H0z" />
+      </ClipPath>
+    </Defs>
+  </Svg>
 );

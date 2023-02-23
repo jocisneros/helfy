@@ -42,19 +42,19 @@ export const HelfyCommonModal = ({
                     ? {...styles.modalContent, height: height}
                     : styles.modalContent
                 }>
-                    {
-                        onClose &&
-                        <IconButton
-                            onPress={onClose}
-                            icon={<CloseIcon color={'black'} />}
-                            onPressColor={styles.closeButton.backgroundColor + '80'}
-                            style={styles.closeButton}
-                        />
-                    }
                     {children}
                 </View>
             </TouchableWithoutFeedback>
             {footer}
+            {
+                onClose &&
+                <IconButton
+                    onPress={onClose}
+                    icon={<CloseIcon color={'black'} />}
+                    onPressColor={styles.closeButton.backgroundColor + '80'}
+                    style={styles.closeButton}
+                />
+            }
         </Modal>
     )
 };
@@ -89,11 +89,9 @@ const styles = StyleSheet.create({
     closeButton: {
         alignItems: 'center',
         justifyContent: 'center',
-        position: 'absolute',
-        top: -10,
-        right: -10,
-        padding: 10,
+        padding: 12,
         backgroundColor: '#dedede',
         borderRadius: 100,
+        marginTop: 20,
     }
 });

@@ -61,7 +61,7 @@ export const WorkoutListItem = ({
         switch (modalType) {
             case ModalType.Info:
                 return (
-                    <Fragment>
+                    <View style={styles.modalContainer}>
                         <View style={{height: '45%', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
                             <Text style={styles.modalText}>DEMO</Text>
                             { /* TEMPORARY*/ }
@@ -102,11 +102,11 @@ export const WorkoutListItem = ({
                                 }}
                             />
                         </View>
-                    </Fragment>
+                    </View>
                 );
             case ModalType.Menu:
                 return (
-                    <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', }}>
+                    <View style={styles.modalContainer}>
                         <View style={styles.centeredRow}>
                             <Text style={styles.modalText}>{'WEIGHT: '}</Text>
                             <Space width={8}/>
@@ -146,11 +146,19 @@ export const WorkoutListItem = ({
                                 ))}
                             </Picker>
                         </View>
+                        {
+                            remove && 
+                            <IconButton
+                                onPress={() => { setModalType(ModalType.None); remove(); }}
+                                icon={<TrashIcon color={'white'} />}
+                                style={styles.removeButton}
+                            />
+                        }
                     </View>
                 );
             case ModalType.Rating:
                 return (
-                    <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    <View style={styles.modalContainer}>
                         <Text style={styles.modalText}>{'🎉 CONGRATS 🎉'}</Text>
                         <Space height={20}/>
                         <Text style={styles.modalText}>{'RATE YOUR WORKOUT'}</Text>
@@ -207,13 +215,6 @@ export const WorkoutListItem = ({
                 headerColor={muscleGroupColor}
                 height={modalHeight}
                 onClose={() => setModalType(ModalType.None)}
-                footer={ remove && modalType === ModalType.Menu && (
-                    <IconButton
-                        onPress={() => { setModalType(ModalType.None); remove(); }}
-                        icon={<TrashIcon color={'white'} />}
-                        style={styles.removeButton}
-                    />
-                )}
             >
                 {modalContents}
             </HelfyCommonModal>
@@ -301,12 +302,10 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     modalContainer: {
-        width: '80%',
-        backgroundColor: '#242424',
-        borderRadius: 16,
+        width: '100%',
+        height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        // overflow: 'hidden',
     },
     workoutTitleContainer: {
         flexDirection: 'row',
@@ -361,8 +360,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     removeButton: {
-        marginTop: 20,
-        padding: 16,
+        position: 'absolute',
+        top: -20,
+        right: -20,
+        padding: 12,
         backgroundColor: '#F54949',
         borderRadius: 100,
     }
