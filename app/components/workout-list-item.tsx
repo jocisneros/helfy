@@ -1,11 +1,12 @@
 // workout-list-item.tsx
 
 import React, { Fragment, useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Keyboard, StyleSheet, Text, TextInput, TouchableHighlight, TouchableWithoutFeedback, View } from 'react-native';
 import { MuscleGroup, Workout } from '../types';
 import {
     InfoCircleIcon,
     ThreeDotsIcon,
+    TrashIcon,
 } from '../icons/icons';
 import { CheckButton } from './check-button';
 import { IconButton } from './icon-button';
@@ -13,6 +14,7 @@ import { Picker } from '@react-native-picker/picker';
 import { HelfyModal } from './helfy-modal';
 import { WorkoutLabel } from './workout-label';
 import { getMuscleGroupLabelColor } from '../muscle-group-helpers';
+import { Space } from './space';
 
 enum ModalType {
     None = 'None',
@@ -25,12 +27,14 @@ enum ModalType {
 type WorkoutListItemProps = {
     workout: Workout,
     muscleGroup: MuscleGroup,
-}
+    remove?: () => void,
+};
 
 
 export const WorkoutListItem = ({
     workout,
-    muscleGroup
+    muscleGroup,
+    remove
 }: WorkoutListItemProps) => {
     const [isChecked, setChecked] = useState(false); 
 
@@ -51,17 +55,46 @@ export const WorkoutListItem = ({
                             <Text style={styles.modalTitle}>{workout.name.toUpperCase()}</Text>
                         </View>
                         <View style={{...styles.modalContainer, height: '50%'}}>
-                            <Text style={{
-                                fontFamily: 'Lato_700Bold',
-                                fontSize: 16,
-                                color: '#FFF',
-                            }}>DEMO</Text>
-                            <View style={{ width: '90%', height: 160, backgroundColor: 'gray', marginVertical: 16}}></View>
-                            <Text style={{
-                                fontFamily: 'Lato_700Bold',
-                                fontSize: 16,
-                                color: '#FFF',
-                            }}>TIPS</Text>
+                            <View style={{height: '45%', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                                <Text style={styles.modalText}>DEMO</Text>
+                                { /* TEMPORARY*/ }
+                                <View style={{
+                                    width: '90%',
+                                    height: 160,
+                                    backgroundColor:
+                                    'gray',
+                                    marginVertical: 16
+                                    }}
+                                />
+                            </View>
+                            <View style={{height: '45%', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                                <Text style={styles.modalText}>TIPS</Text>
+                                <Space height={16}/>
+                                <View style={{
+                                    width: '90%',
+                                    height: 16,
+                                    backgroundColor:
+                                    'gray',
+                                    marginBottom: 16
+                                    }}
+                                />
+                                <View style={{
+                                    width: '90%',
+                                    height: 16,
+                                    backgroundColor:
+                                    'gray',
+                                    marginBottom: 16
+                                    }}
+                                />
+                                <View style={{
+                                    width: '90%',
+                                    height: 16,
+                                    backgroundColor:
+                                    'gray',
+                                    marginBottom: 16
+                                    }}
+                                />
+                            </View>
                         </View>
                     </Fragment>
                 );
@@ -71,50 +104,61 @@ export const WorkoutListItem = ({
                         <View style={{...styles.modalLabel, backgroundColor: muscleGroupColor}}>
                             <Text style={styles.modalTitle}>{workout.name.toUpperCase()}</Text>
                         </View>
-                        <View style={{...styles.modalContainer, height: '30%'}}>
-                            <View style={{ flexDirection: 'column' }}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text style={{
-                                        fontFamily: 'Lato_700Bold',
-                                        fontSize: 16,
-                                        color: '#FFF',
-                                        textAlign: 'center',
-                                    }}>{`WEIGHT: ${weight}`}</Text>
-                                </View>
-                                <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                                    <Text style={{
-                                        fontFamily: 'Lato_700Bold',
-                                        fontSize: 16,
-                                        color: '#FFF',
-                                    }}>{'SETS: '}</Text>
-                                    <Picker
-                                        style={{width: 100}}
-                                        mode='dropdown'
-                                        selectedValue={setCount}
-                                        onValueChange={(itemValue) => setSetCount(itemValue)}
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <View style={{...styles.modalContainer, height: '30%'}}>
+                                {
+                                    remove &&
+                                    <TouchableHighlight
+                                        onPress={() => { setModalType(ModalType.None); remove(); }}
+                                        style={styles.removeButton}
                                     >
-                                        {[...Array(50).keys()].map(n => (
-                                            <Picker.Item label={n.toString()} value={n} color='white' key={n} />
-                                        ))}
-                                    </Picker>
-                                    <Text style={{
-                                        fontFamily: 'Lato_700Bold',
-                                        fontSize: 16,
-                                        color: '#FFF',
-                                    }}>{'REPS: '}</Text>
-                                    <Picker
-                                        style={{width: 100}}
-                                        mode='dropdown'
-                                        selectedValue={repitionCount}
-                                        onValueChange={(itemValue) => setRepitionCount(itemValue)}
-                                    >
-                                        {[...Array(50).keys()].map(n => (
-                                            <Picker.Item label={n.toString()} value={n} color='white' key={n} />
-                                        ))}
-                                    </Picker>
+                                        <TrashIcon color={'white'} />
+                                        {/* <Text style={styles.modalText}>{'REMOVE'}</Text> */}
+                                    </TouchableHighlight>
+                                }
+                                <View style={{ flexDirection: 'column' }}>
+                                    <View style={styles.centeredRow}>
+                                        <Text style={styles.modalText}>{'WEIGHT: '}</Text>
+                                        <Space width={8}/>
+                                        <TextInput
+                                            returnKeyType='done'
+                                            style={styles.modalTextInput}
+                                            keyboardType='numeric'
+                                            onChangeText={(text) => {
+                                                setWeight(parseFloat(text || '0'))
+                                            }}
+                                            value={weight.toString()}
+                                            maxLength={4}
+                                        />
+                                    </View>
+                                    <Space height={36}/>
+                                    <View style={styles.centeredRow}>
+                                        <Text style={styles.modalText}>{'SETS: '}</Text>
+                                        <Picker
+                                            style={styles.picker}
+                                            mode='dropdown'
+                                            selectedValue={setCount}
+                                            onValueChange={(itemValue) => setSetCount(itemValue)}
+                                        >
+                                            {[...Array(50).keys()].map(n => (
+                                                <Picker.Item label={n.toString()} value={n} color='white' key={n} />
+                                            ))}
+                                        </Picker>
+                                        <Text style={styles.modalText}>{'REPS: '}</Text>
+                                        <Picker
+                                            style={styles.picker}
+                                            mode='dropdown'
+                                            selectedValue={repitionCount}
+                                            onValueChange={(itemValue) => setRepitionCount(itemValue)}
+                                        >
+                                            {[...Array(50).keys()].map(n => (
+                                                <Picker.Item label={n.toString()} value={n} color='white' key={n} />
+                                            ))}
+                                        </Picker>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
+                        </TouchableWithoutFeedback>
                     </Fragment>
                 );
             case ModalType.Rating:
@@ -127,6 +171,7 @@ export const WorkoutListItem = ({
     return (
         <Fragment>
             <HelfyModal
+                backdropOpacity={0.7}
                 backdropColor='black'
                 isVisible={modalContents !== null}
                 onClose={() => setModalType(ModalType.None)}
@@ -168,6 +213,11 @@ export const WorkoutListItem = ({
 }
 
 const styles = StyleSheet.create({
+    centeredRow: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     container: {
         display: 'flex',
         flexDirection: 'row',
@@ -183,6 +233,19 @@ const styles = StyleSheet.create({
     modal: {
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    modalText: {
+        fontFamily: 'Lato_700Bold',
+        fontSize: 16,
+        color: 'white',
+    },
+    modalTextInput: {
+        fontSize: 20,
+        color: '#CCCCCC',
+        backgroundColor: '#FFFFFF10',
+        paddingHorizontal: 18,
+        paddingVertical: 14,
+        borderRadius: 12,
     },
     modalLabel: {
         flexDirection: 'row',
@@ -201,11 +264,11 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         width: '80%',
-        backgroundColor: '#445046',
+        backgroundColor: '#242424',
         borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'center',
-        overflow: 'hidden',
+        // overflow: 'hidden',
     },
     workoutTitleContainer: {
         flexDirection: 'row',
@@ -252,5 +315,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 99,
+    },
+    picker: {
+        width: 90,
+        height: 110,
+        overflow: 'hidden',
+        justifyContent: 'center',
+    },
+    removeButton: {
+        position: 'absolute',
+        top: -18,
+        right: -18,
+        padding: 12,
+        backgroundColor: '#F54949',
+        borderRadius: 100,
     }
 });

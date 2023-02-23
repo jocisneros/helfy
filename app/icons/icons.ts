@@ -18,3 +18,5 @@ export * from './three-dots-vertical-icon';
 export * from './three-dots-icon';
 export * from './dot-icon';
 export * from './check-icon';
+export * from './close-icon';
+export * from './trash-icon';

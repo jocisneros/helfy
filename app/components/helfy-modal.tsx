@@ -1,7 +1,8 @@
 // helfy-modal.tsx
 
-import { StyleSheet, Text, TouchableHighlight } from 'react-native';
+import { StyleSheet, TouchableHighlight } from 'react-native';
 import Modal, { ModalProps } from 'react-native-modal';
+import { CloseIcon } from '../icons/close-icon';
 
 type HelfyModalProps = {
     onClose?: () => void,
@@ -22,7 +23,7 @@ export const HelfyModal = ({
                     style={styles.button}
                     underlayColor={styles.button.backgroundColor + '80'}
                 >
-                    <Text style={styles.buttonText}>{'CLOSE'}</Text>
+                    <CloseIcon color={'white'} />
                 </TouchableHighlight>
             }
         </Modal>
@@ -32,15 +33,9 @@ export const HelfyModal = ({
 
 const styles = StyleSheet.create({
     button: {
-        marginTop: 16,
-        paddingVertical: 8,
-        paddingHorizontal: 16,
+        marginTop: 20,
+        padding: 12,
         backgroundColor: '#F54949',
         borderRadius: 100,
-    },
-    buttonText: {
-        fontFamily: 'Lato_700Bold',
-        fontSize: 18,
-        color: 'white',
     }
 });
