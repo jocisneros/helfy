@@ -1,6 +1,5 @@
 // muscle-group-label.tsx
 
-import { useCallback } from 'react';
 import { MuscleGroup } from '../types';
 import { Text, TouchableHighlight, View } from 'react-native';
 import { getMuscleGroupLabelColor } from '../muscle-group-helpers';

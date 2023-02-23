@@ -6,13 +6,13 @@ import { Height, StartPageNavigationProp } from '../types';
 import { Picker } from '@react-native-picker/picker';
 
 export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
-  const [weight, setWeight] = useState(0);
+  const [weight, setWeight] = useState(100);
   const [height, setHeight] = useState<Height>({
-    feet: 0,
-    inches: 0,
+    feet: 5,
+    inches: 4,
   });
-  const [age, setAge] = useState(0);
-  const [sex, setSex] = useState("");
+  const [age, setAge] = useState(20);
+  const [sex, setSex] = useState("Female");
 
   return (
     <ScrollView>
@@ -71,7 +71,7 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
           <View style={styles.picker}>
             <View style={{flex:.15}}>
               <Text style={styles.text}>Age:</Text>
-              <Text style={styles.text}>{age} years.</Text>
+              <Text style={styles.text}>{age} years</Text>
             </View>
             <View style={{flex:.3}}>
               <Picker
@@ -174,5 +174,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       borderRadius: 16,
       overflow: 'hidden',
+      padding: 15,
     }
 });

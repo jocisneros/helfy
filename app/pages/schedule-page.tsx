@@ -1,18 +1,9 @@
 // schedule-page.tsx
 
-import React, { useCallback, useState, useMemo } from 'react';
-import { StyleSheet, Text, TouchableHighlight, View, SafeAreaView, Pressable, Button} from 'react-native';
-import Modal from 'react-native-modal';
+import React, { useCallback, useState } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, Button} from 'react-native';
 import { SchedulePageNavigationProp, MuscleGroup, WorkoutSchedule } from '../types';
-import {
-    CalendarIcon,
-    ChevronLeftIcon,
-    ChevronRightIcon,
-    PlusCircleIcon,
-    ThreeDotsVerticalIcon
-} from '../icons/icons';
 import { MuscleGroupLabel } from '../components/muscle-group-label';
-import { IconButton } from '../components/icon-button';
 import { Picker } from '@react-native-picker/picker';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
@@ -25,16 +16,86 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
     const { weight, height, age, sex } = route.params;
 
     const [modalContents, setModalContents] = useState<React.ReactNode>(null)
-    const [workoutSchedule, setWorkoutSchedule] = useState("");
+    const [workoutSchedule, setWorkoutSchedule] = useState("3 Days");
     const[userWorkoutSchedule, setUserWorkoutSchedule] = useState<WorkoutSchedule>({
         sunday: MuscleGroup.None,
-        monday: MuscleGroup.None,
+        monday: MuscleGroup.Pull,
         tuesday: MuscleGroup.None,
-        wednesday: MuscleGroup.None,
+        wednesday: MuscleGroup.Push,
         thursday: MuscleGroup.None,
-        friday: MuscleGroup.None,
+        friday: MuscleGroup.Legs,
         saturday: MuscleGroup.None,
     });
+
+    const updateSchedule = useCallback((workoutDays: string) => {
+        setWorkoutSchedule(workoutDays)
+        if (workoutDays === '1 Day') {
+            setUserWorkoutSchedule({
+                sunday: MuscleGroup.None,
+                monday: MuscleGroup.None,
+                tuesday: MuscleGroup.None,
+                wednesday: MuscleGroup.FullBody,
+                thursday: MuscleGroup.None,
+                friday: MuscleGroup.None,
+                saturday: MuscleGroup.None,
+            });
+        }
+        if (workoutDays === '2 Days') {
+            setUserWorkoutSchedule({
+                sunday: MuscleGroup.None,
+                monday: MuscleGroup.None,
+                tuesday: MuscleGroup.UpperBody ,
+                wednesday: MuscleGroup.None,
+                thursday: MuscleGroup.Legs,
+                friday: MuscleGroup.None,
+                saturday: MuscleGroup.None,
+            });
+        }
+        if (workoutDays === '3 Days') {
+            setUserWorkoutSchedule({
+                sunday: MuscleGroup.None,
+                monday: MuscleGroup.Pull,
+                tuesday: MuscleGroup.None,
+                wednesday: MuscleGroup.Push,
+                thursday: MuscleGroup.None,
+                friday: MuscleGroup.Legs,
+                saturday: MuscleGroup.None,
+            });
+        }
+        if (workoutDays === '4 Days') {
+            setUserWorkoutSchedule({
+                sunday: MuscleGroup.None,
+                monday: MuscleGroup.Pull,
+                tuesday: MuscleGroup.Push,
+                wednesday: MuscleGroup.Legs,
+                thursday: MuscleGroup.None,
+                friday: MuscleGroup.FullBody,
+                saturday: MuscleGroup.None,
+            });
+        }
+        if (workoutDays === '5 Days') {
+            setUserWorkoutSchedule({
+                sunday: MuscleGroup.None,
+                monday: MuscleGroup.Pull,
+                tuesday: MuscleGroup.Push,
+                wednesday: MuscleGroup.Legs,
+                thursday: MuscleGroup.None,
+                friday: MuscleGroup.UpperBody ,
+                saturday: MuscleGroup.Legs,
+            });
+        }
+        if (workoutDays === '6 Days') {
+            setUserWorkoutSchedule({
+                sunday: MuscleGroup.None,
+                monday: MuscleGroup.Pull,
+                tuesday: MuscleGroup.Push,
+                wednesday: MuscleGroup.Legs,
+                thursday: MuscleGroup.Arms,
+                friday: MuscleGroup.ChestAndBack,
+                saturday: MuscleGroup.Legs,
+            });
+        }
+    }, [workoutSchedule])
 
     const saveUserInfo = useCallback(() => {
         const fileUri = FileSystem.documentDirectory + 'data.txt';
@@ -130,6 +191,14 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
 
     return (
       <SafeAreaView style={styles.container}>
+        <HelfyModal
+            isVisible={modalContents !== null}
+            backdropColor='black'
+            backdropOpacity={0.5}
+            style={styles.modal}
+        >
+            {modalContents}
+        </HelfyModal>
         <View style={styles.header}>
             <Text style={styles.sectionTitle}>{workoutSchedule} Work Schedule</Text>
         </View>
@@ -146,7 +215,7 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
                     <Picker
                         mode='dropdown'
                         selectedValue={workoutSchedule}
-                        onValueChange={(itemValue) => setWorkoutSchedule(itemValue)}
+                        onValueChange={(itemValue) => updateSchedule(itemValue)}
                     >
                         <Picker.Item label='1 Day' value='1 Day' color='#CFCFCF' />
                         <Picker.Item label='2 Days' value='2 Days' color='#CFCFCF' />
@@ -161,12 +230,13 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
                 <View style={{flex:.3}}>
                     <Text style={styles.text}>Sunday:</Text>
                 </View>
-                <View style={{flex:.3}}>
+                <View style={{flex:.4}}>
                     <MuscleGroupLabel
                         muscleGroup={userWorkoutSchedule.sunday}
                         onPress={() => onMuscleGroupLabelPress(userWorkoutSchedule.sunday, 
                             (muscleGroup: MuscleGroup) => {
                                 setUserWorkoutSchedule(prevSchedule => ({...prevSchedule, sunday: muscleGroup}));
+                                setModalContents(null);
                             }
                         )}
                     />
@@ -176,12 +246,13 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
                 <View style={{flex:.3}}>
                     <Text style={styles.text}>Monday:</Text>
                 </View>
-                <View style={{flex:.3}}>
+                <View style={{flex:.4}}>
                     <MuscleGroupLabel
                         muscleGroup={userWorkoutSchedule.monday}
                         onPress={() => onMuscleGroupLabelPress(userWorkoutSchedule.monday, 
                             (muscleGroup: MuscleGroup) => {
                                 setUserWorkoutSchedule(prevSchedule => ({...prevSchedule, monday: muscleGroup}));
+                                setModalContents(null);
                             }
                         )}
                     />
@@ -191,12 +262,13 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
                 <View style={{flex:.3}}>
                     <Text style={styles.text}>Tuesday:</Text>
                 </View>
-                <View style={{flex:.3}}>
+                <View style={{flex:.4}}>
                     <MuscleGroupLabel
                         muscleGroup={userWorkoutSchedule.tuesday}
                         onPress={() => onMuscleGroupLabelPress(userWorkoutSchedule.tuesday, 
                             (muscleGroup: MuscleGroup) => {
                                 setUserWorkoutSchedule(prevSchedule => ({...prevSchedule, tuesday: muscleGroup}));
+                                setModalContents(null);
                             }
                         )}
                     />
@@ -206,12 +278,13 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
                 <View style={{flex:.3}}>
                     <Text style={styles.text}>Wednesday:</Text>
                 </View>
-                <View style={{flex:.3}}>
+                <View style={{flex:.4}}>
                     <MuscleGroupLabel
                         muscleGroup={userWorkoutSchedule.wednesday}
                         onPress={() => onMuscleGroupLabelPress(userWorkoutSchedule.wednesday, 
                             (muscleGroup: MuscleGroup) => {
                                 setUserWorkoutSchedule(prevSchedule => ({...prevSchedule, wednesday: muscleGroup}));
+                                setModalContents(null);
                             }
                         )}
                     />
@@ -221,12 +294,13 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
                 <View style={{flex:.3}}>
                     <Text style={styles.text}>Thursday:</Text>
                 </View>
-                <View style={{flex:.3}}>
+                <View style={{flex:.4}}>
                     <MuscleGroupLabel
                         muscleGroup={userWorkoutSchedule.thursday}
                         onPress={() => onMuscleGroupLabelPress(userWorkoutSchedule.thursday, 
                             (muscleGroup: MuscleGroup) => {
                                 setUserWorkoutSchedule(prevSchedule => ({...prevSchedule, thursday: muscleGroup}));
+                                setModalContents(null);
                             }
                         )}
                     />
@@ -236,12 +310,13 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
                 <View style={{flex:.3}}>
                     <Text style={styles.text}>Friday:</Text>
                 </View>
-                <View style={{flex:.3}}>
+                <View style={{flex:.4}}>
                     <MuscleGroupLabel
                         muscleGroup={userWorkoutSchedule.friday}
                         onPress={() => onMuscleGroupLabelPress(userWorkoutSchedule.friday, 
                             (muscleGroup: MuscleGroup) => {
                                 setUserWorkoutSchedule(prevSchedule => ({...prevSchedule, friday: muscleGroup}));
+                                setModalContents(null);
                             }
                         )}
                     />
@@ -251,12 +326,13 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
                 <View style={{flex:.3}}>
                     <Text style={styles.text}>Saturday:</Text>
                 </View>
-                <View style={{flex:.3}}>
+                <View style={{flex:.4}}>
                     <MuscleGroupLabel
                         muscleGroup={userWorkoutSchedule.saturday}
                         onPress={() => onMuscleGroupLabelPress(userWorkoutSchedule.saturday, 
                             (muscleGroup: MuscleGroup) => {
                                 setUserWorkoutSchedule(prevSchedule => ({...prevSchedule, saturday: muscleGroup}));
+                                setModalContents(null);
                             }
                         )}
                     />
@@ -306,12 +382,13 @@ const styles = StyleSheet.create({
     footer: {
         backgroundColor: '#445046',
         width: '95%',
-        flex: 1,
+        flex: 0,
         margin: 10,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 16,
         overflow: 'hidden',
+        padding: 15,
     },
     workoutList: {
         display: 'flex',
