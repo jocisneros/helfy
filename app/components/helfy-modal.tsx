@@ -4,7 +4,7 @@ import { StyleSheet, Text, TouchableHighlight } from 'react-native';
 import Modal, { ModalProps } from 'react-native-modal';
 
 type HelfyModalProps = {
-    onClose: () => void,
+    onClose?: () => void,
 } & Partial<ModalProps>;
 
 
@@ -16,13 +16,15 @@ export const HelfyModal = ({
     return (
         <Modal {...modalProps}>
             {children}
-            <TouchableHighlight
-                onPress={onClose}
-                style={styles.button}
-                underlayColor={styles.button.backgroundColor + '80'}
-            >
-                <Text style={styles.buttonText}>{'CLOSE'}</Text>
-            </TouchableHighlight>
+            { onClose &&
+                <TouchableHighlight
+                    onPress={onClose}
+                    style={styles.button}
+                    underlayColor={styles.button.backgroundColor + '80'}
+                >
+                    <Text style={styles.buttonText}>{'CLOSE'}</Text>
+                </TouchableHighlight>
+            }
         </Modal>
     )
 };
