@@ -18,6 +18,7 @@ import { Space } from '../components/space';
 import { HelfyModal } from '../components/helfy-modal';
 import { getMuscleGroupDescription, getMuscleGroupLabelColor } from '../muscle-group-helpers';
 import { Pedometer } from 'expo-sensors';
+import { HelfyCommonModal } from '../components/helfy-common-modal';
 
 const mockLegs: Workout[] = [
     {
@@ -50,8 +51,9 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
         setIsPedometerAvailable(isAvailable);
 
         if (isAvailable) {
-            const start = date;
-            start.setHours(0, 0, 0, 0);
+            const start = addDays(date, -1)
+            // const start = date;
+            // start.setHours(0, 0, 0, 0);
             const stepCount = await Pedometer.getStepCountAsync(start, date);
             setTodaysStepCount(stepCount ? stepCount.steps : 0);
         }
@@ -63,26 +65,20 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
 
     return (
         <Fragment>
-            <HelfyModal
+            <HelfyCommonModal
                 isVisible={showModal}
-                backdropColor='black'
-                backdropOpacity={0.7}
+                title={muscleGroup.toUpperCase()}
+                headerColor={muscleGroupLabelColor}
                 onClose={() => setShowModal(false)}
-                style={styles.modal}
             >
-                <Fragment>
-                    <View style={{...styles.sectionLabel, backgroundColor: muscleGroupLabelColor}}>
-                        <Text style={styles.sectionTitle}>{muscleGroup.toUpperCase()}</Text>
-                    </View>
-                    <View style={{...styles.modalContainer, height: '15%'}}>
-                        <Text style={{
-                            fontFamily: 'Lato_400Regular',
-                            fontSize: 16,
-                            color: '#FFF',
-                        }}>{getMuscleGroupDescription(muscleGroup)}</Text>
-                    </View>
-                </Fragment>
-            </HelfyModal>
+                <View style={{...styles.modalContainer, height: '15%'}}>
+                    <Text style={{
+                        fontFamily: 'Lato_400Regular',
+                        fontSize: 16,
+                        color: '#FFF',
+                    }}>{getMuscleGroupDescription(muscleGroup)}</Text>
+                </View>
+            </HelfyCommonModal>
             <SafeAreaView style={styles.header}>
                 { /* Calendar Header */ }
                 <View style={styles.calendarRowContainer} >
@@ -150,10 +146,6 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
 
 
 const styles = StyleSheet.create({
-    modal: {
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
     header: {
         backgroundColor: '#3B463C',
         width: '100%',

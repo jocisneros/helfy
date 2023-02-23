@@ -20,3 +20,6 @@ export * from './dot-icon';
 export * from './check-icon';
 export * from './close-icon';
 export * from './trash-icon';
+export * from './thumbs-down-icon';
+export * from './thumbs-up-icon';
+export * from './double-thumbs-up-icon';

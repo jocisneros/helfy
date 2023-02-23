@@ -9,7 +9,7 @@ import { IconButton } from './icon-button';
 type HelfyCommonModalProps = {
     title?: string,
     headerColor?: string,
-    height?: number,
+    height?: number | string,
     footer?: React.ReactNode,
     onClose?: () => void,
 } & Partial<Omit<ModalProps, 'style'>>;
@@ -46,7 +46,7 @@ export const HelfyCommonModal = ({
                         onClose &&
                         <IconButton
                             onPress={onClose}
-                            icon={<CloseIcon color={'white'} />}
+                            icon={<CloseIcon color={'black'} />}
                             onPressColor={styles.closeButton.backgroundColor + '80'}
                             style={styles.closeButton}
                         />
@@ -90,10 +90,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         position: 'absolute',
-        top: -18,
-        right: -18,
-        padding: 12,
-        backgroundColor: '#F54949',
+        top: -10,
+        right: -10,
+        padding: 10,
+        backgroundColor: '#dedede',
         borderRadius: 100,
     }
 });

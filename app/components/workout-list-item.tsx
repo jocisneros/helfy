@@ -4,8 +4,11 @@ import React, { Fragment, useMemo, useState } from 'react';
 import { Keyboard, StyleSheet, Text, TextInput, TouchableHighlight, TouchableWithoutFeedback, View } from 'react-native';
 import { MuscleGroup, Workout } from '../types';
 import {
+    DoubleThumbsUpIcon,
     InfoCircleIcon,
     ThreeDotsIcon,
+    ThumbsDownIcon,
+    ThumbsUpIcon,
     TrashIcon,
 } from '../icons/icons';
 import { CheckButton } from './check-button';
@@ -15,6 +18,7 @@ import { HelfyModal } from './helfy-modal';
 import { WorkoutLabel } from './workout-label';
 import { getMuscleGroupLabelColor } from '../muscle-group-helpers';
 import { Space } from './space';
+import { HelfyCommonModal } from './helfy-common-modal';
 
 enum ModalType {
     None = 'None',
@@ -30,6 +34,12 @@ type WorkoutListItemProps = {
     remove?: () => void,
 };
 
+enum WorkoutRating {
+    ThumbsDown = -1,
+    Unrated = 0,
+    ThumbsUp = 1,
+    DoubleThumbsUp = 3,
+};
 
 export const WorkoutListItem = ({
     workout,
@@ -43,6 +53,7 @@ export const WorkoutListItem = ({
     const [weight, setWeight] = useState(270);
     const [setCount, setSetCount] = useState(3);
     const [repitionCount, setRepitionCount] = useState(8);
+    const [rating, setRating] = useState<WorkoutRating>(WorkoutRating.Unrated);
 
     const [modalType, setModalType] = useState<ModalType>(ModalType.None);
 
@@ -51,139 +62,166 @@ export const WorkoutListItem = ({
             case ModalType.Info:
                 return (
                     <Fragment>
-                        <View style={{...styles.modalLabel, backgroundColor: muscleGroupColor}}>
-                            <Text style={styles.modalTitle}>{workout.name.toUpperCase()}</Text>
+                        <View style={{height: '45%', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                            <Text style={styles.modalText}>DEMO</Text>
+                            { /* TEMPORARY*/ }
+                            <View style={{
+                                width: '90%',
+                                height: 160,
+                                backgroundColor:
+                                'gray',
+                                marginVertical: 16
+                                }}
+                            />
                         </View>
-                        <View style={{...styles.modalContainer, height: '50%'}}>
-                            <View style={{height: '45%', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                                <Text style={styles.modalText}>DEMO</Text>
-                                { /* TEMPORARY*/ }
-                                <View style={{
-                                    width: '90%',
-                                    height: 160,
-                                    backgroundColor:
-                                    'gray',
-                                    marginVertical: 16
-                                    }}
-                                />
-                            </View>
-                            <View style={{height: '45%', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                                <Text style={styles.modalText}>TIPS</Text>
-                                <Space height={16}/>
-                                <View style={{
-                                    width: '90%',
-                                    height: 16,
-                                    backgroundColor:
-                                    'gray',
-                                    marginBottom: 16
-                                    }}
-                                />
-                                <View style={{
-                                    width: '90%',
-                                    height: 16,
-                                    backgroundColor:
-                                    'gray',
-                                    marginBottom: 16
-                                    }}
-                                />
-                                <View style={{
-                                    width: '90%',
-                                    height: 16,
-                                    backgroundColor:
-                                    'gray',
-                                    marginBottom: 16
-                                    }}
-                                />
-                            </View>
+                        <View style={{height: '45%', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                            <Text style={styles.modalText}>TIPS</Text>
+                            <Space height={16}/>
+                            <View style={{
+                                width: '90%',
+                                height: 16,
+                                backgroundColor:
+                                'gray',
+                                marginBottom: 16
+                                }}
+                            />
+                            <View style={{
+                                width: '90%',
+                                height: 16,
+                                backgroundColor:
+                                'gray',
+                                marginBottom: 16
+                                }}
+                            />
+                            <View style={{
+                                width: '90%',
+                                height: 16,
+                                backgroundColor:
+                                'gray',
+                                marginBottom: 16
+                                }}
+                            />
                         </View>
                     </Fragment>
                 );
             case ModalType.Menu:
                 return (
-                    <Fragment>
-                        <View style={{...styles.modalLabel, backgroundColor: muscleGroupColor}}>
-                            <Text style={styles.modalTitle}>{workout.name.toUpperCase()}</Text>
+                    <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', }}>
+                        <View style={styles.centeredRow}>
+                            <Text style={styles.modalText}>{'WEIGHT: '}</Text>
+                            <Space width={8}/>
+                            <TextInput
+                                returnKeyType='done'
+                                style={styles.modalTextInput}
+                                keyboardType='numeric'
+                                onChangeText={(text) => {
+                                    setWeight(parseFloat(text || '0'))
+                                }}
+                                value={weight.toString()}
+                                maxLength={4}
+                            />
                         </View>
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                            <View style={{...styles.modalContainer, height: '30%'}}>
-                                {
-                                    remove &&
-                                    <TouchableHighlight
-                                        onPress={() => { setModalType(ModalType.None); remove(); }}
-                                        style={styles.removeButton}
-                                    >
-                                        <TrashIcon color={'white'} />
-                                        {/* <Text style={styles.modalText}>{'REMOVE'}</Text> */}
-                                    </TouchableHighlight>
-                                }
-                                <View style={{ flexDirection: 'column' }}>
-                                    <View style={styles.centeredRow}>
-                                        <Text style={styles.modalText}>{'WEIGHT: '}</Text>
-                                        <Space width={8}/>
-                                        <TextInput
-                                            returnKeyType='done'
-                                            style={styles.modalTextInput}
-                                            keyboardType='numeric'
-                                            onChangeText={(text) => {
-                                                setWeight(parseFloat(text || '0'))
-                                            }}
-                                            value={weight.toString()}
-                                            maxLength={4}
-                                        />
-                                    </View>
-                                    <Space height={36}/>
-                                    <View style={styles.centeredRow}>
-                                        <Text style={styles.modalText}>{'SETS: '}</Text>
-                                        <Picker
-                                            style={styles.picker}
-                                            mode='dropdown'
-                                            selectedValue={setCount}
-                                            onValueChange={(itemValue) => setSetCount(itemValue)}
-                                        >
-                                            {[...Array(50).keys()].map(n => (
-                                                <Picker.Item label={n.toString()} value={n} color='white' key={n} />
-                                            ))}
-                                        </Picker>
-                                        <Text style={styles.modalText}>{'REPS: '}</Text>
-                                        <Picker
-                                            style={styles.picker}
-                                            mode='dropdown'
-                                            selectedValue={repitionCount}
-                                            onValueChange={(itemValue) => setRepitionCount(itemValue)}
-                                        >
-                                            {[...Array(50).keys()].map(n => (
-                                                <Picker.Item label={n.toString()} value={n} color='white' key={n} />
-                                            ))}
-                                        </Picker>
-                                    </View>
-                                </View>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </Fragment>
+                        <View style={{ backgroundColor: 'white', marginVertical: 16, height: 0.5, width: 250 }} />
+                        <View style={styles.centeredRow}>
+                            <Text style={styles.modalText}>{'SETS: '}</Text>
+                            <Picker
+                                style={styles.picker}
+                                mode='dropdown'
+                                selectedValue={setCount}
+                                onValueChange={(itemValue) => setSetCount(itemValue)}
+                            >
+                                {[...Array(50).keys()].map(n => (
+                                    <Picker.Item label={n.toString()} value={n} color='white' key={n} />
+                                ))}
+                            </Picker>
+                            <Text style={styles.modalText}>{'REPS: '}</Text>
+                            <Picker
+                                style={styles.picker}
+                                mode='dropdown'
+                                selectedValue={repitionCount}
+                                onValueChange={(itemValue) => setRepitionCount(itemValue)}
+                            >
+                                {[...Array(50).keys()].map(n => (
+                                    <Picker.Item label={n.toString()} value={n} color='white' key={n} />
+                                ))}
+                            </Picker>
+                        </View>
+                    </View>
                 );
             case ModalType.Rating:
+                return (
+                    <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                        <Text style={styles.modalText}>{'🎉 CONGRATS 🎉'}</Text>
+                        <Space height={20}/>
+                        <Text style={styles.modalText}>{'RATE YOUR WORKOUT'}</Text>
+                        <Space height={20}/>
+                        <View style={styles.centeredRow}>
+                            <IconButton
+                                style={{backgroundColor: '#ffffff40', padding: 12, borderRadius: 32}}
+                                icon={<ThumbsUpIcon color={'lightgreen'} />}
+                                onPress={() => { setRating(WorkoutRating.ThumbsUp); setModalType(ModalType.None); }}
+                                onPressColor={'#ffffff20'}
+                            />
+                            <Space width={20}/>
+                            <IconButton
+                                style={{backgroundColor: '#ffffff40', padding: 12, borderRadius: 32}}
+                                icon={<DoubleThumbsUpIcon color={'green'} />}
+                                onPress={() => { setRating(WorkoutRating.DoubleThumbsUp); setModalType(ModalType.None); }}
+                                onPressColor={'#ffffff20'}
+                            />
+                            <Space width={20}/>
+                            <IconButton
+                                style={{backgroundColor: '#ffffff40', padding: 12, borderRadius: 32}}
+                                icon={<ThumbsDownIcon color={'red'} />}
+                                onPress={() => { setRating(WorkoutRating.ThumbsDown); setModalType(ModalType.None); }}
+                                onPressColor={'#ffffff20'}
+                            />
+                        </View>
+                    </View>
+                )
             case ModalType.None:
             default:
                 return null;
         }
     }, [modalType, workout, weight, setCount, repitionCount]);
 
+    const modalHeight = useMemo(() => {
+        switch (modalType) {
+            case ModalType.Info:
+                return '50%';
+            case ModalType.Menu:
+                return '30%';
+            case ModalType.Rating:
+                return '30%';
+            case ModalType.None:
+            default:
+                return undefined;
+        }
+    }, [modalType]);
+
     return (
         <Fragment>
-            <HelfyModal
-                backdropOpacity={0.7}
-                backdropColor='black'
+            <HelfyCommonModal
                 isVisible={modalContents !== null}
+                title={workout.name.toUpperCase()}
+                headerColor={muscleGroupColor}
+                height={modalHeight}
                 onClose={() => setModalType(ModalType.None)}
-                style={styles.modal}
+                footer={ remove && modalType === ModalType.Menu && (
+                    <IconButton
+                        onPress={() => { setModalType(ModalType.None); remove(); }}
+                        icon={<TrashIcon color={'white'} />}
+                        style={styles.removeButton}
+                    />
+                )}
             >
                 {modalContents}
-            </HelfyModal>
+            </HelfyCommonModal>
             <View style={styles.container} >
 
                 <CheckButton
                     isChecked={isChecked}
-                    onPress={() => setChecked(!isChecked)}
+                    onPress={() => { setChecked(!isChecked); !isChecked && setModalType(ModalType.Rating); }}
                     style={isChecked ? styles.checkedButton : styles.uncheckedButton}
                 />
                 <View style={styles.workoutTitleContainer}>
@@ -203,7 +241,7 @@ export const WorkoutListItem = ({
                 <WorkoutLabel weight={weight} setCount={setCount} repitionCount={repitionCount} />
                 <IconButton
                     style={styles.menuButton}
-                    icon={<ThreeDotsIcon color={'#CFCFCF'}/>}
+                    icon={<ThreeDotsIcon color={'white'}/>}
                     onPress={() => setModalType(ModalType.Menu)}
                     onPressColor={'#00000040'}
                 />
@@ -284,7 +322,7 @@ const styles = StyleSheet.create({
     },
     uncheckedButton: {
         display: 'flex',
-        backgroundColor: '#D9D9D9',
+        backgroundColor: 'white',
         height: 20,
         width: 20,
         justifyContent: 'center',
@@ -323,10 +361,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     removeButton: {
-        position: 'absolute',
-        top: -18,
-        right: -18,
-        padding: 12,
+        marginTop: 20,
+        padding: 16,
         backgroundColor: '#F54949',
         borderRadius: 100,
     }
