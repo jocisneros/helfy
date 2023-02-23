@@ -16,6 +16,12 @@ CREATE TABLE IF NOT EXISTS muscle_groups (
     PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS workout_types (
+	id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS muscle_groups_in_exercises (
 	exerciseID INT NOT NULL,
     muscleID INT NOT NULL,

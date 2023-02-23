@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS workout_history (
 	id INT NOT NULL AUTO_INCREMENT,
 	usersID INT NOT NULL,
-    workoutDate DATETIME NOT NULL,
+    workoutDate DATE NOT NULL,
+	workoutType INT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (usersID) REFERENCES users(id)
 );
