@@ -22,10 +22,16 @@ CREATE TABLE IF NOT EXISTS workout_types (
     PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS muscles_in_workout_types (
+    muscleID INT NOT NULL,
+	workoutTypeID INT NOT NULL,
+    FOREIGN KEY (muscleID) REFERENCES muscle_groups(id)
+     FOREIGN KEY (workoutTypeID) REFERENCES workout_types(id)
+);
+
 CREATE TABLE IF NOT EXISTS muscle_groups_in_exercises (
 	exerciseID INT NOT NULL,
     muscleID INT NOT NULL,
-	intensity INT NOT NULL,
 	FOREIGN KEY (exerciseID) REFERENCES exercises(id),
     FOREIGN KEY (muscleID) REFERENCES muscle_groups(id)
 );
