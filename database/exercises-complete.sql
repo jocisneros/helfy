@@ -1,3 +1,4 @@
+USE exercisedb;
 INSERT INTO muscle_groups (name) VALUES ('Biceps');
 INSERT INTO exercises (name, difficulty, tips, link) VALUES ('Barbell Curl', 0, 'While holding the upper arms stationary, curl the weights forward while contracting the biceps as you breathe out. Continue the movement until your biceps are fully contracted and the bar is at shoulder level. Hold the contracted position for a second and squeeze the biceps hard. Slowly bring the weight back down to the starting position. ', 'https://www.youtube.com/watch?v=PGW-SgbEfGU');
 INSERT INTO muscle_groups_in_exercises (exerciseID, muscleID) VALUES (1, 1);

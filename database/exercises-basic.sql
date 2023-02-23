@@ -1,4 +1,4 @@
-USE exercisedb
+USE exercisedb;
 # Muscle Groups
 INSERT INTO muscle_groups VALUES(1, 'Chest');
 INSERT INTO muscle_groups VALUES(2, 'Biceps');
