@@ -1,29 +1,37 @@
 // workout-label.tsx
 
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { Fragment } from 'react';
+import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { DotIcon } from '../icons/icons';
 
 type WorkoutLabelProps = {
     weight: number,
     setCount: number,
-    repitionCount: number
+    repitionCount: number,
+    onPress?: () => void,
 };
 
 export const WorkoutLabel = ({
     weight,
     setCount,
     repitionCount,
+    onPress,
 }: WorkoutLabelProps) => {
     return (
-        <View style={styles.container}>
-            <Text style={styles.weightText}>{weight}</Text>
-            <View style={styles.innerContainer}>
-                <Text>{setCount}</Text>
-                <DotIcon color={'#303730'}/>
-                <Text>{repitionCount}</Text>
-            </View>
-        </View>
+        <TouchableHighlight
+            style={styles.container}
+            onPress={onPress}
+            underlayColor={styles.innerContainer.backgroundColor}
+        >
+            <Fragment>
+                <Text style={styles.weightText}>{weight}</Text>
+                <View style={styles.innerContainer}>
+                    <Text>{setCount}</Text>
+                    <DotIcon color={'#303730'}/>
+                    <Text>{repitionCount}</Text>
+                </View>
+            </Fragment>
+        </TouchableHighlight>
     );
 };
 

@@ -239,12 +239,11 @@ export const WorkoutListItem = ({
                         onPressColor={'#00000040'}
                     />
                 </View>
-                <WorkoutLabel weight={weight} setCount={setCount} repitionCount={repitionCount} />
-                <IconButton
-                    style={styles.menuButton}
-                    icon={<ThreeDotsIcon color={'white'}/>}
+                <WorkoutLabel
+                    weight={weight}
+                    setCount={setCount}
+                    repitionCount={repitionCount}
                     onPress={() => setModalType(ModalType.Menu)}
-                    onPressColor={'#00000040'}
                 />
             </View>
         </Fragment>
@@ -268,6 +267,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 16,
         justifyContent: 'space-between',
+        paddingLeft: 12,
+        paddingRight: 18
     },
     modal: {
         alignItems: 'center',
