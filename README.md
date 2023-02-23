@@ -46,3 +46,10 @@ Helfy will provide users with a complete workout routine and checklist to their 
 At the core of helfy will be the AI-powered workout recommendation system and database that categorizes and recommends different workouts based on experience, schedule, intensity, difficulty, focused muscle groups, and accessible equipment. The app will collect information and integrate with the Apple Watch to build a personalized model. Using the collected data, it will suggest workouts and keep track of exercise, sleep, and food.
 
 We will provide a video demo to demonstrate the helfy mobile app’s functionality.
+
+### Running App ###
+1. cd into app directory (cd app)
+2. npm i
+3. npx expo start
+4. Download [https://apps.apple.com/us/app/expo-go/id982107779]: Expo Go App
+5. Open camera and scan QR code to open application on IOS device
