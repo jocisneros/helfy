@@ -174,5 +174,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       borderRadius: 16,
       overflow: 'hidden',
+      padding: 15,
     }
 });
