@@ -47,7 +47,7 @@ At the core of helfy will be the AI-powered workout recommendation system and da
 
 We will provide a video demo to demonstrate the helfy mobile app’s functionality.
 
-### Running App ###
+### Running helfy App ###
 1. cd into app directory (cd app)
 2. npm i
 3. npx expo start
