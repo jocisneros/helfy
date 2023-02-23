@@ -8,14 +8,6 @@ from selenium import webdriver
 # Output is not fully correct, need to edit apostrophe syntax and add semi colons before sql ready
 
 
-# PERSONALDBCONFIG = {
-#   'user': 'mytestuser',
-#   'password': 'My6$Password',
-#   'host': '127.0.0.1',
-#   'database': 'personaldb',
-#   'raise_on_warnings': True
-# }
-
 EXERCISEDBCONFIG = {
   'user': 'mytestuser',
   'password': 'My6$Password',
