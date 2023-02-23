@@ -1,6 +1,6 @@
 // home-page.tsx
 
-import React, { useCallback, useState, useMemo, Fragment } from 'react';
+import React, { useCallback, useEffect, useState, useMemo, Fragment } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Pressable } from 'react-native';
 import { HomePageNavigationProp, MuscleGroup, Workout } from '../types';
 import {
@@ -16,7 +16,8 @@ import { IconButton } from '../components/icon-button';
 import { addDays, format } from 'date-fns'
 import { Space } from '../components/space';
 import { HelfyModal } from '../components/helfy-modal';
-import { getMuscleGroupDescription } from '../muscle-group-helpers';
+import { getMuscleGroupDescription, getMuscleGroupLabelColor } from '../muscle-group-helpers';
+import { Pedometer } from 'expo-sensors';
 
 const mockLegs: Workout[] = [
     {
@@ -35,55 +36,52 @@ const mockLegs: Workout[] = [
 
 export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
     const [date, setDate] = useState(new Date());
-    const [modalContents, setModalContents] = useState<React.ReactNode>(null)
+    const [showModal, setShowModal] = useState(false);
+    const [workouts, setWorkouts] = useState(mockLegs);
+
+    const [isPedometerAvailable, setIsPedometerAvailable] = useState(false);
+    const [todaysStepCount, setTodaysStepCount] = useState(0);
 
     const muscleGroup = MuscleGroup.Legs;
+    const muscleGroupLabelColor = getMuscleGroupLabelColor(muscleGroup);
 
-    const onMuscleGroupLabelPress = useCallback(() => {
-        setModalContents((
-            <View style={{
-                width: '80%',
-                height: '20%',
-                backgroundColor: '#445046',
-                borderRadius: 16,
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
-            }}>
-                <View style={{
-                    position: 'absolute',
-                    top: 0,
-                    width: '100%',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: '#3C443C',
-                    paddingVertical: 12,
-                }}>
-                    <Text style={{
-                        fontFamily: 'Lato_700Bold',
-                        fontSize: 20,
-                        color: '#CFCFCF',
-                    }}>{muscleGroup.toUpperCase()}</Text>
-                </View>
-                <Text style={{
-                    fontFamily: 'Lato_400Regular',
-                    fontSize: 16,
-                    color: '#FFF',
-                }}>{getMuscleGroupDescription(muscleGroup)}</Text>
-            </View>
-        ));
-    }, []);
+    const subscribeToPedometer = useCallback(async () => {
+        const isAvailable = await Pedometer.isAvailableAsync();
+        setIsPedometerAvailable(isAvailable);
+
+        if (isAvailable) {
+            const start = date;
+            start.setHours(0, 0, 0, 0);
+            const stepCount = await Pedometer.getStepCountAsync(start, date);
+            setTodaysStepCount(stepCount ? stepCount.steps : 0);
+        }
+    }, [date]);
+
+    useEffect(() => {
+        subscribeToPedometer();
+    }, [subscribeToPedometer]);
 
     return (
         <Fragment>
             <HelfyModal
-                isVisible={modalContents !== null}
+                isVisible={showModal}
                 backdropColor='black'
-                backdropOpacity={0.5}
-                onClose={() => setModalContents(null)}
+                backdropOpacity={0.7}
+                onClose={() => setShowModal(false)}
                 style={styles.modal}
             >
-                {modalContents}
+                <Fragment>
+                    <View style={{...styles.sectionLabel, backgroundColor: muscleGroupLabelColor}}>
+                        <Text style={styles.sectionTitle}>{muscleGroup.toUpperCase()}</Text>
+                    </View>
+                    <View style={{...styles.modalContainer, height: '15%'}}>
+                        <Text style={{
+                            fontFamily: 'Lato_400Regular',
+                            fontSize: 16,
+                            color: '#FFF',
+                        }}>{getMuscleGroupDescription(muscleGroup)}</Text>
+                    </View>
+                </Fragment>
             </HelfyModal>
             <SafeAreaView style={styles.header}>
                 { /* Calendar Header */ }
@@ -96,6 +94,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                     />
                     <Pressable style={styles.calendarCore}>
                         <CalendarIcon color={'white'}/>
+                        <Space width={8}/>
                         <Text style={styles.calendarDate}>{format(date, 'E - MMM d')}</Text>
                     </Pressable>
                     <IconButton
@@ -107,7 +106,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                 </View>
                 <MuscleGroupLabel
                     muscleGroup={muscleGroup}
-                    onPress={onMuscleGroupLabelPress}
+                    onPress={() => setShowModal(true)}
                 />
                 <Space height={16}/>
             </SafeAreaView>
@@ -116,21 +115,18 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                 <View style={styles.workouts}>
                     { /* Section Label */ }
                     <View style={styles.sectionLabel}>
-                        <Text style={styles.sectionTitle}>WORKOUTS</Text>
-                        <Space width={12}/>
-                        <IconButton
-                            icon={<ThreeDotsVerticalIcon color={'white'} />}
-                            style={styles.iconButton}
-                            onPressColor={'#00000040'}
-                        />
+                        <Text style={styles.sectionTitle}>{'WORKOUTS'}</Text>
                     </View>
                     { /* Workout List */ }
                     <View style={styles.workoutList}>
-                        {mockLegs.map((workout, i) => (
+                        {workouts.map((workout, i) => (
                             <WorkoutListItem
                                 key={i}
                                 workout={workout}
                                 muscleGroup={muscleGroup}
+                                remove={() => setWorkouts( prevWorkouts => 
+                                    prevWorkouts.filter((_, index) => index !== i))
+                                }
                             />
                         ))}
                         <IconButton
@@ -145,6 +141,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                     <View style={styles.sectionLabel}>
                         <Text style={styles.sectionTitle}>STEPS</Text>
                     </View>
+                    <Text style={styles.sectionTitle}>{todaysStepCount}</Text>
                 </View>
             </SafeAreaView>
       </Fragment>
@@ -188,6 +185,14 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 12,
         borderBottomRightRadius: 12,
     },
+    modalContainer: {
+        width: '80%',
+        backgroundColor: '#242424',
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        overflow: 'hidden',
+    },
     chevronRight: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -204,7 +209,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 8,
+        paddingHorizontal: 16,
         height: 36,
         borderRadius: 12,
         backgroundColor: '#303730',
