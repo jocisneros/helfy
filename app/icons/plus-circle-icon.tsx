@@ -1,18 +1,25 @@
 // plus-circle-icon.tsx
 
 import * as React from 'react';
-import Svg, { SvgProps, Path } from 'react-native-svg';
+import Svg, { SvgProps, Path, ClipPath, Defs, G } from 'react-native-svg';
 
 export const PlusCircleIcon = (props: SvgProps) => (
-    <Svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={16}
-      height={16}
-      fill="currentColor"
-      className="bi bi-plus-circle"
-      {...props}
-    >
-      <Path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-      <Path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
-    </Svg>
+  <Svg
+    width={24}
+    height={24}
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <G clipPath="url(#a)">
+      <Path
+        d="M24 12a12 12 0 1 1-24 0 12 12 0 0 1 24 0ZM12.75 6.75a.75.75 0 1 0-1.5 0v4.5h-4.5a.75.75 0 1 0 0 1.5h4.5v4.5a.75.75 0 1 0 1.5 0v-4.5h4.5a.75.75 0 1 0 0-1.5h-4.5v-4.5Z"
+      />
+    </G>
+    <Defs>
+      <ClipPath id="a">
+        <Path d="M0 0h24v24H0z" />
+      </ClipPath>
+    </Defs>
+  </Svg>
 );

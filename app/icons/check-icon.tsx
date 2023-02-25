@@ -4,14 +4,15 @@ import * as React from 'react';
 import Svg, { SvgProps, Path } from 'react-native-svg';
 
 export const CheckIcon = (props: SvgProps) => (
-    <Svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={16}
-      height={16}
-      fill="currentColor"
-      className="bi bi-check"
-      {...props}
-    >
-      <Path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
-    </Svg>
+  <Svg
+    width={18}
+    height={18}
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <Path
+      d="M14.193 3.972a1.35 1.35 0 0 1 1.926 1.89l-7.183 8.982a1.35 1.35 0 0 1-1.944.036L2.23 10.117A1.35 1.35 0 1 1 4.138 8.21l3.769 3.768 6.251-7.965c.011-.014.022-.027.035-.04Z"
+    />
+  </Svg>
 );

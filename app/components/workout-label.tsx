@@ -7,14 +7,14 @@ import { DotIcon } from '../icons/icons';
 type WorkoutLabelProps = {
     weight: number,
     setCount: number,
-    repitionCount: number,
+    repititionCount: number,
     onPress?: () => void,
 };
 
 export const WorkoutLabel = ({
     weight,
     setCount,
-    repitionCount,
+    repititionCount,
     onPress,
 }: WorkoutLabelProps) => {
     return (
@@ -24,11 +24,11 @@ export const WorkoutLabel = ({
             underlayColor={styles.innerContainer.backgroundColor}
         >
             <Fragment>
-                <Text style={styles.weightText}>{weight}</Text>
+                <Text style={styles.primaryText}>{weight}</Text>
                 <View style={styles.innerContainer}>
-                    <Text>{setCount}</Text>
-                    <DotIcon color={'#303730'}/>
-                    <Text>{repitionCount}</Text>
+                    <Text style={styles.secondaryText}>{setCount}</Text>
+                    <View style={styles.bar}/>
+                    <Text style={styles.secondaryText}>{repititionCount}</Text>
                 </View>
             </Fragment>
         </TouchableHighlight>
@@ -40,9 +40,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 3,
-        paddingHorizontal: 8,
-        borderRadius: 20,
+        paddingVertical: 4,
+        paddingHorizontal: 4,
+        borderRadius: 12,
         backgroundColor: 'white',
     },
     innerContainer: {
@@ -50,18 +50,32 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'row',
         backgroundColor: '#dedede',
-        paddingHorizontal: 4,
-        borderRadius: 20,
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        borderRadius: 10,
+        borderColor: '#303730',
+        borderWidth: 1,
     },
-    weightText: {
+    primaryText: {
+        fontFamily: 'Lato_700Bold',
+        color: '#303730',
+        fontSize: 18,
+        width: 55,
+        textAlign: 'center',
+    },
+    secondaryText: {
         fontFamily: 'Lato_700Bold',
         color: '#303730',
         fontSize: 16,
-        paddingRight: 4,
+        width: 20,
+        textAlign: 'center',
     },
-    countText: {
-        fontFamily: 'Lato_700Bold',
-        color: '#303730',
-        fontSize: 14,
+    bar: {
+        width: 1.25,
+        height: 14,
+        backgroundColor: '#303730',
+        marginHorizontal: 4,
     }
 });
+
+// '#303730'

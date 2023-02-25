@@ -2,58 +2,63 @@
 
 import React, { useCallback, useEffect, useState, useMemo, Fragment } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Pressable } from 'react-native';
-import { HomePageNavigationProp, MuscleGroup, Workout } from '../types';
+import { HomePageNavigationProp, SelectedWorkout, Workout, WorkoutType } from '../types';
 import {
     CalendarIcon,
     ChevronLeftIcon,
     ChevronRightIcon,
     PlusCircleIcon,
-    ThreeDotsVerticalIcon
 } from '../icons/icons';
-import { MuscleGroupLabel } from '../components/muscle-group-label';
-import { WorkoutListItem } from '../components/workout-list-item';
+import { WorkoutTypeLabel } from '../components/workout-type-label';
+import { SelectedWorkoutListItem } from '../components/selected-workout-list-item';
 import { IconButton } from '../components/icon-button';
 import { addDays, format } from 'date-fns'
 import { Space } from '../components/space';
-import { HelfyModal } from '../components/helfy-modal';
 import { getMuscleGroupDescription, getMuscleGroupLabelColor } from '../muscle-group-helpers';
 import { Pedometer } from 'expo-sensors';
 import { HelfyCommonModal } from '../components/helfy-common-modal';
 
-const mockLegs: Workout[] = [
-    {
-        name: 'Leg Press',
-    },
-    {
-        name: 'Squats',
-    },
-    {
-        name: 'Leg Extension',
-    },
-    {
-        name: 'Calf Raises',
-    },
-];
 
 export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
     const [date, setDate] = useState(new Date());
     const [showModal, setShowModal] = useState(false);
-    const [workouts, setWorkouts] = useState(mockLegs);
+    const [workouts, setWorkouts] = useState<SelectedWorkout[]>([]);
+
+    const {
+        id,
+        workoutSchedule
+    } = route.params;
+
+    const workoutType = useMemo(() => {
+        switch (date.getDay()) {
+            case 0:
+                return workoutSchedule.sunday;
+            case 1:
+                return workoutSchedule.monday;
+            case 2:
+                return workoutSchedule.tuesday;
+            case 3:
+                return workoutSchedule.wednesday;
+            case 4:
+                return workoutSchedule.thursday;
+            case 5:
+                return workoutSchedule.friday;
+            case 6:
+                return workoutSchedule.saturday;
+        }
+        return WorkoutType.None;
+    }, [date])
 
     const [isPedometerAvailable, setIsPedometerAvailable] = useState(false);
     const [todaysStepCount, setTodaysStepCount] = useState(0);
-
-    const muscleGroup = MuscleGroup.Legs;
-    const muscleGroupLabelColor = getMuscleGroupLabelColor(muscleGroup);
 
     const subscribeToPedometer = useCallback(async () => {
         const isAvailable = await Pedometer.isAvailableAsync();
         setIsPedometerAvailable(isAvailable);
 
         if (isAvailable) {
-            const start = addDays(date, -1)
-            // const start = date;
-            // start.setHours(0, 0, 0, 0);
+            // Change from previous day to start of day
+            const start = addDays(date, -1);
             const stepCount = await Pedometer.getStepCountAsync(start, date);
             setTodaysStepCount(stepCount ? stepCount.steps : 0);
         }
@@ -63,12 +68,42 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
         subscribeToPedometer();
     }, [subscribeToPedometer]);
 
+    const getUpdateWorkoutFunction = useCallback(
+        (index: number) => {
+            function updateWorkout(action: React.SetStateAction<SelectedWorkout>) {
+                if (action instanceof Function) {
+                    setWorkouts(
+                        prevWorkouts => {
+                            prevWorkouts[index] = action(prevWorkouts[index]);
+                            return prevWorkouts;
+                        }
+                    )
+                } else {
+                    setWorkouts(
+                        prevWorkouts => {
+                            prevWorkouts[index] = action;
+                            return prevWorkouts;
+                        }
+                    )
+                }
+            }
+        return updateWorkout;
+    }, [setWorkouts])
+
+    const removeWorkout = useCallback((index: number) => {
+        setWorkouts(
+            prevWorkouts => (
+                prevWorkouts.filter((_, i) => i !== index)
+            )
+        );
+    }, [setWorkouts]);
+
     return (
         <Fragment>
             <HelfyCommonModal
                 isVisible={showModal}
-                title={muscleGroup.toUpperCase()}
-                headerColor={muscleGroupLabelColor}
+                title={workoutType.toUpperCase()}
+                headerColor={getMuscleGroupLabelColor(workoutType)}
                 onClose={() => setShowModal(false)}
             >
                 <View style={{...styles.modalContainer, height: '15%'}}>
@@ -76,7 +111,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                         fontFamily: 'Lato_400Regular',
                         fontSize: 16,
                         color: '#FFF',
-                    }}>{getMuscleGroupDescription(muscleGroup)}</Text>
+                    }}>{getMuscleGroupDescription(workoutType)}</Text>
                 </View>
             </HelfyCommonModal>
             <SafeAreaView style={styles.header}>
@@ -100,8 +135,8 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                         onPressColor={'#00000080'}
                     />
                 </View>
-                <MuscleGroupLabel
-                    muscleGroup={muscleGroup}
+                <WorkoutTypeLabel
+                    workoutType={workoutType}
                     onPress={() => setShowModal(true)}
                 />
                 <Space height={16}/>
@@ -116,13 +151,12 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                     { /* Workout List */ }
                     <View style={styles.workoutList}>
                         {workouts.map((workout, i) => (
-                            <WorkoutListItem
+                            <SelectedWorkoutListItem
                                 key={i}
-                                workout={workout}
-                                muscleGroup={muscleGroup}
-                                remove={() => setWorkouts( prevWorkouts => 
-                                    prevWorkouts.filter((_, index) => index !== i))
-                                }
+                                selectedWorkout={workout}
+                                workoutType={workoutType}
+                                remove={() => removeWorkout(i)}
+                                updateSelectedWorkout={getUpdateWorkoutFunction(i)}
                             />
                         ))}
                         <IconButton

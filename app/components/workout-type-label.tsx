@@ -1,20 +1,20 @@
-// muscle-group-label.tsx
+// workout-type-label.tsx
 
-import { MuscleGroup } from '../types';
+import { WorkoutType } from '../types';
 import { Text, TouchableHighlight, View } from 'react-native';
 import { getMuscleGroupLabelColor } from '../muscle-group-helpers';
 
-type MuscleGroupLabelProps = {
-    muscleGroup: MuscleGroup,
+type WorkoutTypeLabelProps = {
+    workoutType: WorkoutType,
     onPress?: () => void,
     halfPill?: boolean,
 };
 
-export const MuscleGroupLabel = ({
-    muscleGroup,
+export const WorkoutTypeLabel = ({
+    workoutType,
     onPress,
-}: MuscleGroupLabelProps ) => {
-    const labelColor = getMuscleGroupLabelColor(muscleGroup);
+}: WorkoutTypeLabelProps ) => {
+    const labelColor = getMuscleGroupLabelColor(workoutType);
 
     return (
         <TouchableHighlight
@@ -30,7 +30,7 @@ export const MuscleGroupLabel = ({
             underlayColor={labelColor + '80'}
         >
             <Text style={{ fontFamily: 'Lato_700Bold', color: 'white', fontSize: 16 }}>
-                {muscleGroup.toUpperCase()}
+                {workoutType.toUpperCase()}
             </Text>
         </TouchableHighlight>
     )

@@ -1,7 +1,7 @@
 // check-button.tsx
 
-import React from 'react';
-import { Pressable, StyleProp, ViewStyle } from 'react-native';
+import React, { Fragment } from 'react';
+import { StyleProp, StyleSheet, TouchableHighlight, ViewStyle } from 'react-native';
 import { CheckIcon } from '../icons/check-icon';
 
 type CheckButtonProps = {
@@ -15,12 +15,15 @@ export const CheckButton = ({
     onPress,
     style
 }: CheckButtonProps) => {
+    const onPressColor = StyleSheet.flatten(style).backgroundColor?.toString();
     return (
-        <Pressable style={style} onPress={onPress}>
-            {
-                isChecked &&
-                <CheckIcon color='#3B463C' />
-            }
-        </Pressable>
+        <TouchableHighlight style={style} onPress={onPress} underlayColor={onPressColor && onPressColor + '80'}>
+            <Fragment>
+                {
+                    isChecked &&
+                    <CheckIcon color='#303730' />
+                }
+            </Fragment>
+        </TouchableHighlight>
     );
 }

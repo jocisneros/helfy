@@ -1,439 +1,290 @@
 // schedule-page.tsx
 
-import React, { useCallback, useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button} from 'react-native';
-import { SchedulePageNavigationProp, MuscleGroup, WorkoutSchedule } from '../types';
-import { MuscleGroupLabel } from '../components/muscle-group-label';
+import React, { Fragment, useCallback, useState } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, Button, TouchableHighlight} from 'react-native';
+import { SchedulePageNavigationProp, WorkoutType, WorkoutSchedule, UserSettings } from '../types';
+import { WorkoutTypeLabel } from '../components/workout-type-label';
 import { Picker } from '@react-native-picker/picker';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
-import { HelfyModal } from '../components/helfy-modal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { v4 as uuidv4 } from 'uuid';
+import { HelfyCommonModal } from '../components/helfy-common-modal';
 
-type WorkoutDaySetter = (muscleGroup: MuscleGroup) => void;
+type WorkoutDaySetter = (muscleGroup: WorkoutType) => void;
 
+function recommendedSchedule(frequency: number): WorkoutSchedule {
+    const emptySchedule: WorkoutSchedule = {
+        sunday: WorkoutType.None,
+        monday: WorkoutType.None,
+        tuesday: WorkoutType.None,
+        wednesday: WorkoutType.None,
+        thursday: WorkoutType.None,
+        friday: WorkoutType.None,
+        saturday: WorkoutType.None,
+    };
+
+    switch (frequency) {
+        case 1:
+            return {
+                ...emptySchedule,
+                wednesday: WorkoutType.FullBody
+            };
+        case 2:
+            return {
+                ...emptySchedule,
+                tuesday: WorkoutType.UpperBody,
+                thursday: WorkoutType.Legs,
+            };
+        case 3:
+            return {
+                ...emptySchedule,
+                monday: WorkoutType.Pull,
+                wednesday: WorkoutType.Push,
+                friday: WorkoutType.Legs,
+            }
+        case 4:
+            return {
+                ...emptySchedule,
+                monday: WorkoutType.Pull,
+                tuesday: WorkoutType.Push,
+                wednesday: WorkoutType.Legs,
+                friday: WorkoutType.FullBody,
+            }
+        case 5:
+            return {
+                ...emptySchedule,
+                monday: WorkoutType.Pull,
+                tuesday: WorkoutType.Push,
+                wednesday: WorkoutType.Legs,
+                friday: WorkoutType.UpperBody,
+                saturday: WorkoutType.Legs,
+            }
+        case 6:
+            return {
+                ...emptySchedule,
+                monday: WorkoutType.Pull,
+                tuesday: WorkoutType.Push,
+                wednesday: WorkoutType.Legs,
+                thursday: WorkoutType.Arms,
+                friday: WorkoutType.ChestAndBack,
+                saturday: WorkoutType.Legs,
+            }
+    }
+
+    return emptySchedule;
+}
+
+const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+const weekdayMap = {
+    'sunday': 0,
+    'monday': 1,
+    'tuesday': 2,
+    'wednesday': 3,
+    'thursday': 4,
+    'friday': 5,
+    'saturday': 6,
+};
+
+function sortWeekdays(weekdayA: string, weekdayB: string): number {
+    return weekdayMap[weekdayA as keyof typeof weekdayMap] - weekdayMap[weekdayB as keyof typeof weekdayMap];
+}
 
 export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) => {
     const { weight, height, age, sex } = route.params;
 
-    const [modalContents, setModalContents] = useState<React.ReactNode>(null)
-    const [workoutSchedule, setWorkoutSchedule] = useState("3 Days");
-    const[userWorkoutSchedule, setUserWorkoutSchedule] = useState<WorkoutSchedule>({
-        sunday: MuscleGroup.None,
-        monday: MuscleGroup.Pull,
-        tuesday: MuscleGroup.None,
-        wednesday: MuscleGroup.Push,
-        thursday: MuscleGroup.None,
-        friday: MuscleGroup.Legs,
-        saturday: MuscleGroup.None,
-    });
+    const [modalContents, setModalContents] = useState<React.ReactNode>(null);
+    const [workoutFrequency, setWorkoutFrequency] = useState(3);
+    const [workoutSchedule, setWorkoutSchedule] = useState<WorkoutSchedule>(recommendedSchedule(3));
 
-    const updateSchedule = useCallback((workoutDays: string) => {
-        setWorkoutSchedule(workoutDays)
-        if (workoutDays === '1 Day') {
-            setUserWorkoutSchedule({
-                sunday: MuscleGroup.None,
-                monday: MuscleGroup.None,
-                tuesday: MuscleGroup.None,
-                wednesday: MuscleGroup.FullBody,
-                thursday: MuscleGroup.None,
-                friday: MuscleGroup.None,
-                saturday: MuscleGroup.None,
-            });
-        }
-        if (workoutDays === '2 Days') {
-            setUserWorkoutSchedule({
-                sunday: MuscleGroup.None,
-                monday: MuscleGroup.None,
-                tuesday: MuscleGroup.UpperBody ,
-                wednesday: MuscleGroup.None,
-                thursday: MuscleGroup.Legs,
-                friday: MuscleGroup.None,
-                saturday: MuscleGroup.None,
-            });
-        }
-        if (workoutDays === '3 Days') {
-            setUserWorkoutSchedule({
-                sunday: MuscleGroup.None,
-                monday: MuscleGroup.Pull,
-                tuesday: MuscleGroup.None,
-                wednesday: MuscleGroup.Push,
-                thursday: MuscleGroup.None,
-                friday: MuscleGroup.Legs,
-                saturday: MuscleGroup.None,
-            });
-        }
-        if (workoutDays === '4 Days') {
-            setUserWorkoutSchedule({
-                sunday: MuscleGroup.None,
-                monday: MuscleGroup.Pull,
-                tuesday: MuscleGroup.Push,
-                wednesday: MuscleGroup.Legs,
-                thursday: MuscleGroup.None,
-                friday: MuscleGroup.FullBody,
-                saturday: MuscleGroup.None,
-            });
-        }
-        if (workoutDays === '5 Days') {
-            setUserWorkoutSchedule({
-                sunday: MuscleGroup.None,
-                monday: MuscleGroup.Pull,
-                tuesday: MuscleGroup.Push,
-                wednesday: MuscleGroup.Legs,
-                thursday: MuscleGroup.None,
-                friday: MuscleGroup.UpperBody ,
-                saturday: MuscleGroup.Legs,
-            });
-        }
-        if (workoutDays === '6 Days') {
-            setUserWorkoutSchedule({
-                sunday: MuscleGroup.None,
-                monday: MuscleGroup.Pull,
-                tuesday: MuscleGroup.Push,
-                wednesday: MuscleGroup.Legs,
-                thursday: MuscleGroup.Arms,
-                friday: MuscleGroup.ChestAndBack,
-                saturday: MuscleGroup.Legs,
-            });
-        }
-    }, [workoutSchedule])
+    const updateSchedule = useCallback((frequency: number) => {
+        setWorkoutFrequency(frequency);
+        setWorkoutSchedule( recommendedSchedule(frequency) );
+    }, []);
 
-    const saveUserInfo = useCallback(() => {
-        const fileUri = FileSystem.documentDirectory + 'data.txt';
-
-        let userInfo = {
+    const saveUserInfo = useCallback(async () => {
+        const userSettings: UserSettings = {
+            id: uuidv4(),
             weight: weight,
-            heightFeet: height.feet,
-            heightInches: height.inches,
-            age: age,
+            height: height,
             sex: sex,
-            UserWorkoutSchedule: userWorkoutSchedule
+            age: age,
+            workoutSchedule: workoutSchedule,
         };
-        
-        let userInfoStr = JSON.stringify(userInfo);
 
-        FileSystem.writeAsStringAsync(fileUri, userInfoStr, {
-            encoding: FileSystem.EncodingType.UTF8,
-        });
+        await AsyncStorage.setItem('userSettings', JSON.stringify(userSettings));
 
-        const UTI = 'public.text';
+        navigation.navigate('Home', userSettings);
+    }, [navigation, workoutSchedule])
 
-        Sharing.shareAsync(fileUri, {UTI}).catch((error) => {
-            console.log(error);
-        });
-
-        navigation.navigate('Home')
-    }, [navigation, userWorkoutSchedule])
-
-    const onMuscleGroupLabelPress = useCallback((muscleGroup: MuscleGroup, setWorkoutDay: WorkoutDaySetter) => {
+    const onMuscleGroupLabelPress = useCallback((setWorkoutDay: WorkoutDaySetter) => {
         setModalContents((
-            <View style={{
-                width: '80%',
-                height: '60%',
-                backgroundColor: '#445046',
-                borderRadius: 16,
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                overflow: 'hidden',
-            }}>
-                <View style={{
-                    width: '100%',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: '#3C443C',
-                    paddingVertical: 12,
-                }}>
-                    <Text style={{
-                        fontFamily: 'Lato_700Bold',
-                        fontSize: 20,
-                        color: '#CFCFCF',
-                    }}>{muscleGroup.toUpperCase()}</Text>
-                </View>
-                <View style={{
-                    height: '90%',
-                    justifyContent: 'space-evenly',
-                }}>
-                    <MuscleGroupLabel
-                        muscleGroup={MuscleGroup.Legs}
-                        onPress={() => setWorkoutDay(MuscleGroup.Legs)}
-                    />
-                    <MuscleGroupLabel
-                        muscleGroup={MuscleGroup.Arms}
-                        onPress={() => setWorkoutDay(MuscleGroup.Arms)}
-                    />
-                    <MuscleGroupLabel
-                        muscleGroup={MuscleGroup.ChestAndBack}
-                        onPress={() => setWorkoutDay(MuscleGroup.ChestAndBack)}
-                    />
-                    <MuscleGroupLabel
-                        muscleGroup={MuscleGroup.Push}
-                        onPress={() => setWorkoutDay(MuscleGroup.Push)}
-                    />
-                    <MuscleGroupLabel
-                        muscleGroup={MuscleGroup.Pull}
-                        onPress={() => setWorkoutDay(MuscleGroup.Pull)}
-                    />
-                    <MuscleGroupLabel
-                        muscleGroup={MuscleGroup.UpperBody}
-                        onPress={() => setWorkoutDay(MuscleGroup.UpperBody)}
-                    />
-                    <MuscleGroupLabel
-                        muscleGroup={MuscleGroup.FullBody}
-                        onPress={() => setWorkoutDay(MuscleGroup.FullBody)}
-                    />
-                    <MuscleGroupLabel
-                        muscleGroup={MuscleGroup.None}
-                        onPress={() => setWorkoutDay(MuscleGroup.None)}
-                    />
-                </View>
+            <View style={{ height: '100%', justifyContent: 'space-evenly' }}>
+                {
+                    Object.keys(WorkoutType).map(
+                        (key: string, i: number) => {
+                            const workoutType = WorkoutType[key as (keyof typeof WorkoutType)];
+                            return (
+                                <WorkoutTypeLabel
+                                    key={i}
+                                    workoutType={workoutType}
+                                    onPress={() => setWorkoutDay(workoutType)}
+                                />
+                            )
+                        }
+                    )
+                }
             </View>
         ));
     }, []);
 
     return (
-      <SafeAreaView style={styles.container}>
-        <HelfyModal
-            isVisible={modalContents !== null}
-            backdropColor='black'
-            backdropOpacity={0.5}
-            style={styles.modal}
-        >
-            {modalContents}
-        </HelfyModal>
-        <View style={styles.header}>
-            <Text style={styles.sectionTitle}>{workoutSchedule} Work Schedule</Text>
-        </View>
-        <View style={styles.body}>
-            <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>WORKOUTS</Text>
-            </View>
-            <View style={styles.picker}>
-                <View style={{flex:.2}}>
-                    <Text style={styles.text}>Workout Schedule:</Text>
-                    <Text style={styles.text}>{workoutSchedule}</Text>
+        <Fragment>
+            <HelfyCommonModal
+                title={'WORKOUT TYPE'}
+                headerColor={'#808080'}
+                height={'45%'}
+                isVisible={modalContents !== null}
+                onClose={() => setModalContents(null)}
+            >
+                {modalContents}
+            </HelfyCommonModal>
+            <SafeAreaView style={styles.container}>
+                <View style={styles.sectionLabel}>
+                    <Text style={styles.sectionTitle}>{'SCHEDULE'}</Text>
                 </View>
-                <View style={{flex:.4}}>
+                <View style={styles.frequencySelection}>
+                    <Text style={styles.text}>{'FREQUENCY : '}</Text>
                     <Picker
                         mode='dropdown'
-                        selectedValue={workoutSchedule}
+                        selectedValue={workoutFrequency}
+                        style={styles.picker}
                         onValueChange={(itemValue) => updateSchedule(itemValue)}
                     >
-                        <Picker.Item label='1 Day' value='1 Day' color='#CFCFCF' />
-                        <Picker.Item label='2 Days' value='2 Days' color='#CFCFCF' />
-                        <Picker.Item label='3 Days' value='3 Days' color='#CFCFCF' />
-                        <Picker.Item label='4 Days' value='4 Days' color='#CFCFCF' />
-                        <Picker.Item label='5 Days' value='5 Days' color='#CFCFCF' />
-                        <Picker.Item label='6 Days' value='6 Days' color='#CFCFCF' />
+                        {
+                            [...Array(7).keys()].slice(1).map(
+                                day => (
+                                    <Picker.Item
+                                        key={`picker-${day}`}
+                                        label={`${day} ${day > 1 ? 'DAYS' : 'DAY'}`}
+                                        value={day}
+                                        color='white'
+                                    />
+                                )
+                            )
+                        }
                     </Picker>
                 </View>
-            </View>
-            <View style={styles.label}>
-                <View style={{flex:.3}}>
-                    <Text style={styles.text}>Sunday:</Text>
+                <View style={styles.scheduleContainer}>
+                    {
+                        Object.entries(workoutSchedule).sort((a, b) => sortWeekdays(a[0], b[0])).map(
+                            ([dayString, workoutType], i) => (
+                                <View style={styles.weekdayRow} key={i}>
+                                    <Text style={[styles.text, { width: 110 }]}>{`${weekdays[i]}: `}</Text>
+                                    <View style={styles.labelContainer}>
+                                        <WorkoutTypeLabel
+                                            workoutType={workoutType}
+                                            onPress={() => onMuscleGroupLabelPress(
+                                                (workoutType: WorkoutType) => {
+                                                    setWorkoutSchedule(prevSchedule => {
+                                                        prevSchedule[dayString as keyof WorkoutSchedule] = workoutType;
+                                                        setModalContents(null);
+                                                        return prevSchedule;
+                                                    })
+                                                }
+                                            )}
+                                        />
+                                    </View>
+                                </View>
+                            )
+                        )
+                    }
                 </View>
-                <View style={{flex:.4}}>
-                    <MuscleGroupLabel
-                        muscleGroup={userWorkoutSchedule.sunday}
-                        onPress={() => onMuscleGroupLabelPress(userWorkoutSchedule.sunday, 
-                            (muscleGroup: MuscleGroup) => {
-                                setUserWorkoutSchedule(prevSchedule => ({...prevSchedule, sunday: muscleGroup}));
-                                setModalContents(null);
-                            }
-                        )}
-                    />
-                </View>
-            </View>
-            <View style={styles.label}>
-                <View style={{flex:.3}}>
-                    <Text style={styles.text}>Monday:</Text>
-                </View>
-                <View style={{flex:.4}}>
-                    <MuscleGroupLabel
-                        muscleGroup={userWorkoutSchedule.monday}
-                        onPress={() => onMuscleGroupLabelPress(userWorkoutSchedule.monday, 
-                            (muscleGroup: MuscleGroup) => {
-                                setUserWorkoutSchedule(prevSchedule => ({...prevSchedule, monday: muscleGroup}));
-                                setModalContents(null);
-                            }
-                        )}
-                    />
-                </View>
-            </View>
-            <View style={styles.label}>
-                <View style={{flex:.3}}>
-                    <Text style={styles.text}>Tuesday:</Text>
-                </View>
-                <View style={{flex:.4}}>
-                    <MuscleGroupLabel
-                        muscleGroup={userWorkoutSchedule.tuesday}
-                        onPress={() => onMuscleGroupLabelPress(userWorkoutSchedule.tuesday, 
-                            (muscleGroup: MuscleGroup) => {
-                                setUserWorkoutSchedule(prevSchedule => ({...prevSchedule, tuesday: muscleGroup}));
-                                setModalContents(null);
-                            }
-                        )}
-                    />
-                </View>
-            </View>
-            <View style={styles.label}>
-                <View style={{flex:.3}}>
-                    <Text style={styles.text}>Wednesday:</Text>
-                </View>
-                <View style={{flex:.4}}>
-                    <MuscleGroupLabel
-                        muscleGroup={userWorkoutSchedule.wednesday}
-                        onPress={() => onMuscleGroupLabelPress(userWorkoutSchedule.wednesday, 
-                            (muscleGroup: MuscleGroup) => {
-                                setUserWorkoutSchedule(prevSchedule => ({...prevSchedule, wednesday: muscleGroup}));
-                                setModalContents(null);
-                            }
-                        )}
-                    />
-                </View>
-            </View>
-            <View style={styles.label}>
-                <View style={{flex:.3}}>
-                    <Text style={styles.text}>Thursday:</Text>
-                </View>
-                <View style={{flex:.4}}>
-                    <MuscleGroupLabel
-                        muscleGroup={userWorkoutSchedule.thursday}
-                        onPress={() => onMuscleGroupLabelPress(userWorkoutSchedule.thursday, 
-                            (muscleGroup: MuscleGroup) => {
-                                setUserWorkoutSchedule(prevSchedule => ({...prevSchedule, thursday: muscleGroup}));
-                                setModalContents(null);
-                            }
-                        )}
-                    />
-                </View>
-            </View>
-            <View style={styles.label}>
-                <View style={{flex:.3}}>
-                    <Text style={styles.text}>Friday:</Text>
-                </View>
-                <View style={{flex:.4}}>
-                    <MuscleGroupLabel
-                        muscleGroup={userWorkoutSchedule.friday}
-                        onPress={() => onMuscleGroupLabelPress(userWorkoutSchedule.friday, 
-                            (muscleGroup: MuscleGroup) => {
-                                setUserWorkoutSchedule(prevSchedule => ({...prevSchedule, friday: muscleGroup}));
-                                setModalContents(null);
-                            }
-                        )}
-                    />
-                </View>
-            </View>
-            <View style={styles.label}>
-                <View style={{flex:.3}}>
-                    <Text style={styles.text}>Saturday:</Text>
-                </View>
-                <View style={{flex:.4}}>
-                    <MuscleGroupLabel
-                        muscleGroup={userWorkoutSchedule.saturday}
-                        onPress={() => onMuscleGroupLabelPress(userWorkoutSchedule.saturday, 
-                            (muscleGroup: MuscleGroup) => {
-                                setUserWorkoutSchedule(prevSchedule => ({...prevSchedule, saturday: muscleGroup}));
-                                setModalContents(null);
-                            }
-                        )}
-                    />
-                </View>
-            </View>
-        </View>
-        <View style={styles.footer}>
-          <Button
-            title='Home'
-            onPress={saveUserInfo}
-          />
-        </View>
-      </SafeAreaView>
+                <TouchableHighlight
+                    onPress={saveUserInfo}
+                    style={styles.saveButton}
+                    underlayColor={styles.saveButton.backgroundColor + '80'}
+                >
+                    <Text style={styles.sectionTitle}>{'SAVE'}</Text>
+                </TouchableHighlight>
+            </SafeAreaView>
+      </Fragment>
     );
 }
-  
+
 const styles = StyleSheet.create({
-    modal: {
-        alignItems: 'center',
+    picker: {
+        width: 130,
+        height: 110,
+        overflow: 'hidden',
         justifyContent: 'center',
     },
     container: {
-        flex: 1,
-        backgroundColor: '#2A302A',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: 'Lato_400Regular',
-    },
-    header: {
-        backgroundColor: '#3C443C',
-        width: '100%',
+        backgroundColor: '#303730',
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-evenly',
     },
-    body: {
-        backgroundColor: '#445046',
-        width: '95%',
-        flex: 7,
-        margin: 16,
-        marginBottom: 0,
+    sectionLabel: {
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 16,
-        overflow: 'hidden',
-    },
-    footer: {
-        backgroundColor: '#445046',
-        width: '95%',
-        flex: 0,
-        margin: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 16,
-        overflow: 'hidden',
-        padding: 15,
-    },
-    workoutList: {
-        display: 'flex',
-        width: '100%',
-        height: '75%',
-        alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-evenly',
+        backgroundColor: '#3B463C',
+        marginBottom: 20,
+        paddingHorizontal: 24,
+        borderRadius: 36,
+        height: 36,
     },
     sectionTitle: {
         fontFamily: 'Lato_700Bold',
         fontSize: 20,
-        color: '#CFCFCF',
+        color: 'white',
     },
-    sectionHeader: {
-        display: 'flex',
+    saveButton: {
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        backgroundColor: '#78CF81',
+        paddingHorizontal: 24,
+        borderRadius: 36,
+        height: 36,
+    },
+    frequencySelection: {
+        width: '85%',
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        position: 'absolute',
-        width: '100%',
-        backgroundColor: '#3C443C',
-        paddingHorizontal: 20,
-        paddingVertical: 6,
-        top: 0,
+        justifyContent: 'space-evenly',
+        backgroundColor: '#3B463C',
+        padding: 16,
+        borderTopRightRadius: 24,
+        borderBottomRightRadius: 12,
+        borderTopLeftRadius: 24,
+        borderBottomLeftRadius: 12,
     },
-    iconButton: {
-        width: 24,
-        height: 24,
+    scheduleContainer: {
+        height: '55%',
+        width: '85%',
+        backgroundColor: '#3B463C',
         alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 99,
+        justifyContent: 'space-evenly',
+        paddingHorizontal: 16,
+        borderTopRightRadius: 12,
+        borderBottomRightRadius: 24,
+        borderTopLeftRadius: 12,
+        borderBottomLeftRadius: 24,
+    },
+    weekdayRow: {
+        width: '85%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
     },
     text: {
-        color: '#CFCFCF',
+        color: 'white',
         fontFamily: 'Lato_700Bold',
+        fontSize: 18,
     },
-    picker: {
-        flexDirection: 'row',
+    labelContainer: {
+        width: 136,
         alignItems: 'center',
-        textAlign:'left',
-    },
-    label: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        textAlign:'left',
-        margin: 6,
-    },
-});
+
+    }
+})
