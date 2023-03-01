@@ -14,7 +14,7 @@ import { SelectedWorkoutListItem } from '../components/selected-workout-list-ite
 import { IconButton } from '../components/icon-button';
 import { addDays, format } from 'date-fns'
 import { Space } from '../components/space';
-import { getMuscleGroupDescription, getMuscleGroupLabelColor } from '../muscle-group-helpers';
+import { getWorkoutTypeColor, getWorkoutTypeDescription } from '../workout-type-helpers';
 import { Pedometer } from 'expo-sensors';
 import { HelfyCommonModal } from '../components/helfy-common-modal';
 
@@ -103,7 +103,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
             <HelfyCommonModal
                 isVisible={showModal}
                 title={workoutType.toUpperCase()}
-                headerColor={getMuscleGroupLabelColor(workoutType)}
+                headerColor={getWorkoutTypeColor(workoutType)}
                 onClose={() => setShowModal(false)}
             >
                 <View style={{...styles.modalContainer, height: '15%'}}>
@@ -111,7 +111,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                         fontFamily: 'Lato_400Regular',
                         fontSize: 16,
                         color: '#FFF',
-                    }}>{getMuscleGroupDescription(workoutType)}</Text>
+                    }}>{getWorkoutTypeDescription(workoutType)}</Text>
                 </View>
             </HelfyCommonModal>
             <SafeAreaView style={styles.header}>

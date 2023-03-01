@@ -14,7 +14,7 @@ Windows
 
 MacOS
 ```
-$ venv/bin
+$ cd venv/bin
 $ source activate
 ```
 

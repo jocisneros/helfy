@@ -1,12 +1,13 @@
 // start-page.tsx
 
-import { useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, ScrollView } from 'react-native';
+import { Fragment, useState } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, Button, ScrollView, TouchableHighlight, TextInput } from 'react-native';
 import { Height, StartPageNavigationProp } from '../types';
 import { Picker } from '@react-native-picker/picker';
+import { Space } from '../components/space';
 
 export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
-  const [weight, setWeight] = useState(100);
+  const [weight, setWeight] = useState<number>(100);
   const [height, setHeight] = useState<Height>({
     feet: 5,
     inches: 4,
@@ -15,165 +16,193 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
   const [sex, setSex] = useState("Female");
 
   return (
-    <ScrollView>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Welcome to Helfy </Text>
-          <Text style={styles.headerInfo}>Your Personal Gym Partner!</Text>
-          <Text style={styles.headerInfo}>Please Fill Out Information</Text>
+    <SafeAreaView style={styles.container}>
+        <Text style={[styles.sectionTitle, { fontSize: 36 }]}>{'helfy 🥭'}</Text>
+        <View style={styles.sectionLabel}>
+            <Text style={styles.sectionTitle}>{'your personal gym partner'}</Text>
         </View>
-        <View style={styles.body}>
-          <View style={styles.picker}>
-            <View style={{flex:.15}}>
-              <Text style={styles.text}>Weight:</Text>
-              <Text style={styles.text}>{weight} lbs.</Text>
+        <View style={styles.formContainer}>
+            {/* <Text style={styles.sectionTitle}>{'please input your information'}</Text> */}
+            <View style={styles.formRow}>
+                <Text style={styles.formLabelText}>{'weight: '}</Text>
+                <View style={styles.formInputContainer}>
+                    <TextInput
+                        returnKeyType='done'
+                        style={styles.textInput}
+                        keyboardType='numeric'
+                        onChangeText={(text) => {
+                            setWeight(parseFloat(text || '0'))
+                        }}
+                        value={weight ? weight.toString() : undefined}
+                        maxLength={4}
+                    />
+                    <Text style={styles.formDescriptorText}>{'lbs'}</Text>
+                </View>
             </View>
-            <View style={{flex:.3}}>
-              <Picker
-                mode='dropdown'
-                selectedValue={weight}
-                onValueChange={(itemValue) => setWeight(itemValue)}
-              >
-                {[...Array(301).keys()].map(n => (
-                  <Picker.Item label={n.toString()} value={n} color='#CFCFCF' key={n} />
-                ))}
-              </Picker>
+            <View style={styles.formRow}>
+                <Text style={styles.formLabelText}>{'height: '}</Text>
+                <View style={styles.formInputContainer}>
+                    <View style={styles.formSubField}>
+                        <Picker
+                            style={styles.picker}
+                            mode='dropdown'
+                            selectedValue={height.feet}
+                            onValueChange={(ft) => setHeight(prevHeight => ({...prevHeight, feet: ft}))}
+                            >
+                            {[...Array(8).keys()].slice(3).map(n => (
+                                <Picker.Item label={n.toString()} value={n} color='white' key={n} />
+                            ))}
+                        </Picker>
+                        <Text style={styles.formDescriptorText}>{'feet'}</Text>
+                    </View>
+                    <View style={styles.formSubField}>
+                        <Picker
+                            style={styles.picker}
+                            mode='dropdown'
+                            selectedValue={height.inches}
+                            onValueChange={(inch) => setHeight(prevHeight => ({...prevHeight, inches: inch}))}
+                        >
+                            {[...Array(12).keys()].map(n => (
+                                <Picker.Item label={n.toString()} value={n} color='white' key={n} />
+                            ))}
+                        </Picker>
+                        <Text style={styles.formDescriptorText}>{'inches'}</Text>
+                    </View>
+                </View>
             </View>
-          </View>
-          <View style={styles.picker}>
-            <View style={{flex:.2}}>
-              <Text style={styles.text}>Height:</Text>
-              <Text style={styles.text}>{height.feet} ft. {height.inches} in.</Text>
+            <View style={styles.formRow}>
+                <Text style={styles.formLabelText}>{'age: '}</Text>
+                <View style={styles.formInputContainer}>
+                    <Picker
+                        style={styles.picker}
+                        mode='dropdown'
+                        selectedValue={age}
+                        onValueChange={(itemValue) => setAge(itemValue)}
+                    >
+                        {[...Array(100).keys()].slice(16).map(n => (
+                        <Picker.Item label={n.toString()} value={n} color='white' key={n} />
+                        ))}
+                    </Picker>
+                    <Text style={styles.formDescriptorText}>{'years'}</Text>
+                </View>
             </View>
-            <View style={{flex:.3}}>
-              <Picker
-                  mode='dropdown'
-                  selectedValue={height.feet}
-                  onValueChange={(ft) => setHeight(prevHeight => ({...prevHeight, feet: ft}))}
-                >
-                  {[...Array(11).keys()].map(n => (
-                    <Picker.Item label={n.toString()} value={n} color='#CFCFCF' key={n} />
-                  ))}
-              </Picker>
+            <View style={styles.formRow}>
+                <Text style={styles.formLabelText}>{'sex: '}</Text>
+                <View style={styles.formInputContainer}>
+                    <Picker
+                        style={[styles.picker, { width: 130 }]}
+                        mode='dropdown'
+                        selectedValue={sex}
+                        onValueChange={(itemValue) => setSex(itemValue)}
+                    >
+                        <Picker.Item label='Female' value='Female' color='white' />
+                        <Picker.Item label='Male' value='Male' color='white' />
+                        <Picker.Item label='Other' value='Other' color='white' />
+                    </Picker>
+                </View>
             </View>
-            <View style={{flex:.3}}>
-              <Picker
-                  mode='dropdown'
-                  selectedValue={height.inches}
-                  onValueChange={(inch) => setHeight(prevHeight => ({...prevHeight, inches: inch}))}
-                >
-                  {[...Array(12).keys()].map(n => (
-                    <Picker.Item label={n.toString()} value={n} color='#CFCFCF' key={n} />
-                  ))}
-              </Picker>
-            </View>
-          </View>
-          <View style={styles.picker}>
-            <View style={{flex:.15}}>
-              <Text style={styles.text}>Age:</Text>
-              <Text style={styles.text}>{age} years</Text>
-            </View>
-            <View style={{flex:.3}}>
-              <Picker
-                mode='dropdown'
-                selectedValue={age}
-                onValueChange={(itemValue) => setAge(itemValue)}
-              >
-                {[...Array(100).keys()].map(n => (
-                  <Picker.Item label={n.toString()} value={n} color='#CFCFCF' key={n} />
-                ))}
-              </Picker>
-            </View>
-          </View>
-          <View style={styles.picker}>
-            <View style={{flex:.15}}>
-              <Text style={styles.text}>Sex:</Text>
-              <Text style={styles.text}>{sex}</Text>
-            </View>
-            <View style={{flex:.40}}>
-              <Picker
-                mode='dropdown'
-                selectedValue={sex}
-                onValueChange={(itemValue) => setSex(itemValue)}
-              >
-                <Picker.Item label='Female' value='Female' color='#CFCFCF' />
-                <Picker.Item label='Male' value='Male' color='#CFCFCF' />
-                <Picker.Item label='Other' value='Other' color='#CFCFCF' />
-              </Picker>
-            </View>
-          </View>
         </View>
-        <View style={styles.footer}>
-          <Button
-            title='Schedule Workout'
+        <TouchableHighlight
             onPress={() => navigation.navigate('Schedule', {
-              weight: weight,
-              height: height,
-              sex: sex,
-              age: age
-            })}
-          />
-        </View>
-      </SafeAreaView>
-    </ScrollView>
+                weight: weight,
+                height: height,
+                sex: sex,
+                age: age
+              })}
+            style={styles.nextButton}
+            underlayColor={styles.nextButton.backgroundColor + '80'}
+        >
+            <Text style={styles.sectionTitle}>{'NEXT'}</Text>
+        </TouchableHighlight>
+    </SafeAreaView>
   );
 }
-  
-const styles = StyleSheet.create({
+
+const styles =  StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: '#2A302A',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: 'Lato_400Regular',
+        backgroundColor: '#303730',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
     },
-    header: {
-      backgroundColor: '#3C443C',
-      width: '100%',
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
+    sectionLabel: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        backgroundColor: '#242424',
+        marginBottom: 20,
+        paddingHorizontal: 24,
+        borderRadius: 16,
+        paddingVertical: 12,
     },
-    title: {
-      fontWeight: 'bold',
-      fontSize: 20,
-      color: '#CFCFCF',
-      fontFamily: 'Lato_700Bold',
+    sectionTitle: {
+        fontFamily: 'Lato_700Bold',
+        fontSize: 20,
+        color: 'white',
     },
-    headerInfo: {
-      fontSize: 20,
-      color: '#CFCFCF',
-      fontFamily: 'Lato_400Regular',
+    formContainer: {
+        height: '70%',
+        width: '90%',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        backgroundColor: '#242424',
+        borderTopRightRadius: 12,
+        borderBottomRightRadius: 24,
+        borderTopLeftRadius: 12,
+        borderBottomLeftRadius: 24,
     },
-    body: {
-      backgroundColor: '#445046',
-      width: '95%',
-      flex: 7,
-      margin: 16,
-      marginBottom: 0,
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: 16,
-      overflow: 'hidden',
-    },
-    text: {
-      color: '#CFCFCF',
-      fontFamily: 'Lato_700Bold',
+    nextButton: {
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        backgroundColor: '#78CF81',
+        paddingHorizontal: 24,
+        borderRadius: 36,
+        height: 36,
     },
     picker: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      textAlign:'left',
+        width: 85,
+        height: 110,
+        overflow: 'hidden',
+        justifyContent: 'center',
     },
-    footer: {
-      backgroundColor: '#445046',
-      width: '95%',
-      flex: 1,
-      margin: 10,
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: 16,
-      overflow: 'hidden',
-      padding: 15,
+    textInput: {
+        textAlign: 'center',
+        fontSize: 20,
+        color: '#CCCCCC',
+        backgroundColor: '#FFFFFF0B',
+        width: 85,
+        paddingHorizontal: 18,
+        paddingVertical: 14,
+        borderRadius: 12,
+        marginHorizontal: 8,
+    },
+    formRow: {
+        width: '90%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-evenly'
+    },
+    formLabelText: {
+        fontFamily: 'Lato_700Bold',
+        fontSize: 18,
+        color: 'white',
+        textAlign: 'right',
+        flex: 0.75,
+    },
+    formDescriptorText: {
+        fontFamily: 'Lato_700Bold',
+        fontSize: 16,
+        color: 'white',
+    },
+    formSubField: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    formInputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 2,
     }
 });

@@ -2,7 +2,7 @@
 
 import { WorkoutType } from '../types';
 import { Text, TouchableHighlight, View } from 'react-native';
-import { getMuscleGroupLabelColor } from '../muscle-group-helpers';
+import { getWorkoutTypeColor } from '../workout-type-helpers';
 
 type WorkoutTypeLabelProps = {
     workoutType: WorkoutType,
@@ -14,7 +14,7 @@ export const WorkoutTypeLabel = ({
     workoutType,
     onPress,
 }: WorkoutTypeLabelProps ) => {
-    const labelColor = getMuscleGroupLabelColor(workoutType);
+    const labelColor = getWorkoutTypeColor(workoutType);
 
     return (
         <TouchableHighlight

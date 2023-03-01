@@ -14,7 +14,7 @@ import { CheckButton } from './check-button';
 import { IconButton } from './icon-button';
 import { Picker } from '@react-native-picker/picker';
 import { WorkoutLabel } from './workout-label';
-import { getMuscleGroupLabelColor } from '../muscle-group-helpers';
+import { getWorkoutTypeColor } from '../workout-type-helpers';
 import { Space } from './space';
 import { HelfyCommonModal } from './helfy-common-modal';
 
@@ -215,7 +215,7 @@ export const SelectedWorkoutListItem = ({
             <HelfyCommonModal
                 isVisible={modalContents !== null}
                 title={selectedWorkout.name.toUpperCase()}
-                headerColor={getMuscleGroupLabelColor(workoutType)}
+                headerColor={getWorkoutTypeColor(workoutType)}
                 height={modalHeight}
                 onClose={() => setModalType(ModalType.None)}
             >
