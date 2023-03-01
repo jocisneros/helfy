@@ -59,7 +59,7 @@ export default function App() {
       initialPage = 'Start';
       break;
     case HelfyEntryStatus.ReturningUser:
-      // CHANGE TO 'Home' WHEN NOT TESTING ELSE 'Start'
+      // Use 'Start' to Test, otherwise 'Home'
       initialPage = 'Home';
       break;
     case HelfyEntryStatus.Loading:
@@ -67,19 +67,11 @@ export default function App() {
     default:
       return null;
   }
-
-  console.log(userSettings);
-  for (let i = 0; i < 100; i++) {
-    const uuidTemp = uuidv4()
-    if (uuidTemp.length !== 36) {
-      console.log('NOT 36', uuidTemp.length)
-    }
-  }
   
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={initialPage} screenOptions={{
-        gestureEnabled: false,
+        // gestureEnabled: false,
         headerShown: false
       }}>
         <Stack.Screen name="Start" component={StartPage} />

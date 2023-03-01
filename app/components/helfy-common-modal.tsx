@@ -3,6 +3,7 @@
 import { Keyboard, StyleSheet, Text, TouchableHighlight, TouchableWithoutFeedback, View } from 'react-native';
 import Modal, { ModalProps } from 'react-native-modal';
 import { CloseIcon } from '../icons/close-icon';
+import { HelfyColorPalette } from '../theme';
 import { IconButton } from './icon-button';
 
 
@@ -81,7 +82,7 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         width: '80%',
-        backgroundColor: '#242424',
+        backgroundColor: HelfyColorPalette.primary0,
         borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'center',

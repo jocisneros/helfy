@@ -1,10 +1,10 @@
 // start-page.tsx
 
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, ScrollView, TouchableHighlight, TextInput } from 'react-native';
 import { Height, StartPageNavigationProp } from '../types';
 import { Picker } from '@react-native-picker/picker';
-import { Space } from '../components/space';
+import { HelfyColorPalette } from '../theme';
 
 export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
   const [weight, setWeight] = useState<number>(100);
@@ -120,7 +120,7 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
 
 const styles =  StyleSheet.create({
     container: {
-        backgroundColor: '#303730',
+        backgroundColor: HelfyColorPalette.primary0,
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-evenly',
@@ -129,7 +129,7 @@ const styles =  StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        backgroundColor: '#242424',
+        backgroundColor: HelfyColorPalette.primary1,
         marginBottom: 20,
         paddingHorizontal: 24,
         borderRadius: 16,
@@ -145,7 +145,7 @@ const styles =  StyleSheet.create({
         width: '90%',
         justifyContent: 'space-evenly',
         alignItems: 'center',
-        backgroundColor: '#242424',
+        backgroundColor: HelfyColorPalette.primary1,
         borderTopRightRadius: 12,
         borderBottomRightRadius: 24,
         borderTopLeftRadius: 12,
@@ -154,7 +154,7 @@ const styles =  StyleSheet.create({
     nextButton: {
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        backgroundColor: '#78CF81',
+        backgroundColor: HelfyColorPalette.primary1,
         paddingHorizontal: 24,
         borderRadius: 36,
         height: 36,

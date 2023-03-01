@@ -8,6 +8,7 @@ import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { v4 as uuidv4 } from 'uuid';
 import { HelfyCommonModal } from '../components/helfy-common-modal';
+import { HelfyColorPalette } from '../theme';
 
 type WorkoutDaySetter = (muscleGroup: WorkoutType) => void;
 
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     container: {
-        backgroundColor: '#303730',
+        backgroundColor: HelfyColorPalette.primary0,
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-evenly',
@@ -228,7 +229,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        backgroundColor: '#242424',
+        backgroundColor: HelfyColorPalette.primary1,
         marginBottom: 20,
         paddingHorizontal: 24,
         borderRadius: 36,
@@ -242,7 +243,7 @@ const styles = StyleSheet.create({
     saveButton: {
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        backgroundColor: '#78CF81',
+        backgroundColor: HelfyColorPalette.primary1,
         paddingHorizontal: 24,
         borderRadius: 36,
         height: 36,
@@ -252,7 +253,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        backgroundColor: '#242424',
+        backgroundColor: HelfyColorPalette.primary1,
         padding: 16,
         borderTopRightRadius: 24,
         borderBottomRightRadius: 12,
@@ -262,7 +263,7 @@ const styles = StyleSheet.create({
     scheduleContainer: {
         height: '55%',
         width: '85%',
-        backgroundColor: '#242424',
+        backgroundColor: HelfyColorPalette.primary1,
         alignItems: 'center',
         justifyContent: 'space-evenly',
         paddingHorizontal: 16,

@@ -4,6 +4,7 @@ import { Fragment } from 'react';
 import { StyleSheet, Text, View, Button, TouchableHighlight, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { HelfyCommonModal } from '../components/helfy-common-modal';
+import { HelfyColorPalette } from '../theme';
 import { WorkoutSelectionPageNavigationProp } from '../types';
 
 export const WorkoutSelectionPage = ({ route, navigation }: WorkoutSelectionPageNavigationProp) => {
@@ -32,7 +33,7 @@ export const WorkoutSelectionPage = ({ route, navigation }: WorkoutSelectionPage
 }
 const styles = StyleSheet.create({
 	container: {
-        backgroundColor: '#303730',
+        backgroundColor: HelfyColorPalette.primary0,
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-evenly',
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
 	backButton: {
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        backgroundColor: '#888888',
+        backgroundColor: HelfyColorPalette.primary1,
         paddingHorizontal: 24,
         borderRadius: 36,
         height: 36,
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        backgroundColor: '#3B463C',
+        backgroundColor: HelfyColorPalette.primary1,
         marginBottom: 20,
         paddingHorizontal: 24,
         borderRadius: 36,

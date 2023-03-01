@@ -17,6 +17,7 @@ import { Space } from '../components/space';
 import { getWorkoutTypeColor, getWorkoutTypeDescription } from '../workout-type-helpers';
 import { Pedometer } from 'expo-sensors';
 import { HelfyCommonModal } from '../components/helfy-common-modal';
+import { HelfyColorPalette } from '../theme';
 
 
 export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
@@ -57,9 +58,13 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
         setIsPedometerAvailable(isAvailable);
 
         if (isAvailable) {
-            // Change from previous day to start of day
-            const start = addDays(date, -1);
-            const stepCount = await Pedometer.getStepCountAsync(start, date);
+            const start = new Date(date);
+            start.setHours(0, 0, 0, 0);
+
+            const end = new Date(date);
+            end.setHours(23, 59, 59, 99);
+
+            const stepCount = await Pedometer.getStepCountAsync(start, end);
             setTodaysStepCount(stepCount ? stepCount.steps : 0);
         }
     }, [date]);
@@ -105,8 +110,9 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                 title={workoutType.toUpperCase()}
                 headerColor={getWorkoutTypeColor(workoutType)}
                 onClose={() => setShowModal(false)}
+                height={'15%'}
             >
-                <View style={{...styles.modalContainer, height: '15%'}}>
+                <View style={styles.modalContainer}>
                     <Text style={{
                         fontFamily: 'Lato_400Regular',
                         fontSize: 16,
@@ -167,12 +173,15 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                         />
                     </View>
                 </View>
-                <View style={styles.steps}>
-                    <View style={styles.sectionLabel}>
-                        <Text style={styles.sectionTitle}>STEPS</Text>
+                {
+                    isPedometerAvailable &&
+                    <View style={styles.steps}>
+                        <View style={styles.sectionLabel}>
+                            <Text style={styles.sectionTitle}>STEPS</Text>
+                        </View>
+                        <Text style={styles.sectionTitle}>{todaysStepCount}</Text>
                     </View>
-                    <Text style={styles.sectionTitle}>{todaysStepCount}</Text>
-                </View>
+                }
             </SafeAreaView>
       </Fragment>
     );
@@ -181,7 +190,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
 
 const styles = StyleSheet.create({
     header: {
-        backgroundColor: '#3B463C',
+        backgroundColor: HelfyColorPalette.primary1,
         width: '100%',
         flex: 0,
         alignItems: 'center',
@@ -205,26 +214,25 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: 18,
         height: 26,
-        backgroundColor: '#303730',
+        backgroundColor: HelfyColorPalette.primary2,
         borderTopLeftRadius: 24,
         borderBottomLeftRadius: 24,
         borderTopRightRadius: 12,
         borderBottomRightRadius: 12,
     },
     modalContainer: {
-        width: '80%',
-        backgroundColor: '#242424',
+        height: '100%',
+        width: '100%',
         borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        overflow: 'hidden',
     },
     chevronRight: {
         alignItems: 'center',
         justifyContent: 'center',
         width: 18,
         height: 26,
-        backgroundColor: '#303730',
+        backgroundColor: HelfyColorPalette.primary2,
         borderTopRightRadius: 24,
         borderBottomRightRadius: 24,
         borderTopLeftRadius: 12,
@@ -238,11 +246,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         height: 36,
         borderRadius: 12,
-        backgroundColor: '#303730',
+        backgroundColor: HelfyColorPalette.primary2,
         marginHorizontal: 12,
     },
     content: {
-        backgroundColor: '#303730',
+        backgroundColor: HelfyColorPalette.primary0,
         flex: 7,
         alignItems: 'center',
         justifyContent: 'center',
@@ -251,7 +259,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        backgroundColor: '#3B463C',
+        backgroundColor: HelfyColorPalette.primary1,
         marginBottom: 20,
         paddingHorizontal: 24,
         borderRadius: 36,
