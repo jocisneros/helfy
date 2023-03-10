@@ -60,7 +60,7 @@ def getWorkoutRecommendation():
     # print(workoutInfo)
     # jsonWorkoutInfo = json.dumps(workoutInfo)
     # return jsonWorkoutInfo
-    return {}
+    return {"ret":"Not Implemented"}
 
 @app.route("/completedworkout", methods=['POST'])
 def postCompletedWorkout():

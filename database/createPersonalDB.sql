@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     height INT NOT NULL,
     weight INT NOT NULL,
     gender VARCHAR(100) NOT NULL,
+	experience INT NOT NULL,
     PRIMARY KEY (id)
 );
 

@@ -113,7 +113,28 @@ def insertWorkout(userId: str, date:str, workoutType:str, exercises:dict):
         connection.close()
     
     return True
-            
+
+def getExercisesByWorkoutType(userId:str, workoutType:str):
+
+    try:
+        connection = mysql.connector.connect(**EXERCISEDBCONFIG)
+        cursor = connection.cursor()
+        
+        # Query?
+        # workout Type -> workoutId -> muscle ID -> exerciseID -> Exercise INFO
+        #                                   v
+        #                               Muscle Info
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Username/Password Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database Error")
+        else:
+            print(err)
+        return False
+    else:
+        connection.close()   
 
 if __name__ == "__main__":
     workoutInfo = getWorkoutInfo(1, "2023-01-01")
