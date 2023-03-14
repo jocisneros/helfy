@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { v4 as uuidv4 } from 'uuid';
 import { HelfyCommonModal } from '../components/helfy-common-modal';
 import { HelfyColorPalette } from '../theme';
+import { HelfyHttpClient } from '../helfy-http-client';
 
 type WorkoutDaySetter = (muscleGroup: WorkoutType) => void;
 
@@ -113,6 +114,10 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
         };
 
         await AsyncStorage.setItem('userSettings', JSON.stringify(userSettings));
+
+        const response = await HelfyHttpClient.postUser({ ...userSettings });
+
+        console.log(response)
 
         navigation.navigate('Home', userSettings);
     }, [navigation, workoutSchedule])
