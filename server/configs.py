@@ -11,6 +11,6 @@ EXERCISEDBCONFIG = {
   'user': 'mytestuser',
   'password': 'My6$Password',
   'host': '127.0.0.1',
-  'database': 'personaldb',
+  'database': 'exercisedb',
   'raise_on_warnings': True
 }

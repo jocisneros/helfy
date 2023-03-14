@@ -133,8 +133,8 @@ def insertWorkout(userId: str, date:str, workoutType:str, exercises:dict):
     
     return True
 
-def getExercisesByWorkoutType(userId:str, workoutType:str):
-
+def getExercisesByWorkoutType(workoutType:str):
+    exercises = {}
     try:
         connection = mysql.connector.connect(**EXERCISEDBCONFIG)
         cursor = connection.cursor()
@@ -143,6 +143,18 @@ def getExercisesByWorkoutType(userId:str, workoutType:str):
         # workout Type -> workoutId -> muscle ID -> exerciseID -> Exercise INFO
         #                                   v
         #                               Muscle Info
+        query = ("SELECT e.id, e.name, e.difficulty, e.tips, e.link, me.muscleID FROM workout_types as w, "
+                "muscles_in_workout_types as mw, muscle_groups_in_exercises as me, exercises as e "
+                "WHERE e.id = me.exerciseID AND me.muscleID = mw.muscleID AND mw.workoutTypeID = w.id AND w.name = %s;")
+        
+        cursor.execute(query, (workoutType.lower(),))
+
+        for (eid, name, difficulty, tips, link, muscle) in cursor:
+            if eid not in exercises.keys():
+                exercises[eid] = {'name':name,'difficulty':difficulty, 'tips':tips, 'link':link, 'muscles':[muscle] }
+            else:
+                exercises[eid]['muscles'].append(muscle)
+
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -153,8 +165,9 @@ def getExercisesByWorkoutType(userId:str, workoutType:str):
             print(err)
         return False
     else:
-        connection.close()   
+        connection.close()
+
+    return exercises
 
 if __name__ == "__main__":
-    workoutInfo = getWorkoutInfo(1, "2023-01-01")
-    print(workoutInfo)
+   print(len(getExercisesByWorkoutType('PUSH')))

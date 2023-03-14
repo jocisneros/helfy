@@ -1,6 +1,7 @@
 from flask import Flask, request
 import json
 from connection import getUserById, getWorkoutInfo, insertWorkout, addUserInfo
+from recommender import get_workout_rec
 
 app = Flask(__name__)
 
@@ -37,7 +38,7 @@ def addUser():
 
 @app.route("/workouthistory", methods=['GET'])
 def getWorkoutInfoByDate():
-    args = request.args
+    args = request.argsgit 
     userId = args["id"]
     date = args["date"]
     workoutInfo = getWorkoutInfo(userId, date)
@@ -45,40 +46,17 @@ def getWorkoutInfoByDate():
     jsonWorkoutInfo = json.dumps(workoutInfo)
     return jsonWorkoutInfo
 
-#  *Format*:
-#     {
-#    "workoutId":1,
-#    "workoutDate":"2023-01-01",
-#    "workoutType":1,
-#    "exercises":{
-#       "1":{
-#          "exerciseId":1,
-#          "exerciseName":"Bench Press",
-#          "exerciseSets":3,
-#          "exerciseRepetitions":8,
-#          "exerciseWeight":30,
-#          "exerciseTime":0
-#       },
-#       "2":{
-#          "exerciseId":2,
-#          "exerciseName":"Chest Press",
-#          "exerciseSets":3,
-#          "exerciseRepetitions":8,
-#          "exerciseWeight":30,
-#          "exerciseTime":0
-#       }
-#    }
-
 @app.route("/workoutrec", methods=['GET'])
 def getWorkoutRecommendation():
     args = request.args
     userId = args["id"]
     workoutType = args["type"]
+    exercises = get_workout_rec(userId, workoutType)
     # workoutInfo = getWorkoutInfo(userId, date)
     # print(workoutInfo)
     # jsonWorkoutInfo = json.dumps(workoutInfo)
     # return jsonWorkoutInfo
-    return {"ret":"Not Implemented"}
+    return json.dumps(exercises)
 
 @app.route("/completedworkout", methods=['POST'])
 def postCompletedWorkout():
@@ -96,23 +74,6 @@ def postCompletedWorkout():
         return {'success': False}
     
     return {'success': True}
-
-# *Format for exercises*
-#     {
-#    "1 (exercise ID)":{
-#       "sets":"3",
-#       "reps":"8",
-#       "weight":"30",
-#       "lengthOfTime":"0",
-#       "exerciseName":"Bench Press"
-#    },
-#    "2":{
-#       "sets":"4",
-#       "reps":"10",
-#       "weight":"25",
-#       "lengthOfTime":"0",
-#       "exerciseName":"Chest Press"
-#    }
 
 
 if __name__ == '__main__':
