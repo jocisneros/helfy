@@ -91,7 +91,7 @@ function sortWeekdays(weekdayA: string, weekdayB: string): number {
 }
 
 export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) => {
-    const { weight, height, age, sex } = route.params;
+    const { weight, height, experienceLevel, sex } = route.params;
 
     const [modalContents, setModalContents] = useState<React.ReactNode>(null);
     const [workoutFrequency, setWorkoutFrequency] = useState(3);
@@ -108,7 +108,7 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
             weight: weight,
             height: height,
             sex: sex,
-            age: age,
+            experienceLevel: experienceLevel,
             workoutSchedule: workoutSchedule,
         };
 

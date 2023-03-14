@@ -1,7 +1,7 @@
 // helfy-http-client.ts
 
 import axios from 'axios';
-import { CompletedWorkout, Workout, WorkoutData, WorkoutType } from './types';
+import { CompletedWorkout, UserData, Workout, WorkoutData, WorkoutType } from './types';
 
 function waitFor(timeMS: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, timeMS));
@@ -9,6 +9,12 @@ function waitFor(timeMS: number): Promise<void> {
 
 const BASE_URL = '';
 export class HelfyHttpClient {
+    // Convert User Height to inches
+    static async postNewUser(user: UserData): Promise<void> {
+        await waitFor(1000);
+        return;
+    }
+    
     static async getWorkoutHistory(id: string, date: Date): Promise<WorkoutData> {
         await waitFor(1000);
         return {} as WorkoutData;

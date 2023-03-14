@@ -13,6 +13,12 @@ export type Workout = {
     muscleGroup?: string,
 };
 
+export enum ExperienceLevel {
+    Beginner = 0,
+    Intermediate = 1,
+    Advanced = 2,
+};
+
 export enum WorkoutType {
     Legs = 'Legs',
     Arms = 'Arms',
@@ -55,10 +61,10 @@ export type WorkoutSchedule = {
 
 export type UserSettings = {
     id: string,
-    weight: number,
     height: Height,
-    age: number,
+    weight: number,
     sex: string,
+    experienceLevel: ExperienceLevel,
     workoutSchedule: WorkoutSchedule,
 };
 
@@ -100,6 +106,8 @@ export type WorkoutSelectionPageNavigationProp = NativeStackScreenProps<
 >;
 
 // HTTP Client Types
+
+export type UserData = Omit<UserSettings, 'workoutSchedule'>;
 
 export type WorkoutData = {
     id: number,

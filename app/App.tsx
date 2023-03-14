@@ -11,7 +11,6 @@ import { useFonts, Lato_400Regular, Lato_700Bold } from '@expo-google-fonts/lato
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -60,7 +59,7 @@ export default function App() {
       break;
     case HelfyEntryStatus.ReturningUser:
       // Use 'Start' to Test, otherwise 'Home'
-      initialPage = 'Home';
+      initialPage = 'Start';
       break;
     case HelfyEntryStatus.Loading:
     case HelfyEntryStatus.Loaded:
