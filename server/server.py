@@ -27,7 +27,7 @@ def addUser():
     experienceLevel = args["experienceLevel"]
     print(args)
 
-    success = addUserInfo(userId, height, weight, gender, experience)
+    success = addUserInfo(userId, height, weight, sex, experienceLevel)
 
     if not success:
         return {'success': False}
@@ -41,7 +41,7 @@ def getWorkoutInfoByDate():
     userId = args["id"]
     date = args["date"]
     workoutInfo = getWorkoutInfo(userId, date)
-    print(workoutInfo)
+    # print(workoutInfo)
     jsonWorkoutInfo = json.dumps(workoutInfo)
     return jsonWorkoutInfo
 
@@ -89,7 +89,7 @@ def postCompletedWorkout():
     workoutType = request.form['type']
     exercises = json.loads(request.form['exercises'])
 
-    print(exercises)
+    # print(exercises)
     
     success = insertWorkout(userId, date, workoutType, exercises)
     if not success:
