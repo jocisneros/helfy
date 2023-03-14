@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS exercise_history (
 	weight INT NOT NULL,
 	lengthOfTime INT NOT NULL,
     exerciseName VARCHAR(100) NOT NULL,
+	rating INT NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (usersID) REFERENCES users(id),
 	FOREIGN KEY (workoutID) REFERENCES workout_history(id)
