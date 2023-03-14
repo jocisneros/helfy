@@ -17,6 +17,19 @@ def sendUserbyId():
 
     return jsonUserInfo
 
+@app.route("/adduser", methods=['POST'])
+def addUser():
+    args = request.args
+    userId = args["id"]
+    heightId = args["height"]
+    weight = args["weight"]
+    genderId = args["gender"]
+    experienceId = args["experience"]
+
+    print(args)
+    return 'success'
+
+
 @app.route("/workouthistory", methods=['GET'])
 def getWorkoutInfoByDate():
     args = request.args
