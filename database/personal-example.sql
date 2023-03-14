@@ -19,12 +19,11 @@ INSERT INTO users (id, height, weight, gender, experience) VALUES('abc8', 51, 95
 INSERT INTO users (id, height, weight, gender, experience) VALUES('abc9', 78, 185, 'male', 2);
 
 # workout_history (usersID, workoutDate, workoutType)
-INSERT INTO workout_history VALUES (1, 'abc1', '2023-01-01', 7);
-INSERT INTO workout_history VALUES (2, 'abc2', '2023-01-02', 7);
-INSERT INTO workout_history VALUES (3, 'abc3', '2023-01-03', 7);
-INSERT INTO workout_history VALUES (4, 'abc4', '2023-01-04', 7);
-INSERT INTO workout_history VALUES (5, 'abc5', '2023-01-05', 7);
-
+INSERT INTO workout_history (id, usersID, workoutDate, workoutType) VALUES (1, 'abc1', '2023-01-01', 7);
+INSERT INTO workout_history (id, usersID, workoutDate, workoutType) VALUES (2, 'abc2', '2023-01-02', 7);
+INSERT INTO workout_history (id, usersID, workoutDate, workoutType) VALUES (3, 'abc3', '2023-01-03', 7);
+INSERT INTO workout_history (id, usersID, workoutDate, workoutType) VALUES (4, 'abc4', '2023-01-04', 7);
+INSERT INTO workout_history (id, usersID, workoutDate, workoutType) VALUES (5, 'abc5', '2023-01-05', 7);
 
 # exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, lengthOfTime, exerciseName, rating);
 # for examples: choose 6 beginner exercises and add 4 of the 6 to each workout;
