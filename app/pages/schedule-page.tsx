@@ -115,10 +115,8 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
 
         await AsyncStorage.setItem('userSettings', JSON.stringify(userSettings));
 
-        const response = await HelfyHttpClient.postUser({ ...userSettings });
-
-        console.log(response)
-
+        await HelfyHttpClient.postUser({ ...userSettings });
+        
         navigation.navigate('Home', userSettings);
     }, [navigation, workoutSchedule])
 

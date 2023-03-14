@@ -11,16 +11,19 @@ function waitFor(timeMS: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, timeMS));
 }
 
-const BASE_URL = `https://${manifest!.debuggerHost!.split(':').shift()}:8888`;
-
-// const BASE_URL = `http://11.20.17.135:8888`;
+const BASE_URL = `http://${manifest!.debuggerHost!.split(':').shift()}:8888`;
 
 export class HelfyHttpClient {
-    // Convert User Height to inches
+
     static async postUser(user: UserData): Promise<void> {
-        console.log("CALLING POST USER REQUEST", BASE_URL);
-        const response = await axios.post(BASE_URL + '/adduser');
-        console.log(response);
+        const userForm = new FormData();
+        userForm.append('id', user.id)
+        userForm.append('height', user.height.feet * 12 + user.height.inches + '')
+        userForm.append('weight', user.weight + '')
+        userForm.append('sex', user.sex)
+        userForm.append('experienceLevel', user.experienceLevel + '')
+
+        const response = await axios.post(BASE_URL + '/adduser', userForm);
         return;
     }
 
