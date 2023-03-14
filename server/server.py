@@ -19,13 +19,12 @@ def sendUserbyId():
 
 @app.route("/adduser", methods=['POST'])
 def addUser():
-    print("REQUEST RECEIEVED")
     args = request.form
     userId = args["id"]
     height = args["height"]
     weight = args["weight"]
-    gender = args["gender"]
-    experience = args["experience"]
+    sex = args["sex"]
+    experienceLevel = args["experienceLevel"]
     print(args)
 
     # success = addUserInfo(userId, height, weight, gender, experience)
@@ -113,4 +112,4 @@ def postCompletedWorkout():
 
 
 if __name__ == '__main__':
-    app.run(host="127.0.0.1", port=8888, debug=True)
+    app.run(host='0.0.0.0', port=8888, debug=True)
