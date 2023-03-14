@@ -27,12 +27,10 @@ def addUser():
     experience = args["experience"]
     print(args)
 
-    # success = addUserInfo(userId, height, weight, gender, experience)
+    success = addUserInfo(userId, height, weight, gender, experience)
 
-    # if not success:
-    #     return {'fail'}
-
-    
+    if not success:
+        return {'success': False}
     return {'success': True}
 
 

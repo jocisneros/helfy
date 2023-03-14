@@ -36,6 +36,31 @@ def getUserById(userId: str):
     
     return users
 
+def addUserInfo(userId:str, height:str, weight:str, gender:str, experience:str):
+    try:
+        connection = mysql.connector.connect(**PERSONALDBCONFIG)
+        cursor = connection.cursor()
+
+        # insert user
+        inserUserQuery = ("INSERT INTO users (id, height, weight, gender, experience) VALUES (%s, %s, %s, %s, %s) AS val"
+                        " ON DUPLICATE KEY UPDATE height = val.height, weight = val.weight, gender = val.gender,"
+                        " experience = val.experience")
+        cursor.execute(inserUserQuery, (userId, height, weight, gender, experience))
+        connection.commit()
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Username/Password Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database Error")
+        else:
+            print(err)
+        return False
+    else:
+        connection.close()
+    
+    return True
+
 def getWorkoutInfo(userId: str, date:str):
     workoutInfo = {}
     exercises = {}
