@@ -1,6 +1,6 @@
 from flask import Flask, request
 import json
-from connection import getUserById, getWorkoutInfo, insertWorkout, addUserInfo
+from connection import getUserById, getWorkoutInfo, insertWorkout
 
 app = Flask(__name__)
 
