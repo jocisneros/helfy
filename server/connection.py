@@ -62,13 +62,12 @@ def addUserInfo(userId:str, height:str, weight:str, gender:str, experience:str):
     return True
 
 def getWorkoutInfo(userId: str, date:str):
-    workoutInfo = {}
-    exercises = {}
+    exercises = []
     try:
         connection = mysql.connector.connect(**PERSONALDBCONFIG)
 
         cursor = connection.cursor()
-        query = ("SELECT * FROM workout_history as wh, exercise_history as eh " 
+        query = ("SELECT eh.exerciseID, eh.sets, eh.reps, eh.weight, eh.exerciseName, eh.rating FROM workout_history as wh, exercise_history as eh " 
                 "WHERE wh.usersID = %s AND eh.usersID = %s AND wh.workoutDate = %s "
                 "AND wh.id = eh.workoutID;")
         # query = ("SELECT * FROM users")
@@ -76,22 +75,17 @@ def getWorkoutInfo(userId: str, date:str):
         cursor.execute(query, (userId, userId, date))
         # cursor.execute(query)
         
-        for (wid, uid, d, workoutType, eid, uid2, exerciseId, wid2, sets, reps, weight, time, exerciseName) in cursor:
-            workoutInfo["workoutId"] = wid
-            workoutInfo["workoutDate"] = d.strftime("%Y-%m-%d")
-            workoutInfo["workoutType"] = workoutType
+        for (eid, sets, reps, weight, name, rating) in cursor:
 
             exerciseInfo = {}
-            exerciseInfo["exerciseId"] = exerciseId
-            exerciseInfo["exerciseName"] = exerciseName
-            exerciseInfo["exerciseSets"] = sets
-            exerciseInfo["exerciseRepetitions"] = reps
-            exerciseInfo["exerciseWeight"] = weight
-            exerciseInfo["exerciseTime"] = time
+            exerciseInfo["id"] = eid
+            exerciseInfo["sets"] = sets
+            exerciseInfo["reps"] = reps
+            exerciseInfo["weight"] = weight
+            exerciseInfo["name"] = name
+            exerciseInfo["rating"] = rating
 
-            exercises[eid] = exerciseInfo
-
-        workoutInfo["exercises"] = exercises
+            exercises.append(exerciseInfo)
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -103,7 +97,7 @@ def getWorkoutInfo(userId: str, date:str):
     else:
         connection.close()
     
-    return workoutInfo
+    return exercises
 
 def insertWorkout(userId: str, date:str, workoutType:str, exercises:dict):
     
