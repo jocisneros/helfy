@@ -103,6 +103,10 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
         );
     }, [setWorkouts]);
 
+    const addWorkout = (selectedWorkout: SelectedWorkout) => {
+        setWorkouts(prevWorkouts => [...prevWorkouts, selectedWorkout]);
+    };
+
     return (
         <Fragment>
             <HelfyCommonModal
@@ -166,7 +170,13 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                             />
                         ))}
                         <IconButton
-                            onPress={() => navigation.navigate('WorkoutSelection')}
+                            onPress={
+                                () => navigation.navigate('WorkoutSelection', {
+                                    userId: id,
+                                    workoutType: workoutType,
+                                    addSelectedWorkout: addWorkout
+                                })
+                            }
                             icon={<PlusCircleIcon color={'white'} />}
                             style={styles.iconButton}
                             onPressColor={'#00000040'}

@@ -8,9 +8,8 @@ export type Workout = {
     id: number,
     name: string,
     difficulty: number,
-    demoUrl: string,
+    link: string,
     tips: string[],
-    muscleGroup?: string,
 };
 
 export enum ExperienceLevel {
@@ -78,11 +77,18 @@ export enum HelfyEntryStatus {
 
 // Page Types
 
+type WorkoutSelectionProps = {
+    userId: string,
+    workoutType: WorkoutType,
+    addSelectedWorkout: (selectedWorkout: SelectedWorkout) => void,
+};
+
+
 export type RootStackParamList = {
     Start: undefined;
     Schedule: Omit<Omit<UserSettings, 'id'>, 'workoutSchedule'>;
     Home: UserSettings;
-    WorkoutSelection: undefined;
+    WorkoutSelection: WorkoutSelectionProps;
 };
 
 export type StartPageNavigationProp = NativeStackScreenProps<

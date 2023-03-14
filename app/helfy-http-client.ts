@@ -1,6 +1,6 @@
 // helfy-http-client.ts
 
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { CompletedWorkout, UserData, Workout, WorkoutData, WorkoutType } from './types';
 
 import Constants from "expo-constants";
@@ -38,7 +38,11 @@ export class HelfyHttpClient {
     }
 
     static async getWorkoutList(id: string, workoutType: WorkoutType): Promise<Workout[]> {
-        await waitFor(1000);
-        return {} as Workout[];
+        console.log("CALLING WORKOUT LIST", BASE_URL + `/workoutrec?id=${encodeURIComponent(id)}&type=${encodeURIComponent(workoutType)}`)
+        const response = await axios.get< any, AxiosResponse<Workout[]> >(
+            BASE_URL + `/workoutrec?id=${encodeURIComponent(id)}&type=${encodeURIComponent(workoutType)}`
+        );
+        // console.log(response.data);
+        return response.data;
     }
 }

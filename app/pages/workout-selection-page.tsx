@@ -1,13 +1,28 @@
 // workout-selection-page.tsx
 
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Button, TouchableHighlight, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { HelfyCommonModal } from '../components/helfy-common-modal';
+import { HelfyHttpClient } from '../helfy-http-client';
 import { HelfyColorPalette } from '../theme';
-import { WorkoutSelectionPageNavigationProp } from '../types';
+import { Workout, WorkoutSelectionPageNavigationProp, WorkoutType } from '../types';
 
 export const WorkoutSelectionPage = ({ route, navigation }: WorkoutSelectionPageNavigationProp) => {
+    const [workoutList, setWorkoutList] = useState<Workout[]>([])
+
+    const {
+        userId,
+        workoutType,
+        addSelectedWorkout
+    } = route.params;
+
+    useEffect(() => {
+        HelfyHttpClient.getWorkoutList(userId, workoutType).then(
+            data => setWorkoutList(data)
+        )
+    }, [userId, workoutType]);
+
 	return (
 		<Fragment>
 			<HelfyCommonModal>
@@ -18,7 +33,14 @@ export const WorkoutSelectionPage = ({ route, navigation }: WorkoutSelectionPage
                     <Text style={styles.sectionTitle}>{'WORKOUT SELECTION'}</Text>
                 </View>
 				<ScrollView>
-					
+					{
+                        workoutList.map((workout, index) => (
+                            <View style={{ backgroundColor: 'white', marginBottom: 8, flexDirection: 'row', justifyContent: 'space-between' }} key={index}>
+                                <Text style={{ color: 'black' }}>{workout.name}</Text>
+                                <Text style={{ color: 'black' }}>{workout.difficulty}</Text>
+                            </View>
+                        ))
+                    }
 				</ScrollView>
 				<TouchableHighlight
 					onPress={() => navigation.goBack()}
