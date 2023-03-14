@@ -19,6 +19,7 @@ def sendUserbyId():
 
 @app.route("/adduser", methods=['POST'])
 def addUser():
+    print("REQUEST RECEIEVED")
     args = request.args
     userId = args["id"]
     heightId = args["height"]
