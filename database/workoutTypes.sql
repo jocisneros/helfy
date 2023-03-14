@@ -6,6 +6,7 @@ INSERT INTO workout_types (name) VALUES ('arms'); # 5
 INSERT INTO workout_types (name) VALUES ('upper body'); # 6
 INSERT INTO workout_types (name) VALUES ('full body'); # 7
 INSERT INTO workout_types (name) VALUES ('abs'); # 8
+INSERT INTO workout_types (name) VALUES ('none'); # 9
 
 
 
