@@ -4,6 +4,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Button, TouchableHighlight, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { HelfyCommonModal } from '../components/helfy-common-modal';
+import { WorkoutListItem } from '../components/workout-list-item';
 import { HelfyHttpClient } from '../helfy-http-client';
 import { HelfyColorPalette } from '../theme';
 import { Workout, WorkoutSelectionPageNavigationProp, WorkoutType } from '../types';
@@ -32,13 +33,14 @@ export const WorkoutSelectionPage = ({ route, navigation }: WorkoutSelectionPage
 				<View style={styles.sectionLabel}>
                     <Text style={styles.sectionTitle}>{'WORKOUT SELECTION'}</Text>
                 </View>
-				<ScrollView>
+				<ScrollView style={{ width: '80%' }}>
 					{
                         workoutList.map((workout, index) => (
-                            <View style={{ backgroundColor: 'white', marginBottom: 8, flexDirection: 'row', justifyContent: 'space-between' }} key={index}>
-                                <Text style={{ color: 'black' }}>{workout.name}</Text>
-                                <Text style={{ color: 'black' }}>{workout.difficulty}</Text>
-                            </View>
+                            <WorkoutListItem
+                                key={index}
+                                workout={workout}
+                                addSelectedWorkout={addSelectedWorkout}
+                            />
                         ))
                     }
 				</ScrollView>
