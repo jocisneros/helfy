@@ -1,11 +1,20 @@
-// workout-selection-item.tsx
+// workout-list-item.tsx
 
-type WorkoutSelectionItemProps = {
+import { StyleSheet } from 'react-native';
+import { SelectedWorkout, Workout } from '../types';
 
+type WorkoutListItemProps = {
+    workout: Workout,
+    addSelectedWorkout: (selectedWorkout: SelectedWorkout) => void,
 }
 
-export const WorkoutSelectionItem = ({
-    
-}: WorkoutSelectionItemProps) => {
+export const WorkoutListItem = ({
+    workout,
+    addSelectedWorkout,
+}: WorkoutListItemProps) => {
+    return null;
+};
 
-}
+const styles = StyleSheet.create({
+
+});
