@@ -1,6 +1,6 @@
 from flask import Flask, request
 import json
-from connection import getUserById, getWorkoutInfo, insertWorkout
+from connection import getUserById, getWorkoutInfo, insertWorkout, addUserInfo
 
 app = Flask(__name__)
 
@@ -19,15 +19,21 @@ def sendUserbyId():
 
 @app.route("/adduser", methods=['POST'])
 def addUser():
-    args = request.args
+    args = request.form
     userId = args["id"]
-    heightId = args["height"]
+    height = args["height"]
     weight = args["weight"]
-    genderId = args["gender"]
-    experienceId = args["experience"]
-
+    gender = args["gender"]
+    experience = args["experience"]
     print(args)
-    return 'success'
+
+    # success = addUserInfo(userId, height, weight, gender, experience)
+
+    # if not success:
+    #     return {'fail'}
+
+    
+    return {'success': True}
 
 
 @app.route("/workouthistory", methods=['GET'])
