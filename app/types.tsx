@@ -80,7 +80,6 @@ export enum HelfyEntryStatus {
 type WorkoutSelectionProps = {
     userId: string,
     workoutType: WorkoutType,
-    addSelectedWorkout: (selectedWorkout: SelectedWorkout) => void,
 };
 
 

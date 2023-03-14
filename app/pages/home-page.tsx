@@ -18,12 +18,13 @@ import { getWorkoutTypeColor, getWorkoutTypeDescription } from '../workout-type-
 import { Pedometer } from 'expo-sensors';
 import { HelfyCommonModal } from '../components/helfy-common-modal';
 import { HelfyColorPalette } from '../theme';
+import { useSelectedWorkouts } from '../helfy-context';
 
 
 export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
     const [date, setDate] = useState(new Date());
     const [showModal, setShowModal] = useState(false);
-    const [workouts, setWorkouts] = useState<SelectedWorkout[]>([]);
+    const [workouts, setWorkouts] = useSelectedWorkouts();
 
     const {
         id,
@@ -174,7 +175,6 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                                 () => navigation.navigate('WorkoutSelection', {
                                     userId: id,
                                     workoutType: workoutType,
-                                    addSelectedWorkout: addWorkout
                                 })
                             }
                             icon={<PlusCircleIcon color={'white'} />}

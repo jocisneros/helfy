@@ -4,17 +4,18 @@ import { Fragment, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Button, TouchableHighlight, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { HelfyCommonModal } from '../components/helfy-common-modal';
+import { useSelectedWorkouts } from '../helfy-context';
 import { HelfyHttpClient } from '../helfy-http-client';
 import { HelfyColorPalette } from '../theme';
 import { Workout, WorkoutSelectionPageNavigationProp, WorkoutType } from '../types';
 
 export const WorkoutSelectionPage = ({ route, navigation }: WorkoutSelectionPageNavigationProp) => {
+    const [selectedWorkouts, setSelectedWorkouts] = useSelectedWorkouts();
     const [workoutList, setWorkoutList] = useState<Workout[]>([])
 
     const {
         userId,
         workoutType,
-        addSelectedWorkout
     } = route.params;
 
     useEffect(() => {
