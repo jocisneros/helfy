@@ -1,21 +1,24 @@
 USE personaldb;
 
-# users (id, name, height-inches, weight-pounds, gender, experience);
-# example users;
-INSERT INTO users VALUES('abc1', 75, 145, 'male', 0);
-INSERT INTO users VALUES('abc2', 74, 185, 'male', 0);
-INSERT INTO users VALUES('abc3', 79, 175, 'male', 0);
-INSERT INTO users VALUES('abc4', 63, 140, 'female', 0);
-INSERT INTO users VALUES('abc5', 67, 125, 'female', 0);
+# users (id, name, height-inches, weight-pounds, gender, experience)
+# example user
+INSERT INTO users (id, height, weight, gender, experience) VALUES ('abc0', 75, 190, 'male', 0);
 
-# additional users, not given workouts;
+# example users
+INSERT INTO users (id, height, weight, gender, experience) VALUES('abc1', 75, 145, 'male', 0);
+INSERT INTO users (id, height, weight, gender, experience) VALUES('abc2', 74, 185, 'male', 0);
+INSERT INTO users (id, height, weight, gender, experience) VALUES('abc3', 79, 175, 'male', 0);
+INSERT INTO users (id, height, weight, gender, experience) VALUES('abc4', 63, 140, 'female', 0);
+INSERT INTO users (id, height, weight, gender, experience) VALUES('abc5', 67, 125, 'female', 0);
 
-INSERT INTO users VALUES('abc6', 76, 180, 'male', 1);
-INSERT INTO users VALUES('abc7', 75, 175, 'male', 1);
-INSERT INTO users VALUES('abc8', 51, 95, 'other', 2);
-INSERT INTO users VALUES('abc9', 78, 185, 'male', 2);
+# additional users, not given workouts
 
-# workout_history (usersID, workoutDate, workoutType);
+INSERT INTO users (id, height, weight, gender, experience) VALUES('abc6', 76, 180, 'male', 1);
+INSERT INTO users (id, height, weight, gender, experience) VALUES('abc7', 75, 175, 'male', 1);
+INSERT INTO users (id, height, weight, gender, experience) VALUES('abc8', 51, 95, 'other', 2);
+INSERT INTO users (id, height, weight, gender, experience) VALUES('abc9', 78, 185, 'male', 2);
+
+# workout_history (usersID, workoutDate, workoutType)
 INSERT INTO workout_history VALUES (1, 'abc1', '2023-01-01', 7);
 INSERT INTO workout_history VALUES (2, 'abc2', '2023-01-02', 7);
 INSERT INTO workout_history VALUES (3, 'abc3', '2023-01-03', 7);
