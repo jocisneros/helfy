@@ -1,14 +1,29 @@
 // helfy-http-client.ts
 
 import axios from 'axios';
-import { CompletedWorkout, Workout, WorkoutData, WorkoutType } from './types';
+import { CompletedWorkout, UserData, Workout, WorkoutData, WorkoutType } from './types';
+
+import Constants from "expo-constants";
+
+const { manifest } = Constants;
 
 function waitFor(timeMS: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, timeMS));
 }
 
-const BASE_URL = '';
+const BASE_URL = `https://${manifest!.debuggerHost!.split(':').shift()}:8888`;
+
+// const BASE_URL = `http://11.20.17.135:8888`;
+
 export class HelfyHttpClient {
+    // Convert User Height to inches
+    static async postUser(user: UserData): Promise<void> {
+        console.log("CALLING POST USER REQUEST", BASE_URL);
+        const response = await axios.post(BASE_URL + '/adduser');
+        console.log(response);
+        return;
+    }
+
     static async getWorkoutHistory(id: string, date: Date): Promise<WorkoutData> {
         await waitFor(1000);
         return {} as WorkoutData;

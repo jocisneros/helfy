@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, ScrollView, TouchableHighlight, TextInput } from 'react-native';
-import { Height, StartPageNavigationProp } from '../types';
+import { ExperienceLevel, Height, StartPageNavigationProp } from '../types';
 import { Picker } from '@react-native-picker/picker';
 import { HelfyColorPalette } from '../theme';
 
@@ -12,7 +12,7 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
     feet: 5,
     inches: 4,
   });
-  const [age, setAge] = useState(20);
+  const [experienceLevel, setExperienceLevel] = useState(ExperienceLevel.Beginner);
   const [sex, setSex] = useState("Female");
 
   return (
@@ -23,6 +23,7 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
         </View>
         <View style={styles.formContainer}>
             {/* <Text style={styles.sectionTitle}>{'please input your information'}</Text> */}
+            
             <View style={styles.formRow}>
                 <Text style={styles.formLabelText}>{'weight: '}</Text>
                 <View style={styles.formInputContainer}>
@@ -39,6 +40,7 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
                     <Text style={styles.formDescriptorText}>{'lbs'}</Text>
                 </View>
             </View>
+
             <View style={styles.formRow}>
                 <Text style={styles.formLabelText}>{'height: '}</Text>
                 <View style={styles.formInputContainer}>
@@ -70,22 +72,7 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
                     </View>
                 </View>
             </View>
-            <View style={styles.formRow}>
-                <Text style={styles.formLabelText}>{'age: '}</Text>
-                <View style={styles.formInputContainer}>
-                    <Picker
-                        style={styles.picker}
-                        mode='dropdown'
-                        selectedValue={age}
-                        onValueChange={(itemValue) => setAge(itemValue)}
-                    >
-                        {[...Array(100).keys()].slice(16).map(n => (
-                        <Picker.Item label={n.toString()} value={n} color='white' key={n} />
-                        ))}
-                    </Picker>
-                    <Text style={styles.formDescriptorText}>{'years'}</Text>
-                </View>
-            </View>
+
             <View style={styles.formRow}>
                 <Text style={styles.formLabelText}>{'sex: '}</Text>
                 <View style={styles.formInputContainer}>
@@ -101,13 +88,44 @@ export const StartPage = ({ route, navigation }: StartPageNavigationProp) => {
                     </Picker>
                 </View>
             </View>
+
+            <View style={styles.formRow}>
+                <Text style={styles.formLabelText}>{'experience level: '}</Text>
+                <View style={styles.formInputContainer}>
+                    <Picker
+                        style={[styles.picker, { width: 180 }]}
+                        mode='dropdown'
+                        selectedValue={experienceLevel}
+                        onValueChange={(itemValue) => setExperienceLevel(itemValue)}
+                    >
+                        <Picker.Item
+                            label='Beginner'
+                            value={ExperienceLevel.Beginner}
+                            color='white'
+                            key={ExperienceLevel.Beginner}
+                        />
+                        <Picker.Item
+                            label='Intermediate'
+                            value={ExperienceLevel.Intermediate}
+                            color='white'
+                            key={ExperienceLevel.Intermediate}
+                        />
+                        <Picker.Item
+                            label='Advanced'
+                            value={ExperienceLevel.Advanced}
+                            color='white'
+                            key={ExperienceLevel.Advanced}
+                        />
+                    </Picker>
+                </View>
+            </View>
         </View>
         <TouchableHighlight
             onPress={() => navigation.navigate('Schedule', {
                 weight: weight,
                 height: height,
                 sex: sex,
-                age: age
+                experienceLevel: experienceLevel
               })}
             style={styles.nextButton}
             underlayColor={styles.nextButton.backgroundColor + '80'}

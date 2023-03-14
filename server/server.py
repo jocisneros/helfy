@@ -1,6 +1,6 @@
 from flask import Flask, request
 import json
-from connection import getUserById, getWorkoutInfo, insertWorkout, addUserInfo
+from connection import getUserById, getWorkoutInfo, insertWorkout
 
 app = Flask(__name__)
 
@@ -19,6 +19,7 @@ def sendUserbyId():
 
 @app.route("/adduser", methods=['POST'])
 def addUser():
+    print("REQUEST RECEIEVED")
     args = request.form
     userId = args["id"]
     height = args["height"]
