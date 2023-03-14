@@ -119,11 +119,11 @@ def insertWorkout(userId: str, date:str, workoutType:str, exercises:dict):
         workoutId = cursor.lastrowid
 
         # insert each exercise
-        for exerciseID, exerciseInfo in exercises.items():
+        for exerciseInfo in exercises:
             exerciseQuery = ("INSERT INTO exercise_history (usersID, exerciseID, workoutID, "
-                            "sets, reps, weight, lengthOfTime, exerciseName) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)")
-            cursor.execute(exerciseQuery, (userId, exerciseID, workoutId, exerciseInfo['sets'], exerciseInfo['reps'], 
-                            exerciseInfo['weight'],  exerciseInfo['lengthOfTime'], exerciseInfo['exerciseName'] ))
+                            "sets, reps, weight, exerciseName, rating) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)")
+            cursor.execute(exerciseQuery, (userId, exerciseInfo['id'], workoutId, exerciseInfo['sets'], exerciseInfo['reps'], 
+                            exerciseInfo['weight'], exerciseInfo['exerciseName'], exerciseInfo['rating'] ))
             connection.commit()
 
     except mysql.connector.Error as err:

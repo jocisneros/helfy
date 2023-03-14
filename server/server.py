@@ -1,6 +1,6 @@
 from flask import Flask, request
 import json
-from connection import getUserById, getWorkoutInfo, insertWorkout
+from connection import getUserById, getWorkoutInfo, insertWorkout, addUserInfo
 
 app = Flask(__name__)
 
@@ -31,6 +31,7 @@ def addUser():
 
     if not success:
         return {'success': False}
+    
     return {'success': True}
 
 
@@ -83,13 +84,18 @@ def getWorkoutRecommendation():
 def postCompletedWorkout():
     userId = request.form['id']
    
-    completionDate = request.form['date']
+    date = request.form['date']
     
     workoutType = request.form['type']
     exercises = json.loads(request.form['exercises'])
+
+    print(exercises)
     
-    status = insertWorkout(userId, completionDate, workoutType, exercises)
-    return 'success' if status else 'fail'
+    success = insertWorkout(userId, date, workoutType, exercises)
+    if not success:
+        return {'success': False}
+    
+    return {'success': True}
 
 # *Format for exercises*
 #     {

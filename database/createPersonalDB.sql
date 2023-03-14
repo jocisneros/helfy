@@ -3,7 +3,6 @@ USE personaldb;
 
 CREATE TABLE IF NOT EXISTS users (
 	id VARCHAR(100) NOT NULL,
-    name VARCHAR(100) NOT NULL,
     height INT NOT NULL,
     weight INT NOT NULL,
     gender VARCHAR(100) NOT NULL,
@@ -28,7 +27,6 @@ CREATE TABLE IF NOT EXISTS exercise_history (
 	sets INT NOT NULL,
 	reps INT NOT NULL,
 	weight INT NOT NULL,
-	lengthOfTime INT NOT NULL,
     exerciseName VARCHAR(100) NOT NULL,
 	rating INT NOT NULL,
 	PRIMARY KEY (id),

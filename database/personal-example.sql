@@ -165,22 +165,47 @@ INSERT INTO exercise_history values('abc3', 473, 1, 3, 8, 75, 0, 'Kettlebell Sin
 INSERT INTO exercise_history values('abc3', 476, 1, 3, 8, 0, 0, 'Calves Stretch Variation Three', 0)
 
 INSERT INTO exercise_history values('abc4', 471, 1, 3, 8, 35, 0, 'Machine Standing Calf Raises', 1)
-INSERT INTO exercise_history values('abc4', 473, 1, 3, 8, 0, 0, 'Kettlebell Single Leg Calf Raise', 2)
-INSERT INTO exercise_history values('abc4', 475, 1, 3, 8, 0, 0, 'Kettlebell Seated Calf Raise', 1)
+INSERT INTO exercise_history values('abc4', 473, 1, 3, 8, 20, 0, 'Kettlebell Single Leg Calf Raise', 2)
+INSERT INTO exercise_history values('abc4', 475, 1, 3, 8, 20, 0, 'Kettlebell Seated Calf Raise', 1)
 INSERT INTO exercise_history values('abc4', 476, 1, 3, 8, 0, 0, 'Calves Stretch Variation Three', 0)
 
 INSERT INTO exercise_history values('abc5', 472, 1, 3, 8, 40, 0, 'Machine Seated Calf Raises', 1)
-INSERT INTO exercise_history values('abc5', 474, 1, 3, 8, 0, 0, 'Kettlebell Calf Raise', 1)
-INSERT INTO exercise_history values('abc5', 475, 1, 3, 8, 0, 0, 'Kettlebell Seated Calf Raise', 1)
+INSERT INTO exercise_history values('abc5', 474, 1, 3, 8, 25, 0, 'Kettlebell Calf Raise', 1)
+INSERT INTO exercise_history values('abc5', 475, 1, 3, 8, 25, 0, 'Kettlebell Seated Calf Raise', 1)
 INSERT INTO exercise_history values('abc5', 476, 1, 3, 8, 0, 0, 'Calves Stretch Variation Three', 1)
 
 #abs
+
 -- '491','Crunches'
 -- '492','Laying Leg Raises'
 -- '494','Kettlebell Situp'
 -- '495','Abdominals Stretch Variation Four'
 -- '496','Abdominals Stretch Variation Three'
 -- '497','Abdominals Stretch Variation Two'
+INSERT INTO exercise_history values('abc1', 491, 1, 3, 8, 0, 0, 'Crunches', 2)
+INSERT INTO exercise_history values('abc1', 492, 1, 3, 8, 0, 0, 'Laying Leg Raises', 2)
+INSERT INTO exercise_history values('abc1', 449, 1, 3, 8, 35, 0, 'Kettlebell Situp', 1)
+INSERT INTO exercise_history values('abc1', 495, 1, 3, 8, 0, 0, 'Abdominals Stretch Variation Four', 1)
+
+INSERT INTO exercise_history values('abc2', 491, 1, 3, 8, 0, 0, 'Crunches', 1)
+INSERT INTO exercise_history values('abc2', 492, 1, 3, 8, 0, 0, 'Laying Leg Raises', 1)
+INSERT INTO exercise_history values('abc2', 494, 1, 3, 8, 40, 0, 'Kettlebell Situp', 2)
+INSERT INTO exercise_history values('abc2', 496, 1, 3, 8, 0, 0, 'Abdominals Stretch Variation Three', 1)
+
+INSERT INTO exercise_history values('abc3', 491, 1, 3, 8, 0, 0, 'Crunches', 2)
+INSERT INTO exercise_history values('abc3', 492, 1, 3, 8, 0, 0, 'Laying Leg Raises', 1)
+INSERT INTO exercise_history values('abc3', 494, 1, 3, 8, 45, 0, 'Kettlebell Situp', 1)
+INSERT INTO exercise_history values('abc3', 497, 1, 3, 8, 0, 0, 'Abdominals Stretch Variation Two', 0)
+
+INSERT INTO exercise_history values('abc4', 491, 1, 3, 8, 0, 0, 'Crunches', 1)
+INSERT INTO exercise_history values('abc4', 494, 1, 3, 8, 20, 0, 'Kettlebell Situp', 2)
+INSERT INTO exercise_history values('abc4', 496, 1, 3, 8, 0, 0, 'Abdominals Stretch Variation Three', 1)
+INSERT INTO exercise_history values('abc4', 497, 1, 3, 8, 0, 0, 'Abdominals Stretch Variation Two', 0)
+
+INSERT INTO exercise_history values('abc5', 492, 1, 3, 8, 0, 0, 'Laying Leg Raises', 1)
+INSERT INTO exercise_history values('abc5', 495, 1, 3, 8, 0, 0, 'Abdominals Stretch Variation Four', 1)
+INSERT INTO exercise_history values('abc5', 496, 1, 3, 8, 0, 0, 'Abdominals Stretch Variation Three', 1)
+INSERT INTO exercise_history values('abc5', 497, 1, 3, 8, 0, 0, 'Abdominals Stretch Variation Two', 1)
 
 
 
@@ -191,6 +216,30 @@ INSERT INTO exercise_history values('abc5', 476, 1, 3, 8, 0, 0, 'Calves Stretch 
 -- '534','Lower back Stretch Variation One'
 -- '535','Supermans'
 -- '374','Kettlebell Deadlift'
+INSERT INTO exercise_history values('abc1', 374, 1, 3, 8, 75, 0, 'Kettlebell Deadlift', 2)
+INSERT INTO exercise_history values('abc1', 535, 1, 3, 8, 65, 0, 'Supermans', 2)
+INSERT INTO exercise_history values('abc1', 534, 1, 3, 8, 55, 0, 'Lower back Stretch Variation One', 1)
+INSERT INTO exercise_history values('abc1', 533, 1, 3, 8, 95, 0, 'Lower back Stretch Variation Two', 1)
+
+INSERT INTO exercise_history values('abc2', 374, 1, 3, 8, 85, 0, 'Kettlebell Deadlift', 1)
+INSERT INTO exercise_history values('abc2', 535, 1, 3, 8, 65, 0, 'Supermans', 1)
+INSERT INTO exercise_history values('abc2', 534, 1, 3, 8, 70, 0, 'Lower back Stretch Variation One', 2)
+INSERT INTO exercise_history values('abc2', 532, 1, 3, 8, 85, 0, 'Lower back Stretch Variation Three', 1)
+
+INSERT INTO exercise_history values('abc3', 374, 1, 3, 8, 80, 0, 'Kettlebell Deadlift', 2)
+INSERT INTO exercise_history values('abc3', 535, 1, 3, 8, 75, 0, 'Supermans', 1)
+INSERT INTO exercise_history values('abc3', 534, 1, 3, 8, 75, 0, 'Lower back Stretch Variation One', 1)
+INSERT INTO exercise_history values('abc3', 531, 1, 3, 8, 0, 0, 'Lower back Stretch Variation Four', 0)
+
+INSERT INTO exercise_history values('abc4', 374, 1, 3, 8, 35, 0, 'Kettlebell Deadlift', 1)
+INSERT INTO exercise_history values('abc4', 535, 1, 3, 8, 0, 0, 'Supermans', 2)
+INSERT INTO exercise_history values('abc4', 532, 1, 3, 8, 0, 0, 'Lower back Stretch Variation Three', 1)
+INSERT INTO exercise_history values('abc4', 531, 1, 3, 8, 0, 0, 'Lower back Stretch Variation Four', 0)
+
+INSERT INTO exercise_history values('abc5', 534, 1, 3, 8, 40, 0, 'Lower back Stretch Variation One', 1)
+INSERT INTO exercise_history values('abc5', 533, 1, 3, 8, 0, 0, 'Lower back Stretch Variation Two', 1)
+INSERT INTO exercise_history values('abc5', 532, 1, 3, 8, 0, 0, 'Lower back Stretch Variation Three', 1)
+INSERT INTO exercise_history values('abc5', 531, 1, 3, 8, 0, 0, 'Lower back Stretch Variation Four', 1)
 
 
 #Traps (mid-back)
