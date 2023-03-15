@@ -1,6 +1,6 @@
 // helfy-common-modal.tsx
 
-import { Keyboard, StyleSheet, Text, TouchableHighlight, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, SafeAreaView, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableWithoutFeedback, View } from 'react-native';
 import Modal, { ModalProps } from 'react-native-modal';
 import { CloseIcon } from '../icons/close-icon';
 import { HelfyColorPalette } from '../theme';
@@ -11,8 +11,10 @@ type HelfyCommonModalProps = {
     title?: string,
     headerColor?: string,
     height?: number | string,
+    width?: number | string,
     footer?: React.ReactNode,
     onClose?: () => void,
+    scrollable?: boolean,
 } & Partial<Omit<ModalProps, 'style'>>;
 
 
@@ -20,9 +22,11 @@ export const HelfyCommonModal = ({
     title,
     headerColor,
     height,
+    width,
     footer,
     onClose,
     children,
+    scrollable,
     ...modalProps
 }: HelfyCommonModalProps) => {
     return (
@@ -32,30 +36,48 @@ export const HelfyCommonModal = ({
             backdropColor='black'
             style={styles.modal}
         >
-            { title && 
-                <View style={{...styles.modalLabel, backgroundColor: headerColor}}>
-                    <Text style={styles.modalTitle}>{title}</Text>
-                </View>
-            }
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View style={
-                    height
-                    ? {...styles.modalContent, height: height}
-                    : styles.modalContent
-                }>
-                    {children}
-                </View>
-            </TouchableWithoutFeedback>
-            {footer}
-            {
-                onClose &&
-                <IconButton
-                    onPress={onClose}
-                    icon={<CloseIcon color={'black'} />}
-                    onPressColor={styles.closeButton.backgroundColor + '80'}
-                    style={styles.closeButton}
-                />
-            }
+            <SafeAreaView style={styles.modalContainer}>
+                { title && 
+                    <View style={{...styles.modalLabel, backgroundColor: headerColor}}>
+                        <Text style={styles.modalTitle}>{title}</Text>
+                    </View>
+                }
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    {
+                        scrollable
+                        ? (
+                            <View
+                                style={[
+                                    styles.modalContent,
+                                    { height: height },
+                                    { width: width || styles.modalContent.width },
+                                ]}
+                            >
+                                <ScrollView
+                                    style={styles.scrollableModalContent}
+                                    contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
+                                >
+                                    {children}
+                                </ScrollView>
+                            </View>
+                        ) : (
+                            <View style={[styles.modalContent, { height: height }, { width: width || styles.modalContent.width }]}>
+                                {children}
+                            </View>
+                        )
+                    }
+                </TouchableWithoutFeedback>
+                {footer}
+                {
+                    onClose &&
+                    <IconButton
+                        onPress={onClose}
+                        icon={<CloseIcon color={'black'} />}
+                        onPressColor={styles.closeButton.backgroundColor + '80'}
+                        style={styles.closeButton}
+                    />
+                }
+            </SafeAreaView>
         </Modal>
     )
 };
@@ -65,6 +87,12 @@ const styles = StyleSheet.create({
     modal: {
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    modalContainer: {
+        width: '100%',
+        height: '90%',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     modalLabel: {
         flexDirection: 'row',
@@ -86,6 +114,11 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    scrollableModalContent: {
+        width: '100%',
+        backgroundColor: HelfyColorPalette.primary0,
+        borderRadius: 16,
     },
     closeButton: {
         alignItems: 'center',

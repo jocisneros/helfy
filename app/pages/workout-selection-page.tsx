@@ -1,18 +1,19 @@
 // workout-selection-page.tsx
 
 import { Fragment, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Button, TouchableHighlight, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableHighlight, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { HelfyCommonModal } from '../components/helfy-common-modal';
 import { WorkoutListItem } from '../components/workout-list-item';
 import { useSelectedWorkouts } from '../helfy-context';
 import { HelfyHttpClient } from '../helfy-http-client';
 import { HelfyColorPalette } from '../theme';
-import { Workout, WorkoutSelectionPageNavigationProp, WorkoutType } from '../types';
+import { SelectedWorkout, Workout, WorkoutSelectionPageNavigationProp, WorkoutType } from '../types';
 
 export const WorkoutSelectionPage = ({ route, navigation }: WorkoutSelectionPageNavigationProp) => {
     const [selectedWorkouts, setSelectedWorkouts] = useSelectedWorkouts();
     const [workoutList, setWorkoutList] = useState<Workout[]>([])
+    const [isLoading, setLoading] = useState(false);
 
     const {
         userId,
@@ -20,10 +21,18 @@ export const WorkoutSelectionPage = ({ route, navigation }: WorkoutSelectionPage
     } = route.params;
 
     useEffect(() => {
+        setLoading(true);
         HelfyHttpClient.getWorkoutList(userId, workoutType).then(
-            data => setWorkoutList(data)
+            data => {
+                setWorkoutList(data);
+                setLoading(false);
+            }
         )
     }, [userId, workoutType]);
+
+    const addSelectedWorkout = (selectedWorkout: SelectedWorkout) => {
+        setSelectedWorkouts(prevSelectedWorkouts => [...prevSelectedWorkouts, selectedWorkout]);
+    }
 
 	return (
 		<Fragment>
@@ -34,17 +43,28 @@ export const WorkoutSelectionPage = ({ route, navigation }: WorkoutSelectionPage
 				<View style={styles.sectionLabel}>
                     <Text style={styles.sectionTitle}>{'WORKOUT SELECTION'}</Text>
                 </View>
-				<ScrollView style={{ width: '80%' }}>
-					{
-                        workoutList.map((workout, index) => (
-                            <WorkoutListItem
-                                key={index}
-                                workout={workout}
-                                addSelectedWorkout={addSelectedWorkout}
-                            />
-                        ))
-                    }
-				</ScrollView>
+                {
+                    isLoading
+                    ? (
+                        <ActivityIndicator
+                            color={'white'}
+                            size={'large'}
+                            style={{ width: '100%', height: '70%' }}
+                        />
+                    ) : (
+                        <ScrollView style={{ width: '80%' }}>
+                            {
+                                workoutList.map((workout, index) => (
+                                    <WorkoutListItem
+                                        key={index}
+                                        workout={workout}
+                                        addSelectedWorkout={addSelectedWorkout}
+                                    />
+                                ))
+                            }
+                        </ScrollView>
+                    )
+                }
 				<TouchableHighlight
 					onPress={() => navigation.goBack()}
                     style={styles.backButton}

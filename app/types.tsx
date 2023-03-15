@@ -9,7 +9,7 @@ export type Workout = {
     name: string,
     difficulty: number,
     link: string,
-    tips: string[],
+    tips: string,
 };
 
 export enum ExperienceLevel {

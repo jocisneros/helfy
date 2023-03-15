@@ -78,19 +78,17 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
         (index: number) => {
             function updateWorkout(action: React.SetStateAction<SelectedWorkout>) {
                 if (action instanceof Function) {
-                    setWorkouts(
-                        prevWorkouts => {
-                            prevWorkouts[index] = action(prevWorkouts[index]);
-                            return prevWorkouts;
+                    setWorkouts(prevWorkouts => prevWorkouts.map(
+                        ( workout, i ) => {
+                            return i === index ? action(workout) : workout;
                         }
-                    )
+                    ));
                 } else {
-                    setWorkouts(
-                        prevWorkouts => {
-                            prevWorkouts[index] = action;
-                            return prevWorkouts;
+                    setWorkouts(prevWorkouts => prevWorkouts.map(
+                        ( workout, i ) => {
+                            return i === index ? action : workout;
                         }
-                    )
+                    ));
                 }
             }
         return updateWorkout;
@@ -103,10 +101,6 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
             )
         );
     }, [setWorkouts]);
-
-    const addWorkout = (selectedWorkout: SelectedWorkout) => {
-        setWorkouts(prevWorkouts => [...prevWorkouts, selectedWorkout]);
-    };
 
     return (
         <Fragment>

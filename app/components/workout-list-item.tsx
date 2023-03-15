@@ -2,9 +2,10 @@
 
 import { StyleSheet, View, Text } from 'react-native';
 import { HelfyColorPalette } from '../theme';
-import { SelectedWorkout, Workout } from '../types';
+import { SelectedWorkout, Workout, WorkoutRating } from '../types';
 import { IconButton } from '../components/icon-button';
 import { PlusCircleIcon } from '../icons/plus-circle-icon';
+import { useCallback } from 'react';
 
 type WorkoutDifficultyProps = {
     difficulty: number,
@@ -38,12 +39,20 @@ export const WorkoutListItem = ({
     workout,
     addSelectedWorkout,
 }: WorkoutListItemProps) => {
+    const onPress = useCallback(() => {
+        addSelectedWorkout({
+            ...workout,
+            weight: 0,
+            setCount: 0,
+            repititionCount: 0,
+            rating: WorkoutRating.Unrated,
+        });
+    }, [workout]);
+    
     return (
         <View style={styles.workoutContainer}>
             <IconButton
-                onPress={
-                    () => {}
-                }
+                onPress={onPress}
                 icon={<PlusCircleIcon color={'white'} />}
                 style={styles.iconButton}
                 onPressColor={'#00000040'}
