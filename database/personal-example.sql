@@ -29,8 +29,70 @@ INSERT INTO workout_history (id, usersID, workoutDate, workoutType) VALUES (5, '
 # for examples: choose 6 beginner exercises and add 4 of the 6 to each workout;
 
 #bicep;
+-- '1','Barbell Curl'
+-- '2','Dumbbell Curl'
+-- '3','Dumbbell Hammer Curl'
+-- '4','Kettlebell Goblet Curl'
+-- '7','Kettlebell Single Arm Curl'
+-- '8','Biceps Stretch Variation Five'
+
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc1', 1, 1, 3, 8, 30, 'Barbell Curl', 2);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc1', 2, 1, 3, 8, 10, 'Dumbbell Curl', 2);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc1', 3, 1, 3, 8, 10, 'Dumbbell Hammer Curl', 1);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc1', 4, 1, 3, 8, 25, 'Kettlebell Goblet Curl', 0);
+
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc2', 1, 2, 3, 8, 45, 'Barbell Curl', 2);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc2', 2, 2, 3, 8, 15, 'Dumbbell Curl', 1);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc2', 3, 2, 3, 8, 15, 'Dumbbell Hammer Curl', 2);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc2', 4, 2, 3, 8, 40, 'Kettlebell Goblet Curl', 0);
+
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc3', 1, 3, 3, 8, 40, 'Barbell Curl', 2);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc3', 2, 3, 3, 8, 15, 'Dumbbell Curl', 1);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc3', 7, 3, 3, 8, 15, 'Kettlebell Single Arm Curl', 0);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc3', 8, 3, 3, 8, 0, 'Biceps Stretch Variation Five', 1);
+
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc4', 3, 4, 3, 8, 10, 'Dumbbell Hammer Curl', 1);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc4', 4, 4, 3, 8, 5, 'Kettlebell Goblet Curl', 1);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc4', 7, 4, 3, 8, 5, 'Kettlebell Single Arm Curl', 1);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc4', 8, 4, 3, 8, 0, 'Biceps Stretch Variation Five', 2);
+
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc5', 1, 5, 3, 8, 15, 'Barbell Curl', 2);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc5', 2, 5, 3, 8, 5, 'Dumbbell Curl', 0);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc5', 7, 5, 3, 8, 5, 'Kettlebell Single Arm Curl', 1);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc5', 8, 5, 3, 8, 0, 'Biceps Stretch Variation Five', 0);
 
 #chest;
+-- '64','Dumbbell Incline Bench Press'
+-- '65','Dumbbell Incline Chest Flys'
+-- '66','Dumbbell Bench Press'
+-- '68','Kettlebell Chest Press'
+-- '69','Kettlebell Single Arm Chest Fly'
+-- '70','Kettlebell Single Arm Press'
+
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc1', 64, 1, 3, 8, , 'Dumbbell Incline Bench Press', 2);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc1', 65, 1, 3, 8, , 'Dumbbell Incline Chest Flys', 2);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc1', 66, 1, 3, 8, , 'Dumbbell Bench Press', 1);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc1', 68, 1, 3, 8, , 'Kettlebell Chest Press', 0);
+
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc2', 64, 2, 3, 8, , 'Barbell Curl', 2);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc2', 65, 2, 3, 8, , 'Dumbbell Curl', 1);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc2', 66, 2, 3, 8, , 'Dumbbell Hammer Curl', 2);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc2', 68, 2, 3, 8, , 'Kettlebell Goblet Curl', 0);
+
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc3', 64, 3, 3, 8, , 'Barbell Curl', 2);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc3', 65, 3, 3, 8, , 'Dumbbell Curl', 1);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc3', 69, 3, 3, 8, , 'Kettlebell Single Arm Curl', 0);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc3', 70, 3, 3, 8, , 'Biceps Stretch Variation Five', 1);
+
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc4', 66, 4, 3, 8, , 'Dumbbell Hammer Curl', 1);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc4', 68, 4, 3, 8, , 'Kettlebell Goblet Curl', 1);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc4', 69, 4, 3, 8, , 'Kettlebell Single Arm Curl', 1);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc4', 70, 4, 3, 8, , 'Biceps Stretch Variation Five', 2);
+
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc5', 64, 5, 3, 8, , 'Barbell Curl', 2);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc5', 65, 5, 3, 8, , 'Dumbbell Curl', 0);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc5', 69, 5, 3, 8, , 'Kettlebell Single Arm Curl', 1);
+INSERT INTO exercise_history (usersID, exerciseID, workoutID, sets, reps, weight, exerciseName, rating) values('abc5', 70, 5, 3, 8, , 'Biceps Stretch Variation Five', 0);
 
 #Quads;
 
