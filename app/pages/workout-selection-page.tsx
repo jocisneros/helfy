@@ -52,17 +52,20 @@ export const WorkoutSelectionPage = ({ route, navigation }: WorkoutSelectionPage
                             style={{ width: '100%', height: '70%' }}
                         />
                     ) : (
-                        <ScrollView style={{ width: '80%' }}>
-                            {
-                                workoutList.map((workout, index) => (
-                                    <WorkoutListItem
-                                        key={index}
-                                        workout={workout}
-                                        addSelectedWorkout={addSelectedWorkout}
-                                    />
-                                ))
-                            }
-                        </ScrollView>
+                        <View style={{ width: '100%', height: '70%' }}>
+                            <ScrollView style={{ width: '100%', height: '100%' }} contentContainerStyle={{alignItems: 'center', justifyContent: 'center'}}>
+                                {
+                                    workoutList.map((workout, index) => (
+                                        <WorkoutListItem
+                                            key={index}
+                                            workout={workout}
+                                            addSelectedWorkout={addSelectedWorkout}
+                                            recommended={index < 5}
+                                        />
+                                    ))
+                                }
+                            </ScrollView>
+                        </View>
                     )
                 }
 				<TouchableHighlight
@@ -82,6 +85,24 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-evenly',
+    },
+    workoutContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        backgroundColor: '#3B463C',
+        width: '90%',
+        marginLeft: 20,
+        paddingHorizontal: 10,
+        height: 58,
+        borderTopRightRadius: 24,
+        borderBottomRightRadius: 24,
+        borderTopLeftRadius: 12,
+        borderBottomLeftRadius: 12,
+        alignItems: 'center',
+        marginBottom: 16,
+        justifyContent: 'space-between',
+        paddingLeft: 12,
+        paddingRight: 18
     },
 	backButton: {
         alignItems: 'center',

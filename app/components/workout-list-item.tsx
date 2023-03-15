@@ -5,7 +5,8 @@ import { HelfyColorPalette } from '../theme';
 import { SelectedWorkout, Workout, WorkoutRating } from '../types';
 import { IconButton } from '../components/icon-button';
 import { PlusCircleIcon } from '../icons/plus-circle-icon';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import { CheckButton } from './check-button';
 
 type WorkoutDifficultyProps = {
     difficulty: number,
@@ -33,11 +34,13 @@ const WorkoutDifficulty = ({
 type WorkoutListItemProps = {
     workout: Workout,
     addSelectedWorkout: (selectedWorkout: SelectedWorkout) => void,
+    recommended?: boolean,
 }
 
 export const WorkoutListItem = ({
     workout,
     addSelectedWorkout,
+    recommended,
 }: WorkoutListItemProps) => {
     const onPress = useCallback(() => {
         addSelectedWorkout({
@@ -48,16 +51,28 @@ export const WorkoutListItem = ({
             rating: WorkoutRating.Unrated,
         });
     }, [workout]);
+
+    const [isChecked, setChecked] = useState(false); 
     
     return (
-        <View style={styles.workoutContainer}>
-            <IconButton
-                onPress={onPress}
-                icon={<PlusCircleIcon color={'white'} />}
-                style={styles.iconButton}
-                onPressColor={'#00000040'}
-            />
-            <Text style={styles.workoutText}>{workout.name}</Text>
+        <View style={recommended ? styles.workoutContainerRecommended : styles.workoutContainer}>
+            <CheckButton
+                    isChecked={isChecked}
+                    onPress={() => { setChecked(!isChecked); !isChecked && addSelectedWorkout({
+                        ...workout,
+                        weight: 0,
+                        setCount: 0,
+                        repititionCount: 0,
+                        rating: WorkoutRating.Unrated,
+                    }); }}
+                    style={isChecked ? styles.checkedButton : styles.uncheckedButton}
+                />
+            <Text 
+                style={styles.workoutText}
+                numberOfLines={1}
+            >
+                {workout.name}
+            </Text>
             <WorkoutDifficulty
                 difficulty={workout.difficulty}
             />
@@ -68,21 +83,46 @@ export const WorkoutListItem = ({
 const styles = StyleSheet.create({
     workoutText: {
         fontFamily: 'Lato_700Bold',
-        fontSize: 20,
+        fontSize: 18,
         color: 'white',
-        width: '60%'
+        width: '60%',
+        marginLeft: 24,
+    },
+    workoutContainerRecommended: {
+        display: 'flex',
+        flexDirection: 'row',
+        backgroundColor: '#65b869',
+        width: '80%',
+        marginLeft: 20,
+        paddingHorizontal: 10,
+        height: 58,
+        borderTopRightRadius: 24,
+        borderBottomRightRadius: 24,
+        borderTopLeftRadius: 12,
+        borderBottomLeftRadius: 12,
+        alignItems: 'center',
+        marginBottom: 16,
+        justifyContent: 'space-between',
+        paddingLeft: 12,
+        paddingRight: 18
     },
 	workoutContainer: {
+        display: 'flex',
         flexDirection: 'row',
+        backgroundColor: '#3B463C',
+        width: '80%',
+        marginLeft: 20,
+        paddingHorizontal: 10,
+        height: 58,
+        borderTopRightRadius: 24,
+        borderBottomRightRadius: 24,
+        borderTopLeftRadius: 12,
+        borderBottomLeftRadius: 12,
         alignItems: 'center',
+        marginBottom: 16,
         justifyContent: 'space-between',
-        backgroundColor: HelfyColorPalette.primary1,
-        marginBottom: 20,
-        paddingHorizontal: 24,
-        borderRadius: 36,
-        height: 45,
-        width: '90%',
-        left: 30,
+        paddingLeft: 12,
+        paddingRight: 18
     },
     difficultyContainer: {
         flexDirection: 'row',
@@ -107,6 +147,26 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 99,
         position: 'absolute',
-        left: -8,
-    }
+        left: -16,
+    },
+    checkedButton: {
+        backgroundColor: '#78CF81',
+        height: 32,
+        width: 32,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 999,
+        position: 'absolute',
+        left: -16,
+    },
+    uncheckedButton: {
+        backgroundColor: 'white',
+        height: 32,
+        width: 32,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 999,
+        position: 'absolute',
+        left: -16,
+    },
 });
