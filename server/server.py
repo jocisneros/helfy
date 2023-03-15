@@ -1,7 +1,7 @@
 from flask import Flask, request
 import json
 from connection import getUserById, getWorkoutInfo, insertWorkout, addUserInfo
-from recommender import get_workout_rec
+from recommender import getWorkoutRec
 
 app = Flask(__name__)
 
@@ -51,11 +51,7 @@ def getWorkoutRecommendation():
     args = request.args
     userId = args["id"]
     workoutType = args["type"]
-    exercises = get_workout_rec(userId, workoutType)
-    # workoutInfo = getWorkoutInfo(userId, date)
-    # print(workoutInfo)
-    # jsonWorkoutInfo = json.dumps(workoutInfo)
-    # return jsonWorkoutInfo
+    exercises = getWorkoutRec(userId, workoutType)
     return json.dumps(exercises)
 
 @app.route("/completedworkout", methods=['POST'])
@@ -66,8 +62,6 @@ def postCompletedWorkout():
     
     workoutType = request.form['type']
     exercises = json.loads(request.form['exercises'])
-
-    # print(exercises)
     
     success = insertWorkout(userId, date, workoutType, exercises)
     if not success:
