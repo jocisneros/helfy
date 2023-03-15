@@ -1,7 +1,7 @@
 // workout-list-item.tsx
 
 import React, { Fragment, useCallback, useMemo, useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { WorkoutType, WorkoutRating, SelectedWorkout } from '../types';
 import {
     DoubleThumbsUpIcon,
@@ -17,6 +17,7 @@ import { WorkoutLabel } from './workout-label';
 import { getWorkoutTypeColor } from '../workout-type-helpers';
 import { Space } from './space';
 import { HelfyCommonModal } from './helfy-common-modal';
+import YoutubeIframe from 'react-native-youtube-iframe';
 
 enum ModalType {
     None = 'None',
@@ -41,6 +42,7 @@ export const SelectedWorkoutListItem = ({
     remove
 }: SelectedWorkoutListItemProps) => {
     const [isChecked, setChecked] = useState(false); 
+    const [waitForVideoLoad, setWaitForVideoLoad] = useState(true);
 
     const setWeight = useCallback((weight: number) => {
         updateSelectedWorkout(prevWorkoutData => ({...prevWorkoutData, weight: weight}));
@@ -50,8 +52,8 @@ export const SelectedWorkoutListItem = ({
         updateSelectedWorkout(prevWorkoutData => ({...prevWorkoutData, setCount: setCount}));
     }, [updateSelectedWorkout]);
 
-    const setRepitionCount = useCallback((repitionCount: number) => {
-        updateSelectedWorkout(prevWorkoutData => ({...prevWorkoutData, repitionCount: repitionCount}));
+    const setRepitionCount = useCallback((repititionCount: number) => {
+        updateSelectedWorkout(prevWorkoutData => ({...prevWorkoutData, repititionCount: repititionCount}));
     }, [updateSelectedWorkout]);
 
     const setRating = useCallback((rating: number) => {
@@ -59,51 +61,69 @@ export const SelectedWorkoutListItem = ({
     }, [updateSelectedWorkout]);
 
     const [modalType, setModalType] = useState<ModalType>(ModalType.None);
+    <ActivityIndicator
+        color={'white'}
+        size={'large'}
+    />
+
+    const demoVideo = useMemo(() => {
+        if (selectedWorkout.link === '') {
+            return null;
+        }
+
+        return (
+            <View style={{ width: '100%', height: 200, justifyContent:'center', alignItems: 'center' }}>
+                {
+                    waitForVideoLoad &&
+                    <ActivityIndicator
+                        color={'white'}
+                        size={'large'}
+                        style={{ position: 'absolute', width: '100%', height: '100%' }}
+                    />
+                }
+                <YoutubeIframe
+                    videoId={selectedWorkout.link.slice(-11)}
+                    height={189}
+                    width={336}
+                    onReady={() => setWaitForVideoLoad(false)}
+                    webViewStyle={{ borderRadius: 16 }}
+                />
+            </View>
+        );
+    }, [waitForVideoLoad, selectedWorkout.link]);
+
+    const workoutTips = selectedWorkout.tips.split('. ').filter(tip => tip.length > 5);
 
     const modalContents = useMemo(() => {
         switch (modalType) {
             case ModalType.Info:
                 return (
-                    <View style={styles.modalContainer}>
-                        <View style={{height: '45%', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={styles.modalText}>DEMO</Text>
-                            { /* TEMPORARY*/ }
-                            <View style={{
-                                width: '90%',
-                                height: 160,
-                                backgroundColor:
-                                'gray',
-                                marginVertical: 16
-                                }}
-                            />
+                    <View style={[styles.modalContainer, { paddingVertical: 16 }]}>
+                        <View style={{height: '55%', width: '100%', justifyContent: 'space-evenly', alignItems: 'center'}}>
+                            <Text style={[styles.modalText, { fontSize: 20 }]}>{'DEMO'}</Text>
+                            {demoVideo}
                         </View>
                         <View style={{height: '45%', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={styles.modalText}>TIPS</Text>
                             <Space height={16}/>
-                            <View style={{
-                                width: '90%',
-                                height: 16,
-                                backgroundColor:
-                                'gray',
-                                marginBottom: 16
-                                }}
-                            />
-                            <View style={{
-                                width: '90%',
-                                height: 16,
-                                backgroundColor:
-                                'gray',
-                                marginBottom: 16
-                                }}
-                            />
-                            <View style={{
-                                width: '90%',
-                                height: 16,
-                                backgroundColor:
-                                'gray',
-                                marginBottom: 16
-                                }}
-                            />
+                            <Text style={[styles.modalText, { fontSize: 20 }]}>{'TIPS'}</Text>
+                            <Space height={16}/>
+                            <View style={{ width: '100%', height: '80%', alignItems: 'center', justifyContent: 'space-evenly', }}>
+                                {
+                                    workoutTips.map((tip, index) => (
+                                        <View
+                                            key={index}
+                                            style={{ width: '85%', flexDirection: 'row', marginBottom: 12, }}
+                                        >
+                                            <Text style={[styles.modalSubText]}>
+                                                {index + 1 + '. '}
+                                            </Text>
+                                            <Text style={[styles.modalSubText]}>
+                                                {tip}
+                                            </Text>
+                                        </View>
+                                    ))
+                                }
+                            </View>
                         </View>
                     </View>
                 );
@@ -194,12 +214,12 @@ export const SelectedWorkoutListItem = ({
             default:
                 return null;
         }
-    }, [modalType, selectedWorkout, setWeight, setSetCount, setRepitionCount, setRating]);
+    }, [modalType, demoVideo, selectedWorkout, setWeight, setSetCount, setRepitionCount, setRating]);
 
     const modalHeight = useMemo(() => {
         switch (modalType) {
             case ModalType.Info:
-                return '50%';
+                return '60%';
             case ModalType.Menu:
                 return '30%';
             case ModalType.Rating:
@@ -210,6 +230,11 @@ export const SelectedWorkoutListItem = ({
         }
     }, [modalType]);
 
+    const onCloseModal = () => {
+        setModalType(ModalType.None);
+        setWaitForVideoLoad(true);
+    }
+
     return (
         <Fragment>
             <HelfyCommonModal
@@ -217,7 +242,9 @@ export const SelectedWorkoutListItem = ({
                 title={selectedWorkout.name.toUpperCase()}
                 headerColor={getWorkoutTypeColor(workoutType)}
                 height={modalHeight}
-                onClose={() => setModalType(ModalType.None)}
+                width={modalType === ModalType.Info ? '95%' : undefined}
+                // scrollable={modalType === ModalType.Info}
+                onClose={onCloseModal}
             >
                 {modalContents}
             </HelfyCommonModal>
@@ -283,6 +310,11 @@ const styles = StyleSheet.create({
         fontFamily: 'Lato_700Bold',
         fontSize: 16,
         color: 'white',
+    },
+    modalSubText: {
+        fontFamily: 'Lato_400Regular',
+        color: 'white',
+        fontSize: 15,
     },
     modalTextInput: {
         fontSize: 20,
@@ -374,5 +406,5 @@ const styles = StyleSheet.create({
         padding: 12,
         backgroundColor: '#F54949',
         borderRadius: 100,
-    }
+    },
 });

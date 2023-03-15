@@ -25,7 +25,12 @@ Windows
 ```
 
 ## 3) Install Dependencies
-Run
 ```
+cd Server
 pip install -r requirements.txt
+```
+
+## 4) Run Server
+```
+$ python3 server.py
 ```

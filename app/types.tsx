@@ -9,7 +9,7 @@ export type Workout = {
     name: string,
     difficulty: number,
     link: string,
-    tips: string[],
+    tips: string,
 };
 
 export enum ExperienceLevel {
@@ -80,7 +80,6 @@ export enum HelfyEntryStatus {
 type WorkoutSelectionProps = {
     userId: string,
     workoutType: WorkoutType,
-    addSelectedWorkout: (selectedWorkout: SelectedWorkout) => void,
 };
 
 

@@ -18,12 +18,13 @@ import { getWorkoutTypeColor, getWorkoutTypeDescription } from '../workout-type-
 import { Pedometer } from 'expo-sensors';
 import { HelfyCommonModal } from '../components/helfy-common-modal';
 import { HelfyColorPalette } from '../theme';
+import { useSelectedWorkouts } from '../helfy-context';
 
 
 export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
     const [date, setDate] = useState(new Date());
     const [showModal, setShowModal] = useState(false);
-    const [workouts, setWorkouts] = useState<SelectedWorkout[]>([]);
+    const [workouts, setWorkouts] = useSelectedWorkouts();
 
     const {
         id,
@@ -77,19 +78,17 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
         (index: number) => {
             function updateWorkout(action: React.SetStateAction<SelectedWorkout>) {
                 if (action instanceof Function) {
-                    setWorkouts(
-                        prevWorkouts => {
-                            prevWorkouts[index] = action(prevWorkouts[index]);
-                            return prevWorkouts;
+                    setWorkouts(prevWorkouts => prevWorkouts.map(
+                        ( workout, i ) => {
+                            return i === index ? action(workout) : workout;
                         }
-                    )
+                    ));
                 } else {
-                    setWorkouts(
-                        prevWorkouts => {
-                            prevWorkouts[index] = action;
-                            return prevWorkouts;
+                    setWorkouts(prevWorkouts => prevWorkouts.map(
+                        ( workout, i ) => {
+                            return i === index ? action : workout;
                         }
-                    )
+                    ));
                 }
             }
         return updateWorkout;
@@ -102,10 +101,6 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
             )
         );
     }, [setWorkouts]);
-
-    const addWorkout = (selectedWorkout: SelectedWorkout) => {
-        setWorkouts(prevWorkouts => [...prevWorkouts, selectedWorkout]);
-    };
 
     return (
         <Fragment>
@@ -174,7 +169,6 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                                 () => navigation.navigate('WorkoutSelection', {
                                     userId: id,
                                     workoutType: workoutType,
-                                    addSelectedWorkout: addWorkout
                                 })
                             }
                             icon={<PlusCircleIcon color={'white'} />}
