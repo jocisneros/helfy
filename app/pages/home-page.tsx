@@ -132,7 +132,8 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
         const isBreakDay = workoutType === WorkoutType.None;
 
         return (
-            <ScrollView>
+            <View style={{alignItems: 'center', justifyContent: 'center'}}>
+            <ScrollView style={{maxHeight: '85%', marginBottom: 12}}>
                 { /* Workout List */ }
                 <View style={styles.workoutList}>
                     {selectedWorkoutsForDay.map((workout, i) => (
@@ -145,21 +146,23 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                             updateSelectedWorkout={getUpdateWorkoutFunction(i)}
                         />
                     ))}
-                    { (isToday && !isBreakDay) && (
-                        <IconButton
-                            onPress={
-                                () => navigation.navigate('WorkoutSelection', {
-                                    userId: id,
-                                    workoutType: workoutType,
-                                })
-                            }
-                            icon={<PlusCircleIcon color={'white'} />}
-                            style={styles.iconButton}
-                            onPressColor={'#00000040'}
-                        />
-                    )}
+                    
                 </View>
             </ScrollView>
+            { (isToday && !isBreakDay) && (
+                <IconButton
+                    onPress={
+                        () => navigation.navigate('WorkoutSelection', {
+                            userId: id,
+                            workoutType: workoutType,
+                        })
+                    }
+                    icon={<PlusCircleIcon color={'white'} />}
+                    style={styles.iconButton}
+                    onPressColor={'#00000040'}
+                />
+            )}
+            </View>
         );
     }, [
         pastDayWorkouts, selectedWorkouts, workoutType, navigation, getUpdateWorkoutFunction, removeWorkout, dateOffset

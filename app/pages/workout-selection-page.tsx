@@ -36,9 +36,6 @@ export const WorkoutSelectionPage = ({ route, navigation }: WorkoutSelectionPage
 
 	return (
 		<Fragment>
-			<HelfyCommonModal>
-
-			</HelfyCommonModal>
 			<SafeAreaView style={styles.container}>
 				<View style={styles.sectionLabel}>
                     <Text style={styles.sectionTitle}>{'WORKOUT SELECTION'}</Text>

@@ -24,7 +24,7 @@ export const Helfy = () => {
             break;
         case HelfyEntryStatus.ReturningUser:
             // Use 'Start' to Test, otherwise 'Home'
-            initialPage = 'Home';
+            initialPage = 'Start';
             break;
         case HelfyEntryStatus.Loading:
         case HelfyEntryStatus.Loaded:
