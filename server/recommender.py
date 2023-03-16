@@ -2,31 +2,9 @@
 from connection import getExercisesByWorkoutType, getExerciseHistoryByExerciseIds, getUserById
 from scipy.spatial.distance import cosine
 from numpy import average
-
-###
-
-
-###
-
-# FIX FOR WWIGHTED AVERAGE
-
-###
+from configs import RATING_MAX, RATING_MIN, RATING_DEFAUT, GENDER_DICT, SIMILIARITY_CUTOFF, SIMILARITY_WEIGHTS
 
 
-###
-RATING_MAX = 3
-RATING_MIN = -2
-RATING_DEFAUT = 0
-GENDER_DICT = {'male' : 1, 'female' : 0, 'other' : 0.5}
-SIMILIARITY_CUTOFF = 0.4
-# [gender, experiance, weight, height]
-SIMILARITY_WEIGHTS = [1,1,1,1]
-
-
-
-
-
-# def recommend(userWorkouts, exercisedb)
 
 def getWorkoutRec(userId, day) -> list:
     userInfo = getUserById(userId)
@@ -39,22 +17,7 @@ def getWorkoutRec(userId, day) -> list:
 
     return exerciseOrdered
 
-# def convertToList(eDict:dict):
-#     exerciseList = []
-#     for (e, i) in eDict.items():
-#         exerciseInfo = {}
-#         exerciseInfo['id'] = e
-#         exerciseInfo['name'] = i['name']
-#         exerciseInfo['difficulty'] = i['difficulty']
-#         exerciseInfo['tips'] = i['tips']
-#         exerciseInfo['link'] = i['link']
-#         exerciseList.append(exerciseInfo)
-#     return exerciseList
-
-
-
 def orderExercises(exercisesHistory, exercises, userInfo, similarity):
-    # 2 parts: sort by adjusted ranking and order by difficulty
     doableExercises = []
     advancedExercises = []
     userExperiance = userInfo['experience']
@@ -79,18 +42,7 @@ def orderExercises(exercisesHistory, exercises, userInfo, similarity):
     doableExercises.extend(advancedExercises)
     return doableExercises
 
-#
-#
-#
-###
 
-##
-##
-# FIX TO CALC WEIGHTED AVERAGE OF RATINGS BASED ON SIMILARITY
-# CHANGE multiple to some type of weigthed average function, do not adjust before
-# min max normlization the similarities to get weights
-# assign cutoff potential (similarity > 75 percent?)
-# change max to list of ratings maybe?
 def isolateRatings(exercisesHistory, exercises, similarity):
     ratingsDict = {}
 
@@ -105,7 +57,6 @@ def isolateRatings(exercisesHistory, exercises, similarity):
                 ratingsDict[eh['exerciseId']]['weights'] = [similarity[eh['userId']]]
 
     ratings = {}
-    print(ratingsDict)
 
     for e, i in ratingsDict.items():
         weightedRating = average(i['vals'], weights=i['weights'])
@@ -114,26 +65,8 @@ def isolateRatings(exercisesHistory, exercises, similarity):
     for e in exercises.keys():
         if e not in ratings:
             ratings[e] = normalizeRating(RATING_DEFAUT)
-
-    print(ratings)
-
-
-    # for eh in exercisesHistory:
-    #     if eh['exerciseId'] in ratings:
-    #         ratings[eh['exerciseId']] = max(eh['adjustedRating'], ratings[eh['exerciseId']])
-    #     else:
-    #         ratings[eh['exerciseId']] = eh['adjustedRating']
-    #     addedExercises.add(eh['exerciseId'])
-    # for e in exercises.keys():
-    #     if e not in addedExercises:
-    #         ratings[e] = normalizeRating(RATING_DEFAUT)
     return ratings
 
-
-
-
-
-# {'userId': 'abc5', 'exerciseId': 546, 'rating': 1, 'height': 67, 'weight': 125, 'gender': 'female', 'experience': 0}
 def getCosineSimilarity(user, exerciseHisory) -> dict:
     wMin, wMax, hMin, hMax = minMaxHeightWeight(user, exerciseHisory)
     similarity = {}
@@ -186,57 +119,8 @@ def minMaxHeightWeight(user, ehs):
 
 def normalizeRating(rating):
     return (rating - RATING_MIN)/(RATING_MAX - RATING_MIN)
-# features:
-# user info:
-# day (muscle groups)
-# included workouts
 
-# factor in difficulty
-
-# user similarity (0-1) 1 being same, 0 being completely different
-# gender, experiance, heigth, weight,
-
-# personal ratings scored from 0-1
-
-# others ratings will be multiplied by similarity score
-
-
-# Steps:
-# retrieve user workout history for past week
-
-# get exercises related to current day
-# - get all exercises in muscle groups
-#       - query exercise db to get exercise ids 
-# - rate using previous experiance, if none, check others ratings
-#       - query exercise history filter by exercise id 
-# - greedy selection of exercises to cover all muscle groups
-# - return list (or top n of list)
-
-# how to select sets and reps?
-
-# pick max of previous and 3x8
-
-# how to select weight?
-
-# pick max of previous +5 or starting?
-
-# collaborative filtering
-
-# pick lowest
-
-# else start 10?
-
-
-
-
-
-# get exercises unrelated to current day
-# - remove already worked muscles in past week
-# - get exercises
-# - rate based on input
-
-# - rate remaining based on past postings of difficulty
-
-if __name__ == "__main__":
-    recs = getWorkoutRec('abc1', 'pull')
-    print(len(recs))
+# if __name__ == "__main__":
+#     recs = getWorkoutRec('abc1', 'pull')
+#     print(recs)
+#     print(len(recs))
