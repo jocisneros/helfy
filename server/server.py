@@ -18,27 +18,10 @@ def sendUserbyId():
 
     return jsonUserInfo
 
-@app.route("/adduser", methods=['POST'])
-def addUser():
-    args = request.form
-    userId = args["id"]
-    height = args["height"]
-    weight = args["weight"]
-    sex = args["sex"]
-    experienceLevel = args["experienceLevel"]
-    print(args)
-
-    success = addUserInfo(userId, height, weight, sex, experienceLevel)
-
-    if not success:
-        return {'success': False}
-    
-    return {'success': True}
-
 
 @app.route("/workouthistory", methods=['GET'])
 def getWorkoutInfoByDate():
-    args = request.argsgit 
+    args = request.args 
     userId = args["id"]
     date = args["date"]
     workoutInfo = getWorkoutInfo(userId, date)
@@ -64,6 +47,23 @@ def postCompletedWorkout():
     exercises = json.loads(request.form['exercises'])
     
     success = insertWorkout(userId, date, workoutType, exercises)
+    if not success:
+        return {'success': False}
+    
+    return {'success': True}
+
+@app.route("/adduser", methods=['POST'])
+def addUser():
+    args = request.form
+    userId = args["id"]
+    height = args["height"]
+    weight = args["weight"]
+    sex = args["sex"]
+    experienceLevel = args["experienceLevel"]
+    print(args)
+
+    success = addUserInfo(userId, height, weight, sex, experienceLevel)
+
     if not success:
         return {'success': False}
     

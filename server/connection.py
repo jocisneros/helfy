@@ -10,10 +10,8 @@ def getUserById(userId: str):
 
         cursor = connection.cursor()
         query = ("SELECT * FROM users WHERE id = %s")
-        # query = ("SELECT * FROM users")
 
         cursor.execute(query, (userId,))
-        # cursor.execute(query)
         
         for (userId, height, weight, gender, experience) in cursor:
             user = {}
@@ -69,10 +67,8 @@ def getWorkoutInfo(userId: str, date:str):
         query = ("SELECT eh.exerciseID, eh.sets, eh.reps, eh.weight, eh.exerciseName, eh.rating FROM workout_history as wh, exercise_history as eh " 
                 "WHERE wh.usersID = %s AND eh.usersID = %s AND wh.workoutDate = %s "
                 "AND wh.id = eh.workoutID;")
-        # query = ("SELECT * FROM users")
 
         cursor.execute(query, (userId, userId, date))
-        # cursor.execute(query)
         
         for (eid, sets, reps, weight, name, rating) in cursor:
 
@@ -138,10 +134,6 @@ def getExercisesByWorkoutType(workoutType:str):
         connection = mysql.connector.connect(**EXERCISEDBCONFIG)
         cursor = connection.cursor()
         
-        # Query?
-        # workout Type -> workoutId -> muscle ID -> exerciseID -> Exercise INFO
-        #                                   v
-        #                               Muscle Info
         query = ("SELECT e.id, e.name, e.difficulty, e.tips, e.link, me.muscleID FROM workout_types as w, "
                 "muscles_in_workout_types as mw, muscle_groups_in_exercises as me, exercises as e "
                 "WHERE e.id = me.exerciseID AND me.muscleID = mw.muscleID AND mw.workoutTypeID = w.id AND w.name = %s;")
@@ -169,19 +161,12 @@ def getExercisesByWorkoutType(workoutType:str):
     return exercises
 
 def getExerciseHistoryByExerciseIds(exerciseIds):
-# format_strings = ','.join(['%s'] * len(list_of_ids))
-# cursor.execute("DELETE FROM foo.bar WHERE baz IN (%s)" % format_strings,
-#                 tuple(list_of_ids))
 
     exercisesHistory = []
     try:
         connection = mysql.connector.connect(**PERSONALDBCONFIG)
         cursor = connection.cursor()
         
-        # Query?
-        # workout Type -> workoutId -> muscle ID -> exerciseID -> Exercise INFO
-        #                                   v
-        #                               Muscle Info
         format_strings = ','.join(['%s'] * len(exerciseIds))
         query = ("SELECT eh.usersID, eh.exerciseID, eh.rating, u.height, u.weight, u.gender, u.experience "
                  "FROM exercise_history as eh , users as u "

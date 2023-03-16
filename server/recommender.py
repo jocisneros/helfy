@@ -1,62 +1,28 @@
 # method to create recommendation
 from connection import getExercisesByWorkoutType, getExerciseHistoryByExerciseIds, getUserById
 from scipy.spatial.distance import cosine
-
-###
-
-
-###
-
-# FILTER DIFFCULTY BY EXPERIENCE
-
-###
+from numpy import average
+from configs import RATING_MAX, RATING_MIN, RATING_DEFAUT, GENDER_DICT, SIMILIARITY_CUTOFF, SIMILARITY_WEIGHTS
 
 
-###
-RATING_MAX = 3
-RATING_MIN = -2
-RATING_DEFAUT = 0
-GENDER_DICT = {'male' : 1, 'female' : 0, 'other' : 0.5}
-# [gender, experiance, weight, height]
-SIMILARITY_WEIGHTS = [1,1,1,1]
-
-
-
-
-
-# def recommend(userWorkouts, exercisedb)
 
 def getWorkoutRec(userId, day) -> list:
     userInfo = getUserById(userId)
     exercises = getExercisesByWorkoutType(day)
     exercisesHistory = getExerciseHistoryByExerciseIds(exercises.keys())
-    similarity = getCosineSimilarity(userInfo,exercisesHistory)
 
-    exerciseOrdered = orderExercises(exercisesHistory, exercises, userInfo)
+    similarity = getCosineSimilarity(userInfo,exercisesHistory)
+    exerciseOrdered = orderExercises(exercisesHistory, exercises, userInfo, similarity)
 
 
     return exerciseOrdered
 
-# def convertToList(eDict:dict):
-#     exerciseList = []
-#     for (e, i) in eDict.items():
-#         exerciseInfo = {}
-#         exerciseInfo['id'] = e
-#         exerciseInfo['name'] = i['name']
-#         exerciseInfo['difficulty'] = i['difficulty']
-#         exerciseInfo['tips'] = i['tips']
-#         exerciseInfo['link'] = i['link']
-#         exerciseList.append(exerciseInfo)
-#     return exerciseList
-
-
-
-def orderExercises(exercisesHistory, exercises, userInfo):
-    # 2 parts: sort by adjusted ranking and order by difficulty
+def orderExercises(exercisesHistory, exercises, userInfo, similarity):
     doableExercises = []
     advancedExercises = []
     userExperiance = userInfo['experience']
-    exerciseRatings = isolateRatings(exercisesHistory, exercises)
+
+    exerciseRatings = isolateRatings(exercisesHistory, exercises, similarity)
 
     sortedRatings = sorted(list(exerciseRatings.items()), key=lambda d: d[1], reverse = True) 
 
@@ -76,21 +42,31 @@ def orderExercises(exercisesHistory, exercises, userInfo):
     doableExercises.extend(advancedExercises)
     return doableExercises
 
-def isolateRatings(exercisesHistory, exercises):
-    ratings = {}
-    addedExercises = set()
+
+def isolateRatings(exercisesHistory, exercises, similarity):
+    ratingsDict = {}
+
     for eh in exercisesHistory:
-        if eh['exerciseId'] in ratings:
-            ratings[eh['exerciseId']] = max(eh['adjustedRating'], ratings[eh['exerciseId']])
-        else:
-            ratings[eh['exerciseId']] = eh['adjustedRating']
-        addedExercises.add(eh['exerciseId'])
+        if similarity[eh['userId']] >= SIMILIARITY_CUTOFF:
+            if eh['exerciseId'] in ratingsDict:
+                ratingsDict[eh['exerciseId']]['vals'].append(normalizeRating(eh['rating']))
+                ratingsDict[eh['exerciseId']]['weights'].append(similarity[eh['userId']])
+            else:
+                ratingsDict[eh['exerciseId']] = {}
+                ratingsDict[eh['exerciseId']]['vals'] = [normalizeRating(eh['rating'])]
+                ratingsDict[eh['exerciseId']]['weights'] = [similarity[eh['userId']]]
+
+    ratings = {}
+
+    for e, i in ratingsDict.items():
+        weightedRating = average(i['vals'], weights=i['weights'])
+        ratings[e] = weightedRating
+
     for e in exercises.keys():
-        if e not in addedExercises:
+        if e not in ratings:
             ratings[e] = normalizeRating(RATING_DEFAUT)
     return ratings
 
-# {'userId': 'abc5', 'exerciseId': 546, 'rating': 1, 'height': 67, 'weight': 125, 'gender': 'female', 'experience': 0}
 def getCosineSimilarity(user, exerciseHisory) -> dict:
     wMin, wMax, hMin, hMax = minMaxHeightWeight(user, exerciseHisory)
     similarity = {}
@@ -121,9 +97,11 @@ def getCosineSimilarity(user, exerciseHisory) -> dict:
                 scaledHeight = (eh['height'] - hMin)/(hMax - hMin)
 
             ehVector = [GENDER_DICT[eh['gender']], eh['experience'], scaledWeight, scaledHeight]
-            print(ehVector)
+            # print(ehVector)
             similarity[eh['userId']] = 1 - cosine(userVector, ehVector, SIMILARITY_WEIGHTS)
+
         eh['adjustedRating'] = normalizeRating(eh['rating']) * similarity[eh['userId']]
+
     return similarity
 
 
@@ -141,72 +119,8 @@ def minMaxHeightWeight(user, ehs):
 
 def normalizeRating(rating):
     return (rating - RATING_MIN)/(RATING_MAX - RATING_MIN)
-# features:
-# user info:
-# day (muscle groups)
-# included workouts
 
-# factor in difficulty
-
-# user similarity (0-1) 1 being same, 0 being completely different
-# gender, experiance, heigth, weight,
-
-# personal ratings scored from 0-1
-
-# others ratings will be multiplied by similarity score
-
-
-# Steps:
-# retrieve user workout history for past week
-
-# get exercises related to current day
-# - get all exercises in muscle groups
-#       - query exercise db to get exercise ids 
-# - rate using previous experiance, if none, check others ratings
-#       - query exercise history filter by exercise id 
-# - greedy selection of exercises to cover all muscle groups
-# - return list (or top n of list)
-
-# how to select sets and reps?
-
-# pick max of previous and 3x8
-
-# how to select weight?
-
-# pick max of previous +5 or starting?
-
-# collaborative filtering
-
-# pick lowest
-
-# else start 10?
-
-
-
-
-
-# get exercises unrelated to current day
-# - remove already worked muscles in past week
-# - get exercises
-# - rate based on input
-
-# - rate remaining based on past postings of difficulty
-
-if __name__ == "__main__":
-    
-    # userInfo = getUserById('abc1')
-    # edict = getExercisesByWorkoutType('full body')
-    # # print(edict)
-    # #    print(edict.keys())
-    # eh = getExerciseHistoryByExerciseIds(edict.keys())
-    # similarity = getCosineSimilarity(userInfo,eh)
-    # print(similarity)
-    recs = getWorkoutRec('abc1', 'full body')
-    print(len(recs))
-    
-
-    # isolated_ratings = isolateRatings(eh, edict)
-    # # print(isolated_ratings)
-    # sortedRatings = sorted(list(isolated_ratings.items()), key=lambda d: d[1], reverse = True)
-    # print(sortedRatings)
-    # print(len(isolated_ratings))
+# if __name__ == "__main__":
+#     recs = getWorkoutRec('abc1', 'pull')
+#     print(recs)
+#     print(len(recs))

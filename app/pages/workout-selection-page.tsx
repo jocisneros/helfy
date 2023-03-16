@@ -59,6 +59,7 @@ export const WorkoutSelectionPage = ({ route, navigation }: WorkoutSelectionPage
                                         <WorkoutListItem
                                             key={index}
                                             workout={workout}
+                                            workoutType={workoutType}
                                             addSelectedWorkout={addSelectedWorkout}
                                             recommended={index < 5}
                                         />

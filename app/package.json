@@ -30,7 +30,7 @@
     "react-native-screens": "~3.18.0",
     "react-native-svg": "13.4.0",
     "react-native-web": "~0.18.9",
-    "react-native-webview": "^11.26.1",
+    "react-native-webview": "11.23.1",
     "react-native-youtube-iframe": "^2.2.2",
     "uuid": "^9.0.0"
   },

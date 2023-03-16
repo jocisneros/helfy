@@ -1,7 +1,7 @@
 // home-page.tsx
 
 import React, { useCallback, useEffect, useState, useMemo, Fragment } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Pressable } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Pressable, ScrollView } from 'react-native';
 import { HomePageNavigationProp, SelectedWorkout, Workout, WorkoutType } from '../types';
 import {
     CalendarIcon,
@@ -154,28 +154,30 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                         <Text style={styles.sectionTitle}>{'WORKOUTS'}</Text>
                     </View>
                     { /* Workout List */ }
-                    <View style={styles.workoutList}>
-                        {workouts.map((workout, i) => (
-                            <SelectedWorkoutListItem
-                                key={i}
-                                selectedWorkout={workout}
-                                workoutType={workoutType}
-                                remove={() => removeWorkout(i)}
-                                updateSelectedWorkout={getUpdateWorkoutFunction(i)}
+                    <ScrollView>
+                        <View style={styles.workoutList}>
+                            {workouts.map((workout, i) => (
+                                <SelectedWorkoutListItem
+                                    key={i}
+                                    selectedWorkout={workout}
+                                    workoutType={workoutType}
+                                    remove={() => removeWorkout(i)}
+                                    updateSelectedWorkout={getUpdateWorkoutFunction(i)}
+                                />
+                            ))}
+                            <IconButton
+                                onPress={
+                                    () => navigation.navigate('WorkoutSelection', {
+                                        userId: id,
+                                        workoutType: workoutType,
+                                    })
+                                }
+                                icon={<PlusCircleIcon color={'white'} />}
+                                style={styles.iconButton}
+                                onPressColor={'#00000040'}
                             />
-                        ))}
-                        <IconButton
-                            onPress={
-                                () => navigation.navigate('WorkoutSelection', {
-                                    userId: id,
-                                    workoutType: workoutType,
-                                })
-                            }
-                            icon={<PlusCircleIcon color={'white'} />}
-                            style={styles.iconButton}
-                            onPressColor={'#00000040'}
-                        />
-                    </View>
+                        </View>
+                    </ScrollView>
                 </View>
                 {
                     isPedometerAvailable &&

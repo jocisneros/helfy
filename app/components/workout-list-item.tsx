@@ -1,12 +1,13 @@
 // workout-list-item.tsx
 
-import { StyleSheet, View, Text } from 'react-native';
-import { HelfyColorPalette } from '../theme';
-import { SelectedWorkout, Workout, WorkoutRating } from '../types';
-import { IconButton } from '../components/icon-button';
-import { PlusCircleIcon } from '../icons/plus-circle-icon';
-import { useCallback, useState } from 'react';
+import { StyleSheet, View, Text, TouchableHighlight, ActivityIndicator } from 'react-native';
+import { SelectedWorkout, Workout, WorkoutRating, WorkoutType } from '../types';
+import { Fragment, useCallback, useMemo, useState } from 'react';
 import { CheckButton } from './check-button';
+import { HelfyCommonModal } from './helfy-common-modal';
+import { getWorkoutTypeColor } from '../workout-type-helpers';
+import { Space } from './space';
+import YoutubeIframe from 'react-native-youtube-iframe';
 
 type WorkoutDifficultyProps = {
     difficulty: number,
@@ -33,50 +34,126 @@ const WorkoutDifficulty = ({
 
 type WorkoutListItemProps = {
     workout: Workout,
+    workoutType: WorkoutType,
     addSelectedWorkout: (selectedWorkout: SelectedWorkout) => void,
     recommended?: boolean,
 }
 
 export const WorkoutListItem = ({
     workout,
+    workoutType,
     addSelectedWorkout,
     recommended,
 }: WorkoutListItemProps) => {
-    const onPress = useCallback(() => {
-        addSelectedWorkout({
-            ...workout,
-            weight: 0,
-            setCount: 0,
-            repititionCount: 0,
-            rating: WorkoutRating.Unrated,
-        });
-    }, [workout]);
-
     const [isChecked, setChecked] = useState(false); 
+    const [showModal, setShowModal] = useState(false);
+    const [waitForVideoLoad, setWaitForVideoLoad] = useState(true);
+
+    const demoVideo = useMemo(() => {
+        if (workout.link === '') {
+            return null;
+        }
+
+        return (
+            <View style={{ width: '100%', height: 200, justifyContent:'center', alignItems: 'center' }}>
+                {
+                    waitForVideoLoad &&
+                    <ActivityIndicator
+                        color={'white'}
+                        size={'large'}
+                        style={{ position: 'absolute', width: '100%', height: '100%' }}
+                    />
+                }
+                <YoutubeIframe
+                    videoId={workout.link.slice(-11)}
+                    height={189}
+                    width={336}
+                    onReady={() => setWaitForVideoLoad(false)}
+                    webViewStyle={{ borderRadius: 16 }}
+                />
+            </View>
+        );
+    }, [waitForVideoLoad, workout.link]);
+
+    const workoutTips = workout.tips.split('. ').filter(tip => tip.length > 5);
+
     
     return (
-        <View style={recommended ? styles.workoutContainerRecommended : styles.workoutContainer}>
-            <CheckButton
-                    isChecked={isChecked}
-                    onPress={() => { setChecked(!isChecked); !isChecked && addSelectedWorkout({
-                        ...workout,
-                        weight: 0,
-                        setCount: 0,
-                        repititionCount: 0,
-                        rating: WorkoutRating.Unrated,
-                    }); }}
-                    style={isChecked ? styles.checkedButton : styles.uncheckedButton}
-                />
-            <Text 
-                style={styles.workoutText}
-                numberOfLines={1}
+        <Fragment>
+            <HelfyCommonModal
+                isVisible={showModal}
+                title={workout.name.toUpperCase()}
+                headerColor={getWorkoutTypeColor(workoutType)}
+                height={'60%'}
+                width={'95%'}
+                onClose={() => {setShowModal(false); setWaitForVideoLoad(true);}}
             >
-                {workout.name}
-            </Text>
-            <WorkoutDifficulty
-                difficulty={workout.difficulty}
-            />
-        </View>
+                <View style={[styles.modalContainer, { paddingVertical: 16 }]}>
+                        <View style={{height: '55%', width: '100%', justifyContent: 'space-evenly', alignItems: 'center'}}>
+                            <Text style={[styles.modalText, { fontSize: 20 }]}>{'DEMO'}</Text>
+                            {demoVideo}
+                        </View>
+                        <View style={{height: '45%', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                            <Space height={16}/>
+                            <Text style={[styles.modalText, { fontSize: 20 }]}>{'TIPS'}</Text>
+                            <Space height={16}/>
+                            <View style={{ width: '100%', height: '80%', alignItems: 'center', justifyContent: 'space-evenly', }}>
+                                {
+                                    workoutTips.map((tip, index) => (
+                                        <View
+                                            key={index}
+                                            style={{ width: '85%', flexDirection: 'row', marginBottom: 12, }}
+                                        >
+                                            <Text style={[styles.modalSubText]}>
+                                                {index + 1 + '. '}
+                                            </Text>
+                                            <Text style={[styles.modalSubText]}>
+                                                {tip}
+                                            </Text>
+                                        </View>
+                                    ))
+                                }
+                            </View>
+                        </View>
+                    </View>
+            </HelfyCommonModal>
+                <View style={recommended ? styles.workoutContainerRecommended : styles.workoutContainer}>
+                    <CheckButton
+                        isChecked={isChecked}
+                        onPress={() => { 
+                            setChecked(!isChecked); 
+                            !isChecked && addSelectedWorkout({
+                                ...workout,
+                                weight: 0,
+                                setCount: 0,
+                                repititionCount: 0,
+                                rating: WorkoutRating.Unrated,
+                            }); 
+                        }}
+                        style={isChecked ? styles.checkedButton : styles.uncheckedButton}
+                    />
+                    <TouchableHighlight
+                        onPress={() => setShowModal(true)} style={{ width: '90%', height: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginLeft: '5%' }}
+                        underlayColor={'#00000020'}
+                    >
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Text 
+                                style={styles.workoutText}
+                                numberOfLines={1}
+                            >
+                                {workout.name}
+                            </Text>
+                            <View
+                                style={{paddingLeft: 35}}
+                            >
+                                <WorkoutDifficulty
+                                    difficulty={workout.difficulty}
+                                />
+                            </View>
+                        </View>
+                    </TouchableHighlight>
+                </View>
+        </Fragment>
     );
 };
 
@@ -86,7 +163,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'white',
         width: '60%',
-        marginLeft: 24,
+        marginLeft: 12,
     },
     workoutContainerRecommended: {
         display: 'flex',
@@ -94,7 +171,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#65b869',
         width: '80%',
         marginLeft: 20,
-        paddingHorizontal: 10,
         height: 58,
         borderTopRightRadius: 24,
         borderBottomRightRadius: 24,
@@ -103,8 +179,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 16,
         justifyContent: 'space-between',
-        paddingLeft: 12,
-        paddingRight: 18
     },
 	workoutContainer: {
         display: 'flex',
@@ -112,7 +186,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#3B463C',
         width: '80%',
         marginLeft: 20,
-        paddingHorizontal: 10,
         height: 58,
         borderTopRightRadius: 24,
         borderBottomRightRadius: 24,
@@ -121,8 +194,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 16,
         justifyContent: 'space-between',
-        paddingLeft: 12,
-        paddingRight: 18
     },
     difficultyContainer: {
         flexDirection: 'row',
@@ -168,5 +239,21 @@ const styles = StyleSheet.create({
         borderRadius: 999,
         position: 'absolute',
         left: -16,
+    },
+    modalContainer: {
+        width: '100%',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalText: {
+        fontFamily: 'Lato_700Bold',
+        fontSize: 16,
+        color: 'white',
+    },
+    modalSubText: {
+        fontFamily: 'Lato_400Regular',
+        color: 'white',
+        fontSize: 15,
     },
 });
