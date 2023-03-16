@@ -4,7 +4,7 @@ from configs import PERSONALDBCONFIG, EXERCISEDBCONFIG
 from datetime import date
 
 def getUserById(userId: str):
-    users = []
+    user = None
     try:
         connection = mysql.connector.connect(**PERSONALDBCONFIG)
 
@@ -15,14 +15,13 @@ def getUserById(userId: str):
         cursor.execute(query, (userId,))
         # cursor.execute(query)
         
-        for (userId, name, height, weight, gender) in cursor:
+        for (userId, height, weight, gender, experience) in cursor:
             user = {}
             user["userid"] = userId
-            user["name"] = name
             user["height"] = height
             user["weight"] = weight
             user["gender"] = gender
-            users.append(user)
+            user["experience"] = experience
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -34,7 +33,7 @@ def getUserById(userId: str):
     else:
         connection.close()
     
-    return users
+    return user
 
 def addUserInfo(userId:str, height:str, weight:str, gender:str, experience:str):
     try:
@@ -169,5 +168,50 @@ def getExercisesByWorkoutType(workoutType:str):
 
     return exercises
 
-if __name__ == "__main__":
-   print(len(getExercisesByWorkoutType('PUSH')))
+def getExerciseHistoryByExerciseIds(exerciseIds):
+# format_strings = ','.join(['%s'] * len(list_of_ids))
+# cursor.execute("DELETE FROM foo.bar WHERE baz IN (%s)" % format_strings,
+#                 tuple(list_of_ids))
+
+    exercisesHistory = []
+    try:
+        connection = mysql.connector.connect(**PERSONALDBCONFIG)
+        cursor = connection.cursor()
+        
+        # Query?
+        # workout Type -> workoutId -> muscle ID -> exerciseID -> Exercise INFO
+        #                                   v
+        #                               Muscle Info
+        format_strings = ','.join(['%s'] * len(exerciseIds))
+        query = ("SELECT eh.usersID, eh.exerciseID, eh.rating, u.height, u.weight, u.gender, u.experience "
+                 "FROM exercise_history as eh , users as u "
+                 "WHERE eh.exerciseID IN (%s) AND eh.usersID = u.id")
+
+
+        
+        cursor.execute(query % format_strings, tuple(exerciseIds))
+
+        for (uid, eid, rating, height, weight, gender, experience) in cursor: #
+            ehInfo = {}
+            ehInfo['userId'] = uid
+            ehInfo['exerciseId'] = eid
+            ehInfo['rating'] = rating
+            ehInfo['height'] = height
+            ehInfo['weight'] = weight
+            ehInfo['gender'] = gender
+            ehInfo['experience'] = experience
+
+            exercisesHistory.append(ehInfo)
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Username/Password Error")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database Error")
+        else:
+            print(err)
+        return False
+    else:
+        connection.close()
+
+    return exercisesHistory
