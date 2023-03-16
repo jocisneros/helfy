@@ -1,13 +1,14 @@
 # method to create recommendation
 from connection import getExercisesByWorkoutType, getExerciseHistoryByExerciseIds, getUserById
 from scipy.spatial.distance import cosine
+from numpy import average
 
 ###
 
 
 ###
 
-# FILTER DIFFCULTY BY EXPERIENCE
+# FIX FOR WWIGHTED AVERAGE
 
 ###
 
@@ -17,6 +18,7 @@ RATING_MAX = 3
 RATING_MIN = -2
 RATING_DEFAUT = 0
 GENDER_DICT = {'male' : 1, 'female' : 0, 'other' : 0.5}
+SIMILIARITY_CUTOFF = 0.4
 # [gender, experiance, weight, height]
 SIMILARITY_WEIGHTS = [1,1,1,1]
 
@@ -30,9 +32,9 @@ def getWorkoutRec(userId, day) -> list:
     userInfo = getUserById(userId)
     exercises = getExercisesByWorkoutType(day)
     exercisesHistory = getExerciseHistoryByExerciseIds(exercises.keys())
-    similarity = getCosineSimilarity(userInfo,exercisesHistory)
 
-    exerciseOrdered = orderExercises(exercisesHistory, exercises, userInfo)
+    similarity = getCosineSimilarity(userInfo,exercisesHistory)
+    exerciseOrdered = orderExercises(exercisesHistory, exercises, userInfo, similarity)
 
 
     return exerciseOrdered
@@ -51,12 +53,13 @@ def getWorkoutRec(userId, day) -> list:
 
 
 
-def orderExercises(exercisesHistory, exercises, userInfo):
+def orderExercises(exercisesHistory, exercises, userInfo, similarity):
     # 2 parts: sort by adjusted ranking and order by difficulty
     doableExercises = []
     advancedExercises = []
     userExperiance = userInfo['experience']
-    exerciseRatings = isolateRatings(exercisesHistory, exercises)
+
+    exerciseRatings = isolateRatings(exercisesHistory, exercises, similarity)
 
     sortedRatings = sorted(list(exerciseRatings.items()), key=lambda d: d[1], reverse = True) 
 
@@ -76,19 +79,59 @@ def orderExercises(exercisesHistory, exercises, userInfo):
     doableExercises.extend(advancedExercises)
     return doableExercises
 
-def isolateRatings(exercisesHistory, exercises):
-    ratings = {}
-    addedExercises = set()
+#
+#
+#
+###
+
+##
+##
+# FIX TO CALC WEIGHTED AVERAGE OF RATINGS BASED ON SIMILARITY
+# CHANGE multiple to some type of weigthed average function, do not adjust before
+# min max normlization the similarities to get weights
+# assign cutoff potential (similarity > 75 percent?)
+# change max to list of ratings maybe?
+def isolateRatings(exercisesHistory, exercises, similarity):
+    ratingsDict = {}
+
     for eh in exercisesHistory:
-        if eh['exerciseId'] in ratings:
-            ratings[eh['exerciseId']] = max(eh['adjustedRating'], ratings[eh['exerciseId']])
-        else:
-            ratings[eh['exerciseId']] = eh['adjustedRating']
-        addedExercises.add(eh['exerciseId'])
+        if similarity[eh['userId']] >= SIMILIARITY_CUTOFF:
+            if eh['exerciseId'] in ratingsDict:
+                ratingsDict[eh['exerciseId']]['vals'].append(normalizeRating(eh['rating']))
+                ratingsDict[eh['exerciseId']]['weights'].append(similarity[eh['userId']])
+            else:
+                ratingsDict[eh['exerciseId']] = {}
+                ratingsDict[eh['exerciseId']]['vals'] = [normalizeRating(eh['rating'])]
+                ratingsDict[eh['exerciseId']]['weights'] = [similarity[eh['userId']]]
+
+    ratings = {}
+    print(ratingsDict)
+
+    for e, i in ratingsDict.items():
+        weightedRating = average(i['vals'], weights=i['weights'])
+        ratings[e] = weightedRating
+
     for e in exercises.keys():
-        if e not in addedExercises:
+        if e not in ratings:
             ratings[e] = normalizeRating(RATING_DEFAUT)
+
+    print(ratings)
+
+
+    # for eh in exercisesHistory:
+    #     if eh['exerciseId'] in ratings:
+    #         ratings[eh['exerciseId']] = max(eh['adjustedRating'], ratings[eh['exerciseId']])
+    #     else:
+    #         ratings[eh['exerciseId']] = eh['adjustedRating']
+    #     addedExercises.add(eh['exerciseId'])
+    # for e in exercises.keys():
+    #     if e not in addedExercises:
+    #         ratings[e] = normalizeRating(RATING_DEFAUT)
     return ratings
+
+
+
+
 
 # {'userId': 'abc5', 'exerciseId': 546, 'rating': 1, 'height': 67, 'weight': 125, 'gender': 'female', 'experience': 0}
 def getCosineSimilarity(user, exerciseHisory) -> dict:
@@ -121,9 +164,11 @@ def getCosineSimilarity(user, exerciseHisory) -> dict:
                 scaledHeight = (eh['height'] - hMin)/(hMax - hMin)
 
             ehVector = [GENDER_DICT[eh['gender']], eh['experience'], scaledWeight, scaledHeight]
-            print(ehVector)
+            # print(ehVector)
             similarity[eh['userId']] = 1 - cosine(userVector, ehVector, SIMILARITY_WEIGHTS)
+
         eh['adjustedRating'] = normalizeRating(eh['rating']) * similarity[eh['userId']]
+
     return similarity
 
 
@@ -193,20 +238,5 @@ def normalizeRating(rating):
 # - rate remaining based on past postings of difficulty
 
 if __name__ == "__main__":
-    
-    # userInfo = getUserById('abc1')
-    # edict = getExercisesByWorkoutType('full body')
-    # # print(edict)
-    # #    print(edict.keys())
-    # eh = getExerciseHistoryByExerciseIds(edict.keys())
-    # similarity = getCosineSimilarity(userInfo,eh)
-    # print(similarity)
-    recs = getWorkoutRec('abc1', 'full body')
+    recs = getWorkoutRec('abc1', 'pull')
     print(len(recs))
-    
-
-    # isolated_ratings = isolateRatings(eh, edict)
-    # # print(isolated_ratings)
-    # sortedRatings = sorted(list(isolated_ratings.items()), key=lambda d: d[1], reverse = True)
-    # print(sortedRatings)
-    # print(len(isolated_ratings))
