@@ -100,9 +100,14 @@ def insertWorkout(userId: str, date:str, workoutType:str, exercises:dict):
         connection = mysql.connector.connect(**PERSONALDBCONFIG)
         cursor = connection.cursor()
 
+        workoutTypeIdQuery = ("SELECT wt.id FROM workout_types AS wt WHERE wt.name = %s;")
+        workoutTypeName = (workoutType.lower(), )
+        cursor.execute(workoutTypeIdQuery, workoutTypeName)
+        workoutTypeId = cursor.fetchone()
+
         # insert workout
         workoutQuery = ("INSERT INTO workout_history (usersID, workoutDate, workoutType) VALUES (%s, %s, %s)")
-        cursor.execute(workoutQuery, (userId, date, workoutType))
+        cursor.execute(workoutQuery, (userId, date, workoutTypeId))
         connection.commit()
 
         workoutId = cursor.lastrowid
