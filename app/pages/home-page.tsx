@@ -12,24 +12,30 @@ import {
 import { WorkoutTypeLabel } from '../components/workout-type-label';
 import { SelectedWorkoutListItem } from '../components/selected-workout-list-item';
 import { IconButton } from '../components/icon-button';
-import { addDays, format } from 'date-fns'
+import { addDays, compareAsc, format, isSameDay } from 'date-fns'
 import { Space } from '../components/space';
 import { getWorkoutTypeColor, getWorkoutTypeDescription } from '../workout-type-helpers';
 import { Pedometer } from 'expo-sensors';
 import { HelfyCommonModal } from '../components/helfy-common-modal';
 import { HelfyColorPalette } from '../theme';
-import { useSelectedWorkouts } from '../helfy-context';
+import { useDay, useSelectedWorkouts, useUserSettings } from '../helfy-context';
+import { HelfyHttpClient } from '../helfy-http-client';
 
 
 export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
-    const [date, setDate] = useState(new Date());
-    const [showModal, setShowModal] = useState(false);
-    const [workouts, setWorkouts] = useSelectedWorkouts();
-
-    const {
+    const [{
         id,
         workoutSchedule
-    } = route.params;
+    },] = useUserSettings();
+
+    const [today, ] = useDay();
+    const [dateOffset, setDateOffset] = useState(0);
+
+    const date = useMemo(() => addDays(today, dateOffset), [today, dateOffset]);
+
+    const [showModal, setShowModal] = useState(false);
+    const [pastDayWorkouts, setPastDayWorkouts] = useState<SelectedWorkout[]>([]);
+    const [selectedWorkouts, setSelectedWorkouts] = useSelectedWorkouts();
 
     const workoutType = useMemo(() => {
         switch (date.getDay()) {
@@ -74,17 +80,27 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
         subscribeToPedometer();
     }, [subscribeToPedometer]);
 
+    useEffect(() => {
+        if ( dateOffset >= 0 ) {
+            return;
+        }
+
+        HelfyHttpClient.getWorkoutHistory(id, date).then(
+            data => setPastDayWorkouts(data)
+        )
+    }, [date, dateOffset, id]);
+
     const getUpdateWorkoutFunction = useCallback(
         (index: number) => {
             function updateWorkout(action: React.SetStateAction<SelectedWorkout>) {
                 if (action instanceof Function) {
-                    setWorkouts(prevWorkouts => prevWorkouts.map(
+                    setSelectedWorkouts(prevSelectedWorkouts => prevSelectedWorkouts.map(
                         ( workout, i ) => {
                             return i === index ? action(workout) : workout;
                         }
                     ));
                 } else {
-                    setWorkouts(prevWorkouts => prevWorkouts.map(
+                    setSelectedWorkouts(prevSelectedWorkouts => prevSelectedWorkouts.map(
                         ( workout, i ) => {
                             return i === index ? action : workout;
                         }
@@ -92,15 +108,62 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                 }
             }
         return updateWorkout;
-    }, [setWorkouts])
+    }, [setSelectedWorkouts])
 
     const removeWorkout = useCallback((index: number) => {
-        setWorkouts(
-            prevWorkouts => (
-                prevWorkouts.filter((_, i) => i !== index)
+        setSelectedWorkouts(
+            prevSelectedWorkouts => (
+                prevSelectedWorkouts.filter((_, i) => i !== index)
             )
         );
-    }, [setWorkouts]);
+    }, [setSelectedWorkouts]);
+
+    const homeContent = useMemo(() => {
+        let selectedWorkoutsForDay: SelectedWorkout[] = [];
+
+        const isToday = dateOffset === 0;
+
+        if (isToday) {
+            selectedWorkoutsForDay = selectedWorkouts;
+        } else if (compareAsc(today, date) === 1) {
+            selectedWorkoutsForDay = pastDayWorkouts;
+        }
+
+        const isBreakDay = workoutType === WorkoutType.None;
+
+        return (
+            <ScrollView>
+                { /* Workout List */ }
+                <View style={styles.workoutList}>
+                    {selectedWorkoutsForDay.map((workout, i) => (
+                        <SelectedWorkoutListItem
+                            key={i}
+                            selectedWorkout={workout}
+                            workoutType={workoutType}
+                            remove={() => removeWorkout(i)}
+                            readOnly={!(isToday && !isBreakDay)}
+                            updateSelectedWorkout={getUpdateWorkoutFunction(i)}
+                        />
+                    ))}
+                    { (isToday && !isBreakDay) && (
+                        <IconButton
+                            onPress={
+                                () => navigation.navigate('WorkoutSelection', {
+                                    userId: id,
+                                    workoutType: workoutType,
+                                })
+                            }
+                            icon={<PlusCircleIcon color={'white'} />}
+                            style={styles.iconButton}
+                            onPressColor={'#00000040'}
+                        />
+                    )}
+                </View>
+            </ScrollView>
+        );
+    }, [
+        pastDayWorkouts, selectedWorkouts, workoutType, navigation, getUpdateWorkoutFunction, removeWorkout, dateOffset
+    ]);
 
     return (
         <Fragment>
@@ -123,7 +186,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                 { /* Calendar Header */ }
                 <View style={styles.calendarRowContainer} >
                     <IconButton
-                        onPress={() => setDate(prevDate => addDays(prevDate, -1))}
+                        onPress={() => { setPastDayWorkouts([]); setDateOffset(prevOffset => prevOffset - 1); }}
                         style={styles.chevronLeft}
                         icon={<ChevronLeftIcon color={'white'}/>}
                         onPressColor={'#00000080'}
@@ -134,7 +197,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                         <Text style={styles.calendarDate}>{format(date, 'E - MMM d')}</Text>
                     </Pressable>
                     <IconButton
-                        onPress={() => setDate(prevDate => addDays(prevDate, 1))}
+                        onPress={() => { setPastDayWorkouts([]); setDateOffset(prevOffset => prevOffset + 1); }}
                         style={styles.chevronRight}
                         icon={<ChevronRightIcon color={'white'}/>}
                         onPressColor={'#00000080'}
@@ -153,31 +216,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                     <View style={styles.sectionLabel}>
                         <Text style={styles.sectionTitle}>{'WORKOUTS'}</Text>
                     </View>
-                    { /* Workout List */ }
-                    <ScrollView>
-                        <View style={styles.workoutList}>
-                            {workouts.map((workout, i) => (
-                                <SelectedWorkoutListItem
-                                    key={i}
-                                    selectedWorkout={workout}
-                                    workoutType={workoutType}
-                                    remove={() => removeWorkout(i)}
-                                    updateSelectedWorkout={getUpdateWorkoutFunction(i)}
-                                />
-                            ))}
-                            <IconButton
-                                onPress={
-                                    () => navigation.navigate('WorkoutSelection', {
-                                        userId: id,
-                                        workoutType: workoutType,
-                                    })
-                                }
-                                icon={<PlusCircleIcon color={'white'} />}
-                                style={styles.iconButton}
-                                onPressColor={'#00000040'}
-                            />
-                        </View>
-                    </ScrollView>
+                { homeContent }
                 </View>
                 {
                     isPedometerAvailable &&

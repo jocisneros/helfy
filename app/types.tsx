@@ -12,7 +12,15 @@ export type Workout = {
     tips: string,
 };
 
+export type SelectedWorkout = Workout & {
+    weight: number,
+    setCount: number,
+    repititionCount: number,
+    rating: WorkoutRating,
+};
+
 export enum ExperienceLevel {
+    Unassigned = -1,
     Beginner = 0,
     Intermediate = 1,
     Advanced = 2,
@@ -30,17 +38,11 @@ export enum WorkoutType {
 };
 
 export enum WorkoutRating {
-    ThumbsDown = -1,
+    ThumbsDown = -2,
+    Incomplete = -1,
     Unrated = 0,
     ThumbsUp = 1,
     DoubleThumbsUp = 3,
-};
-
-export type SelectedWorkout = Workout & {
-    weight: number,
-    setCount: number,
-    repititionCount: number,
-    rating: WorkoutRating,
 };
 
 export type Height = {
@@ -86,7 +88,7 @@ type WorkoutSelectionProps = {
 export type RootStackParamList = {
     Start: undefined;
     Schedule: Omit<Omit<UserSettings, 'id'>, 'workoutSchedule'>;
-    Home: UserSettings;
+    Home: undefined;
     WorkoutSelection: WorkoutSelectionProps;
 };
 
@@ -114,6 +116,8 @@ export type WorkoutSelectionPageNavigationProp = NativeStackScreenProps<
 
 export type UserData = Omit<UserSettings, 'workoutSchedule'>;
 
+export type StoredWorkout = Omit<Omit<Omit<SelectedWorkout, 'difficulty'>, 'link'>, 'tips'>;
+
 export type WorkoutData = {
     id: number,
     date: string,
@@ -121,10 +125,11 @@ export type WorkoutData = {
     workouts: Workout[],
 };
 
-export type CompletedWorkout = {
+export type WorkoutHistoryResponse = {
     id: number,
+    sets: number,
+    reps: number,
     weight: number,
-    setCount: number,
-    repititionCount: number,
-    rating: WorkoutRating,
+    name: string,
+    rating: WorkoutRating
 };

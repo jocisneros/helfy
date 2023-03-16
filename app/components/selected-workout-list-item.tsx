@@ -32,16 +32,18 @@ type SelectedWorkoutListItemProps = {
     updateSelectedWorkout: React.Dispatch<React.SetStateAction<SelectedWorkout>>,
     workoutType: WorkoutType,
     remove?: () => void,
+    readOnly?: boolean,
 };
 
 
 export const SelectedWorkoutListItem = ({
     selectedWorkout,
     workoutType,
+    readOnly,
     updateSelectedWorkout,
     remove
 }: SelectedWorkoutListItemProps) => {
-    const [isChecked, setChecked] = useState(false); 
+    const [isChecked, setChecked] = useState(selectedWorkout.rating !== WorkoutRating.Incomplete); 
     const [waitForVideoLoad, setWaitForVideoLoad] = useState(true);
 
     const setWeight = useCallback((weight: number) => {
@@ -61,10 +63,6 @@ export const SelectedWorkoutListItem = ({
     }, [updateSelectedWorkout]);
 
     const [modalType, setModalType] = useState<ModalType>(ModalType.None);
-    <ActivityIndicator
-        color={'white'}
-        size={'large'}
-    />
 
     const demoVideo = useMemo(() => {
         if (selectedWorkout.link === '') {
@@ -252,7 +250,7 @@ export const SelectedWorkoutListItem = ({
 
                 <CheckButton
                     isChecked={isChecked}
-                    onPress={() => { setChecked(!isChecked); !isChecked && setModalType(ModalType.Rating); }}
+                    onPress={readOnly ? undefined : () => { setChecked(!isChecked); !isChecked && setModalType(ModalType.Rating); }}
                     style={isChecked ? styles.checkedButton : styles.uncheckedButton}
                 />
                 <View style={styles.workoutTitleContainer}>
@@ -265,13 +263,13 @@ export const SelectedWorkoutListItem = ({
                     <IconButton
                         style={styles.iconButton}
                         icon={<InfoCircleIcon color={'#CFCFCF'}/>}
-                        onPress={() => setModalType(ModalType.Info)}
+                        onPress={readOnly ? undefined : () => setModalType(ModalType.Info)}
                         onPressColor={'#00000040'}
                     />
                 </View>
                 <WorkoutLabel
                     {...selectedWorkout}
-                    onPress={() => setModalType(ModalType.Menu)}
+                    onPress={readOnly ? undefined : () => setModalType(ModalType.Menu)}
                 />
             </View>
         </Fragment>

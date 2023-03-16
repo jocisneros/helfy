@@ -1,3 +1,5 @@
+USE exercisedb;
+
 INSERT INTO workout_types (name) VALUES ('push'); # 1
 INSERT INTO workout_types (name) VALUES ('pull'); # 2
 INSERT INTO workout_types (name) VALUES ('legs'); # 3

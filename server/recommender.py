@@ -86,7 +86,7 @@ def getCosineSimilarity(user, exerciseHisory) -> dict:
     else:
         scaledHeight = (user['height'] - hMin)/(hMax - hMin)
 
-    userVector = [GENDER_DICT[user['gender']], user['experience']/2, scaledWeight, scaledHeight]
+    userVector = [GENDER_DICT[user['gender'].lower()], user['experience']/2, scaledWeight, scaledHeight]
     for eh in exerciseHisory:
         if eh['userId'] not in similarity.keys():
             if wMax - wMin == 0:
@@ -98,7 +98,7 @@ def getCosineSimilarity(user, exerciseHisory) -> dict:
             else:
                 scaledHeight = (eh['height'] - hMin)/(hMax - hMin)
 
-            ehVector = [GENDER_DICT[eh['gender']], eh['experience'], scaledWeight, scaledHeight]
+            ehVector = [GENDER_DICT[eh['gender'].lower()], eh['experience'], scaledWeight, scaledHeight]
             # print(ehVector)
             similarity[eh['userId']] = 1 - cosine(userVector, ehVector, SIMILARITY_WEIGHTS)
 

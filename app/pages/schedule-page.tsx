@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { HelfyCommonModal } from '../components/helfy-common-modal';
 import { HelfyColorPalette } from '../theme';
 import { HelfyHttpClient } from '../helfy-http-client';
+import { useUserSettings } from '../helfy-context';
 
 type WorkoutDaySetter = (muscleGroup: WorkoutType) => void;
 
@@ -94,6 +95,8 @@ function sortWeekdays(weekdayA: string, weekdayB: string): number {
 export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) => {
     const { weight, height, experienceLevel, sex } = route.params;
 
+    const [, setUserSettings] = useUserSettings();
+
     const [modalContents, setModalContents] = useState<React.ReactNode>(null);
     const [workoutFrequency, setWorkoutFrequency] = useState(3);
     const [workoutSchedule, setWorkoutSchedule] = useState<WorkoutSchedule>(recommendedSchedule(3));
@@ -113,11 +116,11 @@ export const SchedulePage = ({ route, navigation }: SchedulePageNavigationProp) 
             workoutSchedule: workoutSchedule,
         };
 
-        await AsyncStorage.setItem('userSettings', JSON.stringify(userSettings));
+        setUserSettings(userSettings);
 
         await HelfyHttpClient.postUser({ ...userSettings });
         
-        navigation.navigate('Home', userSettings);
+        navigation.navigate('Home');
     }, [navigation, workoutSchedule])
 
     const onMuscleGroupLabelPress = useCallback((setWorkoutDay: WorkoutDaySetter) => {

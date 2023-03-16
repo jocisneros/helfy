@@ -127,7 +127,7 @@ export const WorkoutListItem = ({
                                 weight: 0,
                                 setCount: 0,
                                 repititionCount: 0,
-                                rating: WorkoutRating.Unrated,
+                                rating: WorkoutRating.Incomplete,
                             }); 
                         }}
                         style={isChecked ? styles.checkedButton : styles.uncheckedButton}

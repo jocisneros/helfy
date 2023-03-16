@@ -7,14 +7,12 @@ import { SchedulePage } from './pages/schedule-page'
 import { HomePage } from './pages/home-page'
 import { WorkoutSelectionPage } from './pages/workout-selection-page';
 import { HelfyEntryStatus, RootStackParamList } from './types';
-import { useFonts, Lato_400Regular, Lato_700Bold } from '@expo-google-fonts/lato';
 import 'react-native-get-random-values';
-import { useEntryStatus, useUserSettings } from './helfy-context';
+import { useEntryStatus } from './helfy-context';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const Helfy = () => {
-    const userSettings = useUserSettings();
     const entryStatus = useEntryStatus();
 
     let initialPage: keyof RootStackParamList | undefined = undefined;
@@ -42,7 +40,7 @@ export const Helfy = () => {
             }}>
                 <Stack.Screen name="Start" component={StartPage} />
                 <Stack.Screen name="Schedule" component={SchedulePage} />
-                <Stack.Screen name="Home" component={HomePage} initialParams={userSettings} />
+                <Stack.Screen name="Home" component={HomePage} />
                 <Stack.Screen name="WorkoutSelection" component={WorkoutSelectionPage} />
             </Stack.Navigator>
         </NavigationContainer>
