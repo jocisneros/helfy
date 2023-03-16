@@ -2,7 +2,7 @@
 from connection import getExercisesByWorkoutType, getExerciseHistoryByExerciseIds, getUserById
 from scipy.spatial.distance import cosine
 from numpy import average
-from configs import RATING_MAX, RATING_MIN, RATING_DEFAUT, GENDER_DICT, SIMILIARITY_CUTOFF, SIMILARITY_WEIGHTS
+from configs import RATING_MAX, RATING_MIN, RATING_DEFAUT, GENDER_DICT, SIMILIARITY_CUTOFF, SIMILARITY_WEIGHTS, RECOMMENDATION_LIMIT
 
 
 
@@ -14,6 +14,8 @@ def getWorkoutRec(userId, day) -> list:
     similarity = getCosineSimilarity(userInfo,exercisesHistory)
     exerciseOrdered = orderExercises(exercisesHistory, exercises, userInfo, similarity)
 
+    if len(exerciseOrdered) > RECOMMENDATION_LIMIT:
+        exerciseOrdered = exerciseOrdered[:RECOMMENDATION_LIMIT]
 
     return exerciseOrdered
 
