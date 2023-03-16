@@ -110,7 +110,7 @@ def insertWorkout(userId: str, date:str, workoutType:str, exercises:dict):
 
         # insert workout
         workoutQuery = ("INSERT INTO workout_history (usersID, workoutDate, workoutType) VALUES (%s, %s, %s)")
-        cursor.execute(workoutQuery, (userId, date, workoutTypeId))
+        cursor.execute(workoutQuery, (userId, date, workoutTypeId[0]))
         connection.commit()
 
         workoutId = cursor.lastrowid
