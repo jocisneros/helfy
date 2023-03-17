@@ -3,12 +3,11 @@
 import { Fragment, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Button, TouchableHighlight, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { HelfyCommonModal } from '../components/helfy-common-modal';
 import { WorkoutListItem } from '../components/workout-list-item';
 import { useSelectedWorkouts } from '../helfy-context';
 import { HelfyHttpClient } from '../helfy-http-client';
 import { HelfyColorPalette } from '../theme';
-import { SelectedWorkout, Workout, WorkoutSelectionPageNavigationProp, WorkoutType } from '../types';
+import { SelectedWorkout, Workout, WorkoutSelectionPageNavigationProp } from '../types';
 
 export const WorkoutSelectionPage = ({ route, navigation }: WorkoutSelectionPageNavigationProp) => {
     const [selectedWorkouts, setSelectedWorkouts] = useSelectedWorkouts();
@@ -46,10 +45,10 @@ export const WorkoutSelectionPage = ({ route, navigation }: WorkoutSelectionPage
                         <ActivityIndicator
                             color={'white'}
                             size={'large'}
-                            style={{ width: '100%', height: '70%' }}
+                            style={{ width: '100%', height: '78%' }}
                         />
                     ) : (
-                        <View style={{ width: '100%', height: '70%' }}>
+                        <View style={{ width: '100%', height: '78%' }}>
                             <ScrollView style={{ width: '100%', height: '100%' }} contentContainerStyle={{alignItems: 'center', justifyContent: 'center'}}>
                                 {
                                     workoutList.map((workout, index) => (
@@ -120,7 +119,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-evenly',
         backgroundColor: HelfyColorPalette.primary1,
-        marginBottom: 20,
         paddingHorizontal: 24,
         borderRadius: 36,
         height: 36,

@@ -7,8 +7,9 @@ export const CloseIcon = (props: SvgProps) => (
   <Svg
     width={24}
     height={24}
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio='xMinYMin slice'
+    fill='currentColor'
+    viewBox='0 0 24 24'
     {...props}
   >
     <Path

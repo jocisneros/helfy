@@ -2,7 +2,6 @@
 
 import React, { Fragment } from 'react';
 import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import { DotIcon } from '../icons/icons';
 
 type WorkoutLabelProps = {
     weight: number,
@@ -58,14 +57,14 @@ const styles = StyleSheet.create({
     },
     primaryText: {
         fontFamily: 'Lato_700Bold',
-        color: '#303730',
+        color: 'black',
         fontSize: 18,
-        width: 55,
+        width: 38,
         textAlign: 'center',
     },
     secondaryText: {
         fontFamily: 'Lato_700Bold',
-        color: '#303730',
+        color: 'black',
         fontSize: 16,
         width: 20,
         textAlign: 'center',
@@ -73,9 +72,7 @@ const styles = StyleSheet.create({
     bar: {
         width: 1.25,
         height: 14,
-        backgroundColor: '#303730',
+        backgroundColor: 'black',
         marginHorizontal: 4,
     }
 });
-
-// '#303730'

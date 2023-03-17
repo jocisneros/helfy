@@ -9,7 +9,8 @@ import { ExperienceLevel, HelfyEntryStatus, SelectedWorkout, UserSettings, Worko
 
 type SelectedWorkoutState = [
     SelectedWorkout[],
-    React.Dispatch<React.SetStateAction<SelectedWorkout[]>>
+    React.Dispatch<React.SetStateAction<SelectedWorkout[]>>,
+    boolean,
 ];
 
 type UserSettingsState = [
@@ -43,7 +44,7 @@ const StartUpUserSettings: UserSettings = {
 
 const HelfyUserContext = React.createContext<UserSettingsState>([StartUpUserSettings, () => {}]);
 const HelfyStatusContext = React.createContext(HelfyEntryStatus.Loading);
-const HelfyWorkoutsContext = React.createContext<SelectedWorkoutState>([[], () => {}]);
+const HelfyWorkoutsContext = React.createContext<SelectedWorkoutState>([[], () => {}, false]);
 const HelfyDayContext = React.createContext<[Date, WorkoutType]>([new Date(), WorkoutType.None]);
 
 export const useUserSettings = () => {
@@ -65,6 +66,8 @@ export const useDay = () => {
 
 const HelfyWorkoutProvider = ({ children }: HelfyContextProps) => {
     const [selectedWorkouts, setSelectedWorkouts] = useState<SelectedWorkout[]>([]);
+
+    const [today, ] = useDay();
 
     const [lastSyncDate, setLastSyncDate] = useState<Date>(new Date());
     const [syncDate, setSyncDate] = useState<Date>(new Date());
@@ -104,20 +107,29 @@ const HelfyWorkoutProvider = ({ children }: HelfyContextProps) => {
         loadStoredData();
     }, [loadStoredData]);
 
-    useEffect(() => {
-        if (!syncToDB || userSettings.id === '') {
+    const syncWorkoutToDB = useCallback(async () => {
+        // no user + no need to sync + nothing to sync
+        if (userSettings.id === '' || !syncToDB || selectedWorkouts.length === 0) {
             return;
         }
 
         const workoutType = getWorkoutTypeFromSchedule(lastSyncDate, userSettings.workoutSchedule);
 
-        HelfyHttpClient.postWorkoutData(userSettings.id, lastSyncDate, workoutType, selectedWorkouts)
-        .then(() => {
-            setSyncToDB(false);
-            setLastSyncDate(new Date());
-            setSelectedWorkouts([]);
-        });
-    }, [userSettings, syncToDB, selectedWorkouts, lastSyncDate]);
+        await HelfyHttpClient.postWorkoutData(
+            userSettings.id,
+            lastSyncDate,
+            workoutType,
+            selectedWorkouts
+        );
+
+        setSyncToDB(false);
+        setLastSyncDate(new Date());
+        setSelectedWorkouts([]);
+    }, [lastSyncDate, selectedWorkouts, syncDate, userSettings]);
+
+    useEffect(() => {
+        syncWorkoutToDB();
+    }, [syncWorkoutToDB]);
 
     // update locally stored data sync time
     useEffect(() => {
@@ -145,18 +157,24 @@ const HelfyWorkoutProvider = ({ children }: HelfyContextProps) => {
             return;
         }
 
-        setLastSyncDate(prevSyncDate => {
-            if (isSameDay(prevSyncDate, syncDate)) {
-                return syncDate;
-            }
-
+        if (isSameDay(lastSyncDate, syncDate)) {
+            setLastSyncDate(lastSyncDate);
+        } else {
             setSyncToDB(true);
-            return prevSyncDate;
-        })
-    }, [syncDate, syncToDB]);
+        }
+    }, [syncDate, syncToDB, lastSyncDate]);
+
+    // sync if new day
+    useEffect(() => {
+        if (syncToDB || isSameDay(today, lastSyncDate)) {
+            return;
+        }
+
+        setSyncToDB(true);
+    }, [today, lastSyncDate, syncToDB])
 
     return (
-        <HelfyWorkoutsContext.Provider value={[ selectedWorkouts, setSelectedWorkouts ]}>
+        <HelfyWorkoutsContext.Provider value={[ selectedWorkouts, setSelectedWorkouts, syncToDB ]}>
             { children }
         </HelfyWorkoutsContext.Provider>
     )
