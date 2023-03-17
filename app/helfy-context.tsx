@@ -107,20 +107,29 @@ const HelfyWorkoutProvider = ({ children }: HelfyContextProps) => {
         loadStoredData();
     }, [loadStoredData]);
 
-    useEffect(() => {
-        if (!syncToDB || userSettings.id === '') {
+    const syncWorkoutToDB = useCallback(async () => {
+        // no user + no need to sync + nothing to sync
+        if (userSettings.id === '' || !syncToDB || selectedWorkouts.length === 0) {
             return;
         }
 
         const workoutType = getWorkoutTypeFromSchedule(lastSyncDate, userSettings.workoutSchedule);
 
-        HelfyHttpClient.postWorkoutData(userSettings.id, lastSyncDate, workoutType, selectedWorkouts)
-        .then(() => {
-            setSyncToDB(false);
-            setLastSyncDate(new Date());
-            setSelectedWorkouts([]);
-        });
-    }, [userSettings, syncToDB, selectedWorkouts, lastSyncDate]);
+        await HelfyHttpClient.postWorkoutData(
+            userSettings.id,
+            lastSyncDate,
+            workoutType,
+            selectedWorkouts
+        );
+
+        setSyncToDB(false);
+        setLastSyncDate(new Date());
+        setSelectedWorkouts([]);
+    }, [lastSyncDate, selectedWorkouts, syncDate, userSettings]);
+
+    useEffect(() => {
+        syncWorkoutToDB();
+    }, [syncWorkoutToDB]);
 
     // update locally stored data sync time
     useEffect(() => {
@@ -148,15 +157,12 @@ const HelfyWorkoutProvider = ({ children }: HelfyContextProps) => {
             return;
         }
 
-        setLastSyncDate(prevSyncDate => {
-            if (isSameDay(prevSyncDate, syncDate)) {
-                return syncDate;
-            }
-
+        if (isSameDay(lastSyncDate, syncDate)) {
+            setLastSyncDate(lastSyncDate);
+        } else {
             setSyncToDB(true);
-            return prevSyncDate;
-        })
-    }, [syncDate, syncToDB]);
+        }
+    }, [syncDate, syncToDB, lastSyncDate]);
 
     // sync if new day
     useEffect(() => {
