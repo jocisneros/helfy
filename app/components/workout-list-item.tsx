@@ -8,6 +8,8 @@ import { HelfyCommonModal } from './helfy-common-modal';
 import { getWorkoutTypeColor } from '../workout-type-helpers';
 import { Space } from './space';
 import YoutubeIframe from 'react-native-youtube-iframe';
+import { SparkleIcon } from '../icons/sparkle-icon';
+import { HelfyColorPalette } from '../theme';
 
 type WorkoutDifficultyProps = {
     difficulty: number,
@@ -136,16 +138,29 @@ export const WorkoutListItem = ({
                         onPress={() => setShowModal(true)} style={{ width: '90%', height: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginLeft: '5%' }}
                         underlayColor={'#00000020'}
                     >
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <Text 
-                                style={styles.workoutText}
-                                numberOfLines={1}
-                            >
-                                {workout.name}
-                            </Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                             <View
-                                style={{paddingLeft: 35}}
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'flex-start',
+                                    width: '75%'
+                                }}
                             >
+                                <Text 
+                                    style={[styles.workoutText, !recommended && { width: '87.5%' }]}
+                                    numberOfLines={1}
+                                >
+                                    {workout.name}
+                                </Text>
+                                {
+                                    recommended &&
+                                    <View style={{ width: '30%' }}>
+                                        <SparkleIcon color={'white'} width={30} height={30} />
+                                    </View>
+                                }
+                            </View>
+                            <View style={{ width: '25%', alignItems: 'center' }}>
                                 <WorkoutDifficulty
                                     difficulty={workout.difficulty}
                                 />
@@ -162,13 +177,13 @@ const styles = StyleSheet.create({
         fontFamily: 'Lato_700Bold',
         fontSize: 18,
         color: 'white',
-        width: '60%',
+        width: '75%',
         marginLeft: 12,
     },
     workoutContainerRecommended: {
         display: 'flex',
         flexDirection: 'row',
-        backgroundColor: '#65b869',
+        backgroundColor: HelfyColorPalette.primary4,
         width: '80%',
         marginLeft: 20,
         height: 50,
@@ -183,7 +198,7 @@ const styles = StyleSheet.create({
 	workoutContainer: {
         display: 'flex',
         flexDirection: 'row',
-        backgroundColor: '#3B463C',
+        backgroundColor: HelfyColorPalette.primary2,
         width: '80%',
         marginLeft: 20,
         height: 50,
@@ -198,7 +213,7 @@ const styles = StyleSheet.create({
     difficultyContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         backgroundColor: 'white',
         paddingHorizontal: 24,
         borderRadius: 36,

@@ -1,7 +1,7 @@
 // home-page.tsx
 
 import React, { useCallback, useEffect, useState, useMemo, Fragment } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { HomePageNavigationProp, SelectedWorkout, Workout, WorkoutType } from '../types';
 import {
     CalendarIcon,
@@ -12,7 +12,7 @@ import {
 import { WorkoutTypeLabel } from '../components/workout-type-label';
 import { SelectedWorkoutListItem } from '../components/selected-workout-list-item';
 import { IconButton } from '../components/icon-button';
-import { addDays, compareAsc, format, isSameDay } from 'date-fns'
+import { add, addDays, compareAsc, format, isSameDay } from 'date-fns'
 import { Space } from '../components/space';
 import { getWorkoutTypeColor, getWorkoutTypeDescription } from '../workout-type-helpers';
 import { Pedometer } from 'expo-sensors';
@@ -20,6 +20,7 @@ import { HelfyCommonModal } from '../components/helfy-common-modal';
 import { HelfyColorPalette } from '../theme';
 import { useDay, useSelectedWorkouts, useUserSettings } from '../helfy-context';
 import { HelfyHttpClient } from '../helfy-http-client';
+import { getWorkoutTypeFromSchedule } from '../helpers';
 
 
 export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
@@ -31,31 +32,26 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
     const [today, ] = useDay();
     const [dateOffset, setDateOffset] = useState(0);
 
-    const date = useMemo(() => addDays(today, dateOffset), [today, dateOffset]);
-
     const [showModal, setShowModal] = useState(false);
     const [pastDayWorkouts, setPastDayWorkouts] = useState<SelectedWorkout[]>([]);
-    const [selectedWorkouts, setSelectedWorkouts] = useSelectedWorkouts();
+    const [selectedWorkouts, setSelectedWorkouts, isSyncingToDB] = useSelectedWorkouts();
+    const [isLoading, setLoading] = useState(false);
+    
+    const [date, setDate] = useState(today);
 
-    const workoutType = useMemo(() => {
-        switch (date.getDay()) {
-            case 0:
-                return workoutSchedule.sunday;
-            case 1:
-                return workoutSchedule.monday;
-            case 2:
-                return workoutSchedule.tuesday;
-            case 3:
-                return workoutSchedule.wednesday;
-            case 4:
-                return workoutSchedule.thursday;
-            case 5:
-                return workoutSchedule.friday;
-            case 6:
-                return workoutSchedule.saturday;
+    useEffect(() => {
+        const updatedDate = addDays(today, dateOffset);
+
+        if (isSameDay(updatedDate, date)) {
+            return;
         }
-        return WorkoutType.None;
-    }, [date])
+
+        setDate(updatedDate);
+    }, [date, today, dateOffset]);
+
+    const workoutType = useMemo(
+        () => getWorkoutTypeFromSchedule(date, workoutSchedule)
+    , [date, workoutSchedule]);
 
     const [isPedometerAvailable, setIsPedometerAvailable] = useState(false);
     const [todaysStepCount, setTodaysStepCount] = useState(0);
@@ -85,9 +81,13 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
             return;
         }
 
+        setLoading(true);
         HelfyHttpClient.getWorkoutHistory(id, date).then(
-            data => setPastDayWorkouts(data)
-        )
+            data => {
+                setPastDayWorkouts(data);
+                setLoading(false);
+            }
+        );
     }, [date, dateOffset, id]);
 
     const getUpdateWorkoutFunction = useCallback(
@@ -118,54 +118,63 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
         );
     }, [setSelectedWorkouts]);
 
+    const isToday = dateOffset === 0;
+
+    const isBreakDay = workoutType === WorkoutType.None;
+
     const homeContent = useMemo(() => {
         let selectedWorkoutsForDay: SelectedWorkout[] = [];
 
-        const isToday = dateOffset === 0;
-
         if (isToday) {
             selectedWorkoutsForDay = selectedWorkouts;
-        } else if (compareAsc(today, date) === 1) {
+        } else if (dateOffset < 0) {
             selectedWorkoutsForDay = pastDayWorkouts;
         }
 
-        const isBreakDay = workoutType === WorkoutType.None;
+        if (selectedWorkouts.length === 0) {
+            return null;
+        }
 
         return (
-            <View style={{alignItems: 'center', justifyContent: 'center'}}>
-            <ScrollView style={{maxHeight: '85%', marginBottom: 12}}>
-                { /* Workout List */ }
-                <View style={styles.workoutList}>
-                    {selectedWorkoutsForDay.map((workout, i) => (
-                        <SelectedWorkoutListItem
-                            key={i}
-                            selectedWorkout={workout}
-                            workoutType={workoutType}
-                            remove={() => removeWorkout(i)}
-                            readOnly={!(isToday && !isBreakDay)}
-                            updateSelectedWorkout={getUpdateWorkoutFunction(i)}
-                        />
-                    ))}
-                    
-                </View>
-            </ScrollView>
-            { (isToday && !isBreakDay) && (
-                <IconButton
-                    onPress={
-                        () => navigation.navigate('WorkoutSelection', {
-                            userId: id,
-                            workoutType: workoutType,
-                        })
-                    }
-                    icon={<PlusCircleIcon color={'white'} />}
-                    style={styles.iconButton}
-                    onPressColor={'#00000040'}
-                />
-            )}
+            <View style={styles.workoutList}>
+                <ScrollView
+                    style={{ flexGrow: 0 }} contentContainerStyle={styles.workoutListContainer}
+                >
+                    { /* Workout List */ }
+                        {
+                            isLoading || isSyncingToDB
+                            ? (
+                                <ActivityIndicator
+                                    color={'white'}
+                                    size={'large'}
+                                    style={{ width: '100%', height: '100%' }}
+                                />
+                            )
+                            : (
+                                selectedWorkoutsForDay.map((workout, i) => (
+                                    <SelectedWorkoutListItem
+                                        key={i}
+                                        selectedWorkout={workout}
+                                        workoutType={workoutType}
+                                        remove={() => removeWorkout(i)}
+                                        readOnly={!(isToday && !isBreakDay)}
+                                        updateSelectedWorkout={getUpdateWorkoutFunction(i)}
+                                    />
+                                ))
+                            )
+                        } 
+                </ScrollView>
             </View>
         );
-    }, [
-        pastDayWorkouts, selectedWorkouts, workoutType, navigation, getUpdateWorkoutFunction, removeWorkout, dateOffset
+    },
+    [
+        pastDayWorkouts,
+        selectedWorkouts,
+        workoutType,
+        navigation,
+        getUpdateWorkoutFunction,
+        removeWorkout,
+        dateOffset
     ]);
 
     return (
@@ -191,18 +200,18 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                     <IconButton
                         onPress={() => { setPastDayWorkouts([]); setDateOffset(prevOffset => prevOffset - 1); }}
                         style={styles.chevronLeft}
-                        icon={<ChevronLeftIcon color={'white'}/>}
+                        icon={<ChevronLeftIcon color={'white'} strokeWidth={1} stroke={'white'} />}
                         onPressColor={'#00000080'}
                     />
                     <Pressable style={styles.calendarCore}>
-                        <CalendarIcon color={'white'}/>
+                        <CalendarIcon color={'white'} width={20} height={20} />
                         <Space width={8}/>
                         <Text style={styles.calendarDate}>{format(date, 'E - MMM d')}</Text>
                     </Pressable>
                     <IconButton
                         onPress={() => { setPastDayWorkouts([]); setDateOffset(prevOffset => prevOffset + 1); }}
                         style={styles.chevronRight}
-                        icon={<ChevronRightIcon color={'white'}/>}
+                        icon={<ChevronRightIcon color={'white'} strokeWidth={1} stroke={'white'} />}
                         onPressColor={'#00000080'}
                     />
                 </View>
@@ -216,10 +225,24 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                 { /* Workout Contents */ }
                 <View style={styles.workouts}>
                     { /* Section Label */ }
+                    <Space height={16} />
                     <View style={styles.sectionLabel}>
                         <Text style={styles.sectionTitle}>{'WORKOUTS'}</Text>
                     </View>
-                { homeContent }
+                    { homeContent }
+                    { (isToday && !isBreakDay) && (
+                        <IconButton
+                            onPress={
+                                () => navigation.navigate('WorkoutSelection', {
+                                    userId: id,
+                                    workoutType: workoutType,
+                                })
+                            }
+                            icon={<PlusCircleIcon color={'white'} width={32} height={32} />}
+                            style={styles.addWorkoutButton}
+                            onPressColor={'#00000040'}
+                        />
+                    )}
                 </View>
                 {
                     isPedometerAvailable &&
@@ -260,26 +283,19 @@ const styles = StyleSheet.create({
     chevronLeft: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: 18,
-        height: 26,
+        width: 24,
+        height: 28,
         backgroundColor: HelfyColorPalette.primary2,
         borderTopLeftRadius: 24,
         borderBottomLeftRadius: 24,
         borderTopRightRadius: 12,
         borderBottomRightRadius: 12,
     },
-    modalContainer: {
-        height: '100%',
-        width: '100%',
-        borderRadius: 16,
-        alignItems: 'center',
-        justifyContent: 'space-evenly',
-    },
     chevronRight: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: 18,
-        height: 26,
+        width: 24,
+        height: 28,
         backgroundColor: HelfyColorPalette.primary2,
         borderTopRightRadius: 24,
         borderBottomRightRadius: 24,
@@ -297,9 +313,16 @@ const styles = StyleSheet.create({
         backgroundColor: HelfyColorPalette.primary2,
         marginHorizontal: 12,
     },
+    modalContainer: {
+        height: '100%',
+        width: '100%',
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+    },
     content: {
         backgroundColor: HelfyColorPalette.primary0,
-        flex: 7,
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -315,32 +338,34 @@ const styles = StyleSheet.create({
     },
     workouts: {
         width: '95%',
-        flex: 7,
         margin: 16,
         marginBottom: 0,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
+        flex: 1,
     },
     steps: {
-        flex: 1,
         width: '95%',
         alignItems: 'center',
         justifyContent: 'center',
+        flex: 0,
     },
     workoutList: {
-        marginTop: 20,
-        width: '100%',
-        height: '75%',
+        maxHeight: '73%',
+        marginTop: 8,
+        marginBottom: 12,
+        paddingVertical: 16,
+    },
+    workoutListContainer: {
         alignItems: 'center',
+        justifyContent: 'center',
     },
     sectionTitle: {
         fontFamily: 'Lato_700Bold',
         fontSize: 20,
         color: 'white',
     },
-    iconButton: {
-        width: 24,
-        height: 24,
+    addWorkoutButton: {
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 99,

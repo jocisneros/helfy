@@ -18,6 +18,7 @@ import { getWorkoutTypeColor } from '../workout-type-helpers';
 import { Space } from './space';
 import { HelfyCommonModal } from './helfy-common-modal';
 import YoutubeIframe from 'react-native-youtube-iframe';
+import { HelfyColorPalette } from '../theme';
 
 enum ModalType {
     None = 'None',
@@ -43,7 +44,10 @@ export const SelectedWorkoutListItem = ({
     updateSelectedWorkout,
     remove
 }: SelectedWorkoutListItemProps) => {
-    const [isChecked, setChecked] = useState(selectedWorkout.rating !== WorkoutRating.Incomplete); 
+    const isChecked = useMemo(
+        () => selectedWorkout.rating !== WorkoutRating.Incomplete
+    , [selectedWorkout])
+
     const [waitForVideoLoad, setWaitForVideoLoad] = useState(true);
 
     const setWeight = useCallback((weight: number) => {
@@ -92,6 +96,11 @@ export const SelectedWorkoutListItem = ({
 
     const workoutTips = selectedWorkout.tips.split('. ').filter(tip => tip.length > 5);
 
+    const onRate = (rating: WorkoutRating) => {
+        setRating(rating);
+        setModalType(ModalType.None);
+    }
+
     const modalContents = useMemo(() => {
         switch (modalType) {
             case ModalType.Info:
@@ -139,7 +148,7 @@ export const SelectedWorkoutListItem = ({
                                     setWeight(parseFloat(text || '0'))
                                 }}
                                 value={selectedWorkout.weight.toString()}
-                                maxLength={4}
+                                maxLength={3}
                             />
                         </View>
                         <View style={{ backgroundColor: 'white', marginVertical: 16, height: 0.5, width: 250 }} />
@@ -186,23 +195,23 @@ export const SelectedWorkoutListItem = ({
                         {/* <Space height={20}/> */}
                         <View style={styles.centeredRow}>
                             <IconButton
-                                style={{backgroundColor: '#ffffff60', padding: 12, borderRadius: 32}}
-                                icon={<ThumbsUpIcon color={'lightgreen'} />}
-                                onPress={() => { setRating(WorkoutRating.ThumbsUp); setModalType(ModalType.None); }}
+                                style={{backgroundColor: '#64b564', padding: 12, borderRadius: 32}}
+                                icon={<ThumbsUpIcon color={'white'} strokeWidth={0.5} stroke={'white'} />}
+                                onPress={() => onRate(WorkoutRating.ThumbsUp )}
                                 onPressColor={'#ffffff20'}
                             />
                             <Space width={20}/>
                             <IconButton
-                                style={{backgroundColor: '#ffffff60', padding: 12, borderRadius: 32}}
-                                icon={<DoubleThumbsUpIcon color={'lime'} />}
-                                onPress={() => { setRating(WorkoutRating.DoubleThumbsUp); setModalType(ModalType.None); }}
+                                style={{backgroundColor: '#37a337', padding: 12, borderRadius: 32}}
+                                icon={<DoubleThumbsUpIcon color={'white'} strokeWidth={0.5} stroke={'white'} />}
+                                onPress={() => onRate(WorkoutRating.DoubleThumbsUp )}
                                 onPressColor={'#ffffff20'}
                             />
                             <Space width={20}/>
                             <IconButton
-                                style={{backgroundColor: '#ffffff60', padding: 12, borderRadius: 32}}
-                                icon={<ThumbsDownIcon color={'red'} />}
-                                onPress={() => { setRating(WorkoutRating.ThumbsDown); setModalType(ModalType.None); }}
+                                style={{backgroundColor: '#a33737', padding: 12, borderRadius: 32}}
+                                icon={<ThumbsDownIcon color={'white'} strokeWidth={0.5} stroke={'white'} />}
+                                onPress={() => onRate(WorkoutRating.ThumbsDown )}
                                 onPressColor={'#ffffff20'}
                             />
                         </View>
@@ -250,7 +259,14 @@ export const SelectedWorkoutListItem = ({
 
                 <CheckButton
                     isChecked={isChecked}
-                    onPress={readOnly ? undefined : () => { setChecked(!isChecked); !isChecked && setModalType(ModalType.Rating); }}
+                    onPress={readOnly ? undefined : () => {
+                        if (isChecked) {
+                            setRating(WorkoutRating.Incomplete);
+                        } else {
+                            setRating(WorkoutRating.Unrated);
+                            setModalType(ModalType.Rating);
+                        }
+                    }}
                     style={isChecked ? styles.checkedButton : styles.uncheckedButton}
                 />
                 <View style={styles.workoutTitleContainer}>
@@ -261,16 +277,18 @@ export const SelectedWorkoutListItem = ({
                         {selectedWorkout.name.toUpperCase()}
                     </Text>
                     <IconButton
-                        style={styles.iconButton}
-                        icon={<InfoCircleIcon color={'#CFCFCF'}/>}
+                        style={styles.infoButton}
+                        icon={<InfoCircleIcon color={'white'} width={18} height={18} strokeWidth={0.25} stroke={'white'} />}
                         onPress={readOnly ? undefined : () => setModalType(ModalType.Info)}
                         onPressColor={'#00000040'}
                     />
                 </View>
-                <WorkoutLabel
-                    {...selectedWorkout}
-                    onPress={readOnly ? undefined : () => setModalType(ModalType.Menu)}
-                />
+                <View style={{ width: '35%', alignItems: 'center' }}>
+                    <WorkoutLabel
+                        {...selectedWorkout}
+                        onPress={readOnly ? undefined : () => setModalType(ModalType.Menu)}
+                    />
+                </View>
             </View>
         </Fragment>
     )
@@ -285,7 +303,7 @@ const styles = StyleSheet.create({
     container: {
         display: 'flex',
         flexDirection: 'row',
-        backgroundColor: '#3B463C',
+        backgroundColor: HelfyColorPalette.primary2,
         width: '90%',
         marginLeft: 20,
         paddingHorizontal: 10,
@@ -346,14 +364,16 @@ const styles = StyleSheet.create({
     workoutTitleContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
+        width: '65%',
+        paddingHorizontal: 16,
     },
     workoutTitle: {
         fontFamily: 'Lato_700Bold',
-        fontSize: 18,
-        color: '#FFFFFF',
-        width: 145,
-        marginLeft: 24,
+        fontSize: 17,
+        color: 'white',
+        flex: 1,
+        textAlign: 'left',
     },
     uncheckedButton: {
         backgroundColor: 'white',
@@ -384,12 +404,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 999,
     },
-    iconButton: {
-        width: 24,
-        height: 24,
+    infoButton: {
+        width: 28,
+        height: 26,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 99,
+        flex: 0,
     },
     picker: {
         width: 90,

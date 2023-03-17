@@ -9,7 +9,8 @@ import { ExperienceLevel, HelfyEntryStatus, SelectedWorkout, UserSettings, Worko
 
 type SelectedWorkoutState = [
     SelectedWorkout[],
-    React.Dispatch<React.SetStateAction<SelectedWorkout[]>>
+    React.Dispatch<React.SetStateAction<SelectedWorkout[]>>,
+    boolean,
 ];
 
 type UserSettingsState = [
@@ -43,7 +44,7 @@ const StartUpUserSettings: UserSettings = {
 
 const HelfyUserContext = React.createContext<UserSettingsState>([StartUpUserSettings, () => {}]);
 const HelfyStatusContext = React.createContext(HelfyEntryStatus.Loading);
-const HelfyWorkoutsContext = React.createContext<SelectedWorkoutState>([[], () => {}]);
+const HelfyWorkoutsContext = React.createContext<SelectedWorkoutState>([[], () => {}, false]);
 const HelfyDayContext = React.createContext<[Date, WorkoutType]>([new Date(), WorkoutType.None]);
 
 export const useUserSettings = () => {
@@ -65,6 +66,8 @@ export const useDay = () => {
 
 const HelfyWorkoutProvider = ({ children }: HelfyContextProps) => {
     const [selectedWorkouts, setSelectedWorkouts] = useState<SelectedWorkout[]>([]);
+
+    const [today, ] = useDay();
 
     const [lastSyncDate, setLastSyncDate] = useState<Date>(new Date());
     const [syncDate, setSyncDate] = useState<Date>(new Date());
@@ -155,8 +158,17 @@ const HelfyWorkoutProvider = ({ children }: HelfyContextProps) => {
         })
     }, [syncDate, syncToDB]);
 
+    // sync if new day
+    useEffect(() => {
+        if (syncToDB || isSameDay(today, lastSyncDate)) {
+            return;
+        }
+
+        setSyncToDB(true);
+    }, [today, lastSyncDate, syncToDB])
+
     return (
-        <HelfyWorkoutsContext.Provider value={[ selectedWorkouts, setSelectedWorkouts ]}>
+        <HelfyWorkoutsContext.Provider value={[ selectedWorkouts, setSelectedWorkouts, syncToDB ]}>
             { children }
         </HelfyWorkoutsContext.Provider>
     )
