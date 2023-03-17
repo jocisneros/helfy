@@ -27,21 +27,21 @@ export function getWorkoutTypeColor(workoutType: WorkoutType): string {
 export function getWorkoutTypeDescription(workoutType: WorkoutType): string {
     switch (workoutType) {
         case WorkoutType.Arms:
-            return 'Arms Description';
+            return 'Exercises that work out the biceps, triceps, and forearms.';
         case WorkoutType.Legs:
-            return 'Legs Description';
+            return 'Exercises that work out the glutes, quads, hamstrings, and calves.';
         case WorkoutType.Push:
-            return 'Push Description';
+            return 'Exercises that work out the chest, shoulders, and triceps.';
         case WorkoutType.Pull:
-            return 'Pulls Description';
+            return 'Exercises that work out the back and biceps.';
         case WorkoutType.UpperBody:
-            return 'Upper Body Description';
+            return 'Exercises that work out the arms, back, chest, and shoulders.';
         case WorkoutType.None:
-            return 'Break Description';
+            return 'A break day king, enjoy! :)';
         case WorkoutType.FullBody:
-            return 'Full Body Description';
+            return 'Exercises that work out the glutes, quads, hamstrings, and calves.';
         case WorkoutType.ChestAndBack:
-            return 'Chest and Back Description';
+            return 'Exercises that work out the upper and lower body.';
     }
     return '';
 }
