@@ -34,7 +34,7 @@ export enum WorkoutType {
     Pull = 'Pull',
     UpperBody = 'Upper Body',
     FullBody = 'Full Body',
-    None = 'Break',
+    None = 'None',
 };
 
 export enum WorkoutRating {
