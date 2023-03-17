@@ -7,8 +7,9 @@ export const CheckIcon = (props: SvgProps) => (
   <Svg
     width={18}
     height={18}
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio='xMinYMin slice'
+    fill='currentColor'
+    viewBox='0 0 18 18'
     {...props}
   >
     <Path
