@@ -69,7 +69,12 @@ export const SelectedWorkoutListItem = ({
     const [modalType, setModalType] = useState<ModalType>(ModalType.None);
 
     const demoVideo = useMemo(() => {
-        if (selectedWorkout.link === '') {
+
+        const urlMatch = selectedWorkout.link.match(
+            /https:\/\/(?:(?:youtu\.be)|(?:www\.youtube\.com))\/(?:watch\?v=)?(.{11})/
+        );
+
+        if (urlMatch?.length !== 2) {
             return null;
         }
 
@@ -84,7 +89,7 @@ export const SelectedWorkoutListItem = ({
                     />
                 }
                 <YoutubeIframe
-                    videoId={selectedWorkout.link.slice(-11)}
+                    videoId={urlMatch[1]}
                     height={189}
                     width={336}
                     onReady={() => setWaitForVideoLoad(false)}
