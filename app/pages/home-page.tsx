@@ -47,6 +47,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
         }
 
         setDate(updatedDate);
+        setPastDayWorkouts([]);
     }, [date, today, dateOffset]);
 
     const workoutType = useMemo(
@@ -88,7 +89,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                 setLoading(false);
             }
         );
-    }, [date, dateOffset, id]);
+    }, [date, id]);
 
     const getUpdateWorkoutFunction = useCallback(
         (index: number) => {
@@ -131,9 +132,11 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
             selectedWorkoutsForDay = pastDayWorkouts;
         }
 
-        if (selectedWorkouts.length === 0) {
+        if (selectedWorkoutsForDay.length === 0) {
             return null;
         }
+        
+        const showSpinner = isLoading || isSyncingToDB;
 
         return (
             <View style={styles.workoutList}>
@@ -142,7 +145,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                 >
                     { /* Workout List */ }
                         {
-                            isLoading || isSyncingToDB
+                            showSpinner
                             ? (
                                 <ActivityIndicator
                                     color={'white'}
@@ -174,7 +177,9 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
         navigation,
         getUpdateWorkoutFunction,
         removeWorkout,
-        dateOffset
+        dateOffset,
+        isLoading,
+        isSyncingToDB,
     ]);
 
     return (
@@ -198,7 +203,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                 { /* Calendar Header */ }
                 <View style={styles.calendarRowContainer} >
                     <IconButton
-                        onPress={() => { setPastDayWorkouts([]); setDateOffset(prevOffset => prevOffset - 1); }}
+                        onPress={() => setDateOffset(prevOffset => prevOffset - 1) }
                         style={styles.chevronLeft}
                         icon={<ChevronLeftIcon color={'white'} strokeWidth={1} stroke={'white'} />}
                         onPressColor={'#00000080'}
@@ -209,7 +214,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                         <Text style={styles.calendarDate}>{format(date, 'E - MMM d')}</Text>
                     </Pressable>
                     <IconButton
-                        onPress={() => { setPastDayWorkouts([]); setDateOffset(prevOffset => prevOffset + 1); }}
+                        onPress={() =>  setDateOffset(prevOffset => prevOffset + 1) }
                         style={styles.chevronRight}
                         icon={<ChevronRightIcon color={'white'} strokeWidth={1} stroke={'white'} />}
                         onPressColor={'#00000080'}
@@ -230,7 +235,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                         <Text style={styles.sectionTitle}>{'WORKOUTS'}</Text>
                     </View>
                     { homeContent }
-                    { (isToday && !isBreakDay) && (
+                    { (isToday && !isBreakDay && !isSyncingToDB) && (
                         <IconButton
                             onPress={
                                 () => navigation.navigate('WorkoutSelection', {
