@@ -196,6 +196,7 @@ export const HomePage = ({ route, navigation }: HomePageNavigationProp) => {
                         fontFamily: 'Lato_400Regular',
                         fontSize: 16,
                         color: '#FFF',
+                        textAlign: 'center'
                     }}>{getWorkoutTypeDescription(workoutType)}</Text>
                 </View>
             </HelfyCommonModal>
@@ -320,7 +321,7 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         height: '100%',
-        width: '100%',
+        width: '80%',
         borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'space-evenly',
